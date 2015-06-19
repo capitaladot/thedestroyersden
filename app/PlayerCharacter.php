@@ -3,37 +3,74 @@
 namespace App;
 
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Navigatable;
-use App\Attendable;
-use App\Homelandable;
-use App\Raceable;
-class PlayerCharacter extends BaseModel implements NavigatableContract {
-	use Navigatable;
+use App\Traits\Attendable;
+use App\Traits\CharacterClassable;
+use App\Traits\Fillable;
+use App\Traits\Homelandable;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\Traits\Raceable;
+
+class PlayerCharacter extends BaseModel implements HasPresenter, NavigatableContract {
+	
 	use Attendable;
-	use Homelandable;
 	use CharacterClassable;
+	use Fillable;
+	use Homelandable;
+	use Navigatable; use Presentable;
 	use Raceable;
-	public $relationMethods = ['user','possessions','creations','skills','arcs','experiences','expenditures','characterClass','homeland','race'];
+	public $relationMethods = [ 
+			'user',
+			'craftingOccurrences',
+			'experiences',
+			'expenditures',
+			'characterClass',
+			'homeland',
+			'race',
+			'consumables',
+			'durables',
+			'craftingComponents',
+			'rawResources',
+			'tools',
+			'weapons',
+			'ownables',
+			'skills',
+			'spells' 
+	];
 	public function user() {
 		return $this->belongsTo ( 'App\User' );
 	}
 	
 	/**
 	 * The list of items the player character possesses.
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
-	public function possessions() {
-		return $this->morphMany ( 'App\Item', 'ownable' );
+	public function craftingComponents() {
+		return $this->morphedByMany ( 'App\CraftingComponent', 'ownable', 'ownables', 'owner_id' );
 	}
-	
+	public function rawResources() {
+		return $this->morphedByMany ( 'App\RawResource', 'ownable', 'ownables', 'owner_id' );
+	}
+	public function durables() {
+		return $this->morphedByMany ( 'App\Durable', 'ownable', 'ownables', 'owner_id' );
+	}
+	public function consumables() {
+		return $this->morphedByMany ( 'App\Consumable', 'ownable', 'ownables', 'owner_id' );
+	}
+	public function tools() {
+		return $this->morphedByMany ( 'App\Tool', 'ownable', 'ownables', 'owner_id' );
+	}
+	public function weapons() {
+		return $this->morphedByMany ( 'App\Weapon', 'ownable', 'ownables', 'owner_id' );
+	}
+	public function ownables() {
+		return $this->hasMany ( 'App\Ownable', 'owner_id' );
+	}
 	/**
 	 * The list of items the player character created.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
-	public function creations() {
-		return $this->morphMany ( 'App\CraftedItem', 'craftable' );
+	public function craftingOccurrences() {
+		return $this->morphMany ( 'App\CraftingOccurrence', 'craftable' );
 	}
 	
 	/**
@@ -41,10 +78,10 @@ class PlayerCharacter extends BaseModel implements NavigatableContract {
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
 	public function skills() {
-		return $this->hasMany ( 'App\Skill' );
+		return $this->hasManyThrough ( 'App\Skill', 'App\Expenditure', 'skill_id', 'id' );
 	}
 	public function arcs() {
-		return $this->hasMany ( 'App\Arc' );
+		return $this->hasMany ( 'App\Arc', 'App\Experience' );
 	}
 	public function experiences() {
 		return $this->hasMany ( 'App\Experience' );
@@ -61,5 +98,8 @@ class PlayerCharacter extends BaseModel implements NavigatableContract {
 		return $this->earnedExperience () - $this->expenditures->sum ( function ($eachexpenditure) {
 			return $eachexpenditure->value;
 		} );
+	}
+	public function spells() {
+		return $this->hasManyThrough ( 'App\Spell', 'App\Memorization', 'spell_id', 'id' );
 	}
 }

@@ -3,22 +3,29 @@
 namespace App;
 
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Navigatable;
-use App\BaseModel;
-use App\Fillable;
-class Arc extends BaseModel implements NavigatableContract {
-	use Navigatable;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Traits\Fillable;
+
+class Arc extends BaseModel implements HasPresenter, NavigatableContract {
+	use Navigatable; use Presentable;
 	use Fillable;
-	public $fillable = [
-		'start_time',
-		'end_time'
+	public $fillable = [ 
+			'start_time',
+			'end_time' 
 	];
-	public $relationMethods = ['playerCharacters','expenditures','economy','sales'];
+	public $relationMethods = [ 
+			'event',
+			'playerCharacters',
+			'expenditures',
+			'economy',
+			'sales' 
+	];
 	public function playerCharacters() {
-		return $this->morphedByMany ( 'App\PlayerCharacter' ,'attendable');
+		return $this->morphedByMany ( 'App\PlayerCharacter', 'attendable' );
 	}
 	public function users() {
-		return $this->morphedByMany ( 'App\User' ,'attendable');
+		return $this->morphedByMany ( 'App\User', 'attendable' );
 	}
 	
 	/**
@@ -27,21 +34,18 @@ class Arc extends BaseModel implements NavigatableContract {
 	 */
 	public function nonPlayerCharacters() {
 		$playerCharacterPlayers = $this->playerCharacters->each ( function ($eachPlayerCharacter) {
-			return $eachPlayerCharacter->user();
+			return $eachPlayerCharacter->user ();
 		} );
 		$users = $this->users ();
-		if($users->count() == 0){
+		if ($users->count () == 0) {
 			$combinedUsers = $playerCharacterPlayers;
-		}
-		else if($playerCharacterPlayers->count() == 0){
+		} else if ($playerCharacterPlayers->count () == 0) {
 			$combinedUsers = $users;
-		}
-		else if($users->count() > 0 && $playerCharacterPlayers->count() > 0){
-			$combinedUsers = $users->merge($playerCharacterPlayers);
+		} else if ($users->count () > 0 && $playerCharacterPlayers->count () > 0) {
+			$combinedUsers = $users->merge ( $playerCharacterPlayers );
 			$combinedUsers->unique ();
-		}
-		else{
-			$combinedUsers = new Collection;
+		} else {
+			$combinedUsers = new Collection ();
 		}
 		return $combinedUsers;
 	}
@@ -51,7 +55,10 @@ class Arc extends BaseModel implements NavigatableContract {
 	public function economy() {
 		return $this->belongsTo ( 'App\Economy' );
 	}
-	public function sales(){
-		return $this->hasMany('App\Sale');
+	public function event() {
+		return $this->belongsTo ( 'App\Event' );
+	}
+	public function sales() {
+		return $this->hasMany ( 'App\Sale' );
 	}
 }

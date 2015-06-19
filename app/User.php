@@ -2,20 +2,37 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Navigatable;
-use Illuminate\Auth\Authenticatable;
-use App\BaseModel;
-use Illuminate\Auth\Passwords\CanResetPassword;
+use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
+use Illuminate\Support\Facades\DB;
+// contracts
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use App\Attendable;
-class User extends BaseModel implements AuthenticatableContract, CanResetPasswordContract, NavigatableContract {
-	
+use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use Bican\Roles\Contracts\HasRoleAndPermissionContract;
+// traits
+use Illuminate\Auth\Authenticatable as Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword as CanResetPassword;
+use App\Traits\Attendable;
+use App\Traits\Fillable;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+use SammyK\LaravelFacebookSdk\SyncableGraphNodeTrait as SyncableGraphNodeTrait;
+use Bican\Roles\Traits\HasRoleAndPermission as HasRoleAndPermissionTrait;
+// related
+use App\Order;
+class User extends BaseModel implements AuthenticatableContract, CanResetPasswordContract, HasRoleAndPermissionContract, NavigatableContract {
+	use Attendable;
 	use Authenticatable;
 	use CanResetPassword;
-	use Navigatable;
-	use Attendable;
+	use Fillable;
+	use HasRoleAndPermissionTrait;
+	use Navigatable; 
+	use Presentable;
+	use SyncableGraphNodeTrait;
+	protected static $graph_node_field_aliases = [ 
+			'id' => 'facebook_id',
+			'name' => 'name',
+			'access_token' => 'access_token' 
+	];
 	/**
 	 * The database table used by the model.
 	 *
@@ -28,12 +45,12 @@ class User extends BaseModel implements AuthenticatableContract, CanResetPasswor
 	 *
 	 * @var array
 	 */
-	protected $fillable = [
+	protected $fillable = [ 
 			'name',
 			'email',
 			'password',
 			'title',
-			'slug'
+			'slug' 
 	];
 	
 	/**
@@ -41,24 +58,42 @@ class User extends BaseModel implements AuthenticatableContract, CanResetPasswor
 	 *
 	 * @var array
 	 */
-	protected $hidden = [
+	protected $hidden = [ 
 			'password',
-			'remember_token'
+			'remember_token',
+			'access_token',
+			'slug' 
 	];
-	/**
-	 * Override getTitle from Navigatable since user objects have slight different parameters.
-	 * @return string
-	 * @@todo: add role decoration here.
-	 */
-	public function getTitle(){
-		return $this->name . '('.$this->title.')';
-	}
-	/**
-	 * The list of items this user possesses.
+	public $relationMethods = [ 
+			'events',
+			'playerCharacters',
+			'orders' 
+	];
+	public function __construct()
+	{
+		$cart = \Session::get('cart');
+		if(!empty($cart))
+			$this->cart = Order::find($cart);
+		else{
+			$this->cart = Order::create(['user_id'=>$this->id]);
+			\Session::put($this->cart->id);
+		}
+		return parent::__construct();
+	}	/**
+	 * Override getTitle from Navigatable since user objects have slightly different parameters.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 * @return string @@todo: add role decoration here.
 	 */
-	public function possessions() {
-		return $this->morphMany ( 'App\Item', 'ownable' );
+	public function getTitle() {
+		return $this->name . '(' . $this->title . ')';
+	}
+	public function events() {
+		return $this->hasMany ( 'App\Event', 'owner_id' );
+	}
+	public function playerCharacters() {
+		return $this->hasMany ( 'App\PlayerCharacter' );
+	}
+	public function orders(){
+		return $this->hasMany('App\Order');
 	}
 }

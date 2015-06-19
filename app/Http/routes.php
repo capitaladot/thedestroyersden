@@ -15,27 +15,34 @@ Route::get ( '/', function () {
 } );
 Route::get ( '/', 'WelcomeController@index' );
 Route::get ( 'home', 'HomeController@index' );
-Route::controllers ( [
+Route::controllers ( [ 
+		'amazon' => 'AmazonController',
 		'auth' => 'Auth\AuthController',
-		'password' => 'Auth\PasswordController'
+		'cart' => 'CartController',
+		'password' => 'Auth\PasswordController' 
 ] );
 Route::resource ( 'arc', 'ArcController' );
-Route::resource ( 'characterclass', 'CharacterClassController' );
+Route::resource ( 'character-class', 'CharacterClassController' );
 Route::resource ( 'cost', 'CostController' );
-Route::resource ( 'craftingcomponent', 'CraftingComponentController' );
-Route::resource ( 'craftingrequirement', 'CraftingRequirementController' );
+Route::resource ( 'crafting-component', 'CraftingComponentController' );
+Route::resource ( 'crafting-requirement', 'CraftingRequirementController' );
 Route::resource ( 'craft', 'CraftController' );
 Route::resource ( 'economy', 'EconomyController' );
 Route::resource ( 'expenditures', 'ExpendituresController' );
-Route::resource ( 'finalproduct', 'FinalProductController' );
+Route::resource ( 'event', 'EventController' );
+Route::resource ( 'final-product', 'FinalProductController' );
 Route::resource ( 'homeland', 'HomelandController' );
-Route::resource ( 'playercharacter', 'PlayerCharacterController' );
+Route::resource ( 'player-character', 'PlayerCharacterController' );
 Route::resource ( 'race', 'RaceController' );
-Route::resource ( 'rawresource', 'RawResourceController' );
+Route::resource ( 'raw-resource', 'RawResourceController' );
 Route::resource ( 'sale', 'SaleController' );
 Route::resource ( 'skill', 'SkillController' );
 Route::resource ( 'tool', 'ToolController' );
 Route::resource ( 'user', 'UserController' );
 
+/* Facebook */
+Route::get ( 'facebook/login', 'FacebookController@login' );
+Route::get ( 'facebook/callback', 'FacebookController@callback' );
+Route::get ( 'facebook/events', 'FacebookController@events' );
 /* form macros */
-require app_path().'/macros.php';
+require app_path () . '/macros.php';

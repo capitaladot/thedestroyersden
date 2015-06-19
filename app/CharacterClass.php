@@ -3,12 +3,12 @@
 namespace App;
 
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Navigatable;
-use App\BaseModel;
-use App\Fillable;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Traits\Fillable;
 
-class CharacterClass extends BaseModel implements NavigatableContract {
-	use Navigatable;
+class CharacterClass extends BaseModel implements HasPresenter, NavigatableContract {
+	use Navigatable; use Presentable;
 	use Fillable;
 	public $relationMethods = ['costs'];
 	public function costs(){

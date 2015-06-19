@@ -1,11 +1,11 @@
 <?php
 namespace App;
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Navigatable;
-use App\Fillable;
-use App\BaseModel;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\Traits\Fillable;
+use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
 class Homeland extends BaseModel implements NavigatableContract{
-	use Navigatable;
+	use Navigatable; use Presentable;
 	use Fillable;
 	public $relationMethods = ['costs','playerCharacters'];
 	public function playerCharacters(){

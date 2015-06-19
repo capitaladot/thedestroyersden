@@ -28,7 +28,16 @@ $app->singleton ( 'Illuminate\Contracts\Http\Kernel', 'App\Http\Kernel' );
 $app->singleton ( 'Illuminate\Contracts\Console\Kernel', 'App\Console\Kernel' );
 
 $app->singleton ( 'Illuminate\Contracts\Debug\ExceptionHandler', 'App\Exceptions\Handler' );
-
+/*
+ * $app->bind ( 'ArcRepository', function ($app) {
+ * } );
+ * $app->bind ( 'EventRepository', function ($app) {
+ * } );
+ * $app->bind ( 'OwnableRepository', function ($app) {
+ * } );
+ * $app->bind ( 'UserRepository', function ($app) {
+ * } );
+ */
 /*
  * |--------------------------------------------------------------------------
  * | Return The Application

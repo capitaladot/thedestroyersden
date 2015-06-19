@@ -2,19 +2,17 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract; use App\Navigatable;
-use App\BaseModel;
 use App\Item;
-use App\Harvestable;
-use App\Requireable;
+use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\Traits\Harvestable;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\Traits\Requireable;
+use App\Traits\Buyable;
+use App\Contracts\ItemContract;
 
-class RawResource extends BaseModel implements NavigatableContract {
-	use App\Item;
-	use App\Harvestable;
-	use App\Requireable;
-	use Navigatable;
-	use Titleable;
-	public function consume(){
-		$this->consumed_at = now();
-	}
+class RawResource extends Item implements ItemContract, NavigatableContract {
+	use Buyable;
+	use Harvestable;
+	use Navigatable; use Presentable;
+	use Requireable;
 }

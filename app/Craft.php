@@ -3,13 +3,15 @@
 namespace App;
 
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Navigatable;
-use App\BaseModel;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
 
-class Craft extends BaseModel implements NavigatableContract {
+class Craft extends Skill implements NavigatableContract {
 	
-	use App\Requireable;
-	use Navigatable;
+	use Requireable;
+	use Navigatable; use Presentable;
+	use Taggable;
+	protected $table = 'skills';
 	
 	/**
 	 * the list of final products this technique may produce.
@@ -24,6 +26,6 @@ class Craft extends BaseModel implements NavigatableContract {
 	 * the skill this crafting technique resides under.
 	 */
 	public function skill() {
-		return $this->belongsTo ( 'App\Skill');
+		return $this->belongsTo ( 'App\Skill' );
 	}
 }

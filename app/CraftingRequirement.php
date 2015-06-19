@@ -2,12 +2,12 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract; use App\Navigatable;
+use MartinBean\MenuBuilder\Contracts\NavigatableContract; use App\Traits\Navigatable; use App\Traits\Presentable;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
-use App\BaseModel;
+use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
 
-class CraftingRequirement extends BaseModel implements NavigatableContract {
-	use Navigatable;
+class CraftingRequirement extends BaseModel implements HasPresenter, NavigatableContract {
+	use Navigatable; use Presentable;
 	use Titleable;
 	protected $table = 'crafting_requirements';
 	public $timestamps = true;

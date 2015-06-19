@@ -2,18 +2,24 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract; use App\Navigatable;
-use App\Requireable;
-use App\Craftable;
-use App\Item;
-use App\Salvageable;
-use App\BaseModel;
+use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
+use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\Traits\Craftable;
+use App\Traits\Item;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\Traits\Requireable;
+use App\Traits\Salvageable;
+use App\Traits\Buyable;
 
-class Tool extends BaseModel implements NavigatableContract {
-	use App\Craftable;
-	use App\Item;
-	use App\Salvageable;
-	use App\Requireable;
-	use Navigatable;
-	public $lossFactor = 2;
+class Tool extends FinalProduct implements NavigatableContract {
+	use Buyable;
+	use Craftable;
+	use Salvageable;
+	use Requireable;
+	use Navigatable; use Presentable;
+	public $loss_factor = 2;
+	public $used_by = '';
+	protected $fillable = [ 
+			'used_by' 
+	];
 }

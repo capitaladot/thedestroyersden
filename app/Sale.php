@@ -2,11 +2,11 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract; use App\Navigatable;
-use App\BaseModel;
+use MartinBean\MenuBuilder\Contracts\NavigatableContract; use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
 
-class Sale extends BaseModel implements NavigatableContract {
-	use Navigatable;
+class Sale extends BaseModel implements HasPresenter, NavigatableContract {
+	use Navigatable; use Presentable;
 	public function item() {
 		return $this->morphTo ();
 	}

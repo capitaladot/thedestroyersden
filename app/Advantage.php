@@ -1,18 +1,18 @@
 <?php
+
 namespace App;
 
-use App\BaseModel;
+use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\CharacterClassable;
-use App\Fillable;
-use App\Homelandable;
-use App\Navigatable;
-use App\Raceable;
+use App\Traits\CharacterClassable;
+use App\Traits\Fillable;
+use App\Traits\Homelandable;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\Traits\Raceable;
 
-class Advantage extends BaseModel implements NavigatableContract{
+class Advantage extends BaseModel implements HasPresenter, NavigatableContract {
 	use CharacterClassable;
-	use Fillable;
 	use Homelandable;
-	use Navigatable;
+	use Navigatable; use Presentable;
 	use Raceable;
 }

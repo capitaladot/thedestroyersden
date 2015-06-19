@@ -1,12 +1,12 @@
 <?php
 
 namespace App;
-use App\BaseModel;
+use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Navigatable;
-use App\Fillable;
-class Skill extends BaseModel implements NavigatableContract {
-	use Navigatable;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\Traits\Fillable;
+class Skill extends BaseModel implements HasPresenter, NavigatableContract {
+	use Navigatable; use Presentable;
 	use Fillable;
 	public $relationMethods = ['costs','prerequisites','characterClasses','playerCharacters'];
 	public function typeable() {

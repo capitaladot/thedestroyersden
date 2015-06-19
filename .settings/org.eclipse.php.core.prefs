@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+include_path=0;/ec2-52-0-25-209.compute-1.amazonaws.com_thedestroyersden/vendor\u00050;/ec2-52-0-25-209.compute-1.amazonaws.com_thedestroyersden/app
 org.eclipse.php.core.phpDoc=false
 phpVersion=php5.5
 useShortTags=true

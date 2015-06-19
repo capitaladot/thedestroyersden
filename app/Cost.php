@@ -3,12 +3,12 @@
 namespace App;
 
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\BaseModel;
-use App\Fillable;
-use App\CharacterClassable;
-use App\Skillable;
-use App\Homelandable;
-use App\Raceable;
+use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Traits\Fillable;
+use App\Traits\CharacterClassable;
+use App\Traits\Skillable;
+use App\Traits\Homelandable;
+use App\Traits\Raceable;
 /**
  *
  *

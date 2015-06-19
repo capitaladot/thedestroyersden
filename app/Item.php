@@ -3,13 +3,15 @@
 namespace App;
 
 use App\BaseModel;
+use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Contracts\ItemContract;
 
-trait Item {
+abstract class Item extends BaseModel implements ItemContract {
+	protected $table = 'items';
 	/**
-	 * which player character did the creating?
 	 */
 	public function owner() {
-		return $this->morphTo ( 'App\Ownership', 'ownable' );
+		return $this->morphTo ( 'App\Ownable', 'ownable' );
 	}
 	/**
 	 * Return either a pegged price or the recursive summation of the tools and
@@ -19,15 +21,10 @@ trait Item {
 	 *        	'buy'|'sell'
 	 * @return number
 	 */
-	public function calculatePrice($transactionType) {
-		return ! empty ( $this->price ) ? $this->price : ($this->craftingComponents->sum ( function () use($transactionType) {
-			return $this->calculatePrice ( $transactionType );
-		} ) + count ( $this->craftingTechnique->tools () ));
+	public function saleable() {
+		return $this->morphsTo ();
 	}
-	public function buyable(){
-		return $this->morphsTo();
-	}
-	public function saleable(){
-		return $this->morphsTo();
+	public function itemTypes() {
+		return $this->hasMany ( 'App\ItemType' );
 	}
 }

@@ -1,5 +1,5 @@
 <?php
-return [
+return [ 
 		
 		/*
 		 * |--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ return [
 	|
 	*/
 
-	'url' => 'http://ec2-52-0-25-209.compute-1.amazonaws.com',
+	'url' => 'http://destroyersden.com',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -108,13 +108,13 @@ return [
 	|
 	*/
 
-	'providers' => [
+	'providers' => [ 
 				
 				/*
 				 * Laravel Framework Service Providers...
 				 */
-				'Illuminate\Foundation\Providers\ArtisanServiceProvider',
-				'Illuminate\Auth\AuthServiceProvider',
+				Illuminate\Foundation\Providers\ArtisanServiceProvider::class,
+				Illuminate\Auth\AuthServiceProvider::class,
 				'Illuminate\Bus\BusServiceProvider',
 				'Illuminate\Cache\CacheServiceProvider',
 				'Illuminate\Foundation\Providers\ConsoleSupportServiceProvider',
@@ -139,7 +139,7 @@ return [
 		/*
 		 * Application Service Providers...
 		 */
-		'App\Providers\AppServiceProvider',
+				'App\Providers\AppServiceProvider',
 				'App\Providers\BusServiceProvider',
 				'App\Providers\ConfigServiceProvider',
 				'App\Providers\EventServiceProvider',
@@ -149,11 +149,19 @@ return [
 		 * Module service providers...
 		 * */
 		//	'Way\Generators\GeneratorsServiceProvider',
-			'Illuminate\Html\HtmlServiceProvider',
-			'Kris\LaravelFormBuilder\FormBuilderServiceProvider',
-			'Barryvdh\Debugbar\ServiceProvider',
-			'MartinBean\MenuBuilder\MenuBuilderServiceProvider'
+				'Illuminate\Html\HtmlServiceProvider',
+				'Kris\LaravelFormBuilder\FormBuilderServiceProvider',
+				'Barryvdh\Debugbar\ServiceProvider',
+				'MartinBean\MenuBuilder\MenuBuilderServiceProvider',
+				'Teepluss\Theme\ThemeServiceProvider',
+				'SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider',
+				Bican\Roles\RolesServiceProvider::class,
+				'Stevebauman\Location\LocationServiceProvider',
+				'Thomaswelton\LaravelGravatar\LaravelGravatarServiceProvider',
+				'Caffeinated\Flash\FlashServiceProvider',
+				'Tuurbo\AmazonPayment\AmazonPaymentServiceProvider' 
 		]
+		
 	,
  
 	/*
@@ -167,9 +175,10 @@ return [
 	|
 	*/
 
-	'aliases' => [
+	'aliases' => [ 
 				
 				'App' => 'Illuminate\Support\Facades\App',
+				'AmazonPayment' => 'Tuurbo\AmazonPayment\AmazonPaymentFacade',
 				'Artisan' => 'Illuminate\Support\Facades\Artisan',
 				'Auth' => 'Illuminate\Support\Facades\Auth',
 				'Blade' => 'Illuminate\Support\Facades\Blade',
@@ -182,14 +191,18 @@ return [
 				'Debugbar' => 'Barryvdh\Debugbar\Facade',
 				'Eloquent' => 'Illuminate\Database\Eloquent\Model',
 				'Event' => 'Illuminate\Support\Facades\Event',
+				'Facebook' => 'SammyK\LaravelFacebookSdk\FacebookFacade',
 				'File' => 'Illuminate\Support\Facades\File',
+				'Flash' => 'Caffeinated\Flash\Facades\Flash',
 				'Form' => 'Illuminate\Html\FormFacade',
 				'FormBuilder' => 'Kris\LaravelFormBuilder\Facades\FormBuilder',
+				'Gravatar' => 'Thomaswelton\LaravelGravatar\Facades\Gravatar',
 				'Hash' => 'Illuminate\Support\Facades\Hash',
 				'Html' => 'Illuminate\Html\HtmlFacade',
 				'Input' => 'Illuminate\Support\Facades\Input',
 				'Inspiring' => 'Illuminate\Foundation\Inspiring',
 				'Lang' => 'Illuminate\Support\Facades\Lang',
+				'Location' => 'Stevebauman\Location\Facades\Location',
 				'Log' => 'Illuminate\Support\Facades\Log',
 				'Mail' => 'Illuminate\Support\Facades\Mail',
 				'Menu' => 'MartinBean\MenuBuilder\MenuFacade',
@@ -204,8 +217,9 @@ return [
 				'Session' => 'Illuminate\Support\Facades\Session',
 				'Socialize' => 'Laravel\Socialite\Facades\Socialite',
 				'Storage' => 'Illuminate\Support\Facades\Storage',
+				'Theme' => 'Teepluss\Theme\Facades\Theme',
 				'URL' => 'Illuminate\Support\Facades\URL',
 				'Validator' => 'Illuminate\Support\Facades\Validator',
-				'View' => 'Illuminate\Support\Facades\View'
-		]
+				'View' => 'Illuminate\Support\Facades\View' 
+		] 
 ];

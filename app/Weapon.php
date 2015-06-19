@@ -1,19 +1,20 @@
 <?php
 
 namespace App;
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Navigatable;
-use App\Requireable;
-use App\Craftable;
-use App\Item;
-use App\Salvageable;
-use Sjdaws\Vocal\Vocal;
 
-class Weapon extends BaseModel implements NavigatableContract  {
+use App\FinalProduct;
+use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\Traits\Craftable;
+use App\Traits\Durable;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\Traits\Requireable;
+use App\Traits\Salvageable;
+
+class Weapon extends FinalProduct implements NavigatableContract {
 	use Craftable;
-	use Item;
-	use Salvageable;
+	use Durable;
+	use Navigatable; use Presentable;
 	use Requireable;
-	use Titleable;
-	public $lossFactor = 3;
+	use Salvageable;
+	public $loss_factor = 3;
 }

@@ -1,34 +1,84 @@
 <?php
-
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
-
 class RaceTableSeeder extends Seeder {
-
+	
 	/**
 	 * Run the database seeds.
 	 *
 	 * @return void
 	 */
-	public function run()
-	{
-		Model::unguard();
-		Race::create([
-			['title' =>'Adversarian', 'slug'=>strolower('Adversarian'),'id'=>1],
-			['title' =>'Armaga', 'slug'=>strolower('Armaga'),'id'=>2],
-			['title' =>'Dreddlin', 'slug'=>strolower('Dreddlin'),'id'=>3],
-			['title' =>'Elisati', 'slug'=>strolower('Elisati'),'id'=>4],
-			['title' =>'Felmane', 'slug'=>strolower('Felmane'),'id'=>5],
-			['title' =>'Foxeen', 'slug'=>strolower('Foxeen'),'id'=>6],
-			['title' =>'Gargoyle', 'slug'=>strolower('Gargoyle'),'id'=>7],
-			['title' =>'Krowtower', 'slug'=>strolower('Krowtower'),'id'=>8],
-			['title' =>'Saurin', 'slug'=>strolower('Saurin'),'id'=>9],
-			['title' =>'Merfolk', 'slug'=>strolower('Merfolk'),'id'=>10],
-			['title' =>'Roehart', 'slug'=>strolower('Roehart'),'id'=>11],
-			['title' =>'Succubus', 'slug'=>strolower('Succubus'),'id'=>12],
-			['title' =>'Vanquill', 'slug'=>strolower('Vanquill'),'id'=>13],
-			['title' =>'Warkai', 'slug'=>strolower('Warkai'),'id'=>14]
-		]);
+	public function run() {
+		Model::unguard ();
+		Race::create ( [ 
+				'title' => 'Adversarian',
+				'slug' => str_slug ( 'Adversarian' ),
+				'id' => 1 
+		] );
+		Race::create ( [ 
+				'title' => 'Armaga',
+				'slug' => str_slug ( 'Armaga' ),
+				'id' => 2 
+		] );
+		Race::create ( [ 
+				'title' => 'Dreddlin',
+				'slug' => str_slug ( 'Dreddlin' ),
+				'id' => 3 
+		] );
+		Race::create ( [ 
+				'title' => 'Elisati',
+				'slug' => str_slug ( 'Elisati' ),
+				'id' => 4 
+		] );
+		Race::create ( [ 
+				'title' => 'Felmane',
+				'slug' => str_slug ( 'Felmane' ),
+				'id' => 5 
+		] );
+		Race::create ( [ 
+				'title' => 'Foxeen',
+				'slug' => str_slug ( 'Foxeen' ),
+				'id' => 6 
+		] );
+		Race::create ( [ 
+				'title' => 'Gargoyle',
+				'slug' => str_slug ( 'Gargoyle' ),
+				'id' => 7 
+		] );
+		Race::create ( [ 
+				'title' => 'Krowtower',
+				'slug' => str_slug ( 'Krowtower' ),
+				'id' => 8 
+		] );
+		Race::create ( [ 
+				'title' => 'Saurin',
+				'slug' => str_slug ( 'Saurin' ),
+				'id' => 9 
+		] );
+		Race::create ( [ 
+				'title' => 'Merfolk',
+				'slug' => str_slug ( 'Merfolk' ),
+				'id' => 10 
+		] );
+		Race::create ( [ 
+				'title' => 'Roehart',
+				'slug' => str_slug ( 'Roehart' ),
+				'id' => 11 
+		] );
+		Race::create ( [ 
+				'title' => 'Succubus',
+				'slug' => str_slug ( 'Succubus' ),
+				'id' => 12 
+		] );
+		Race::create ( [ 
+				'title' => 'Vanquill',
+				'slug' => str_slug ( 'Vanquill' ),
+				'id' => 13 
+		] );
+		Race::create ( [ 
+				'title' => 'Warkai',
+				'slug' => str_slug ( 'Warkai' ),
+				'id' => 14 
+		] );
 	}
-
 }

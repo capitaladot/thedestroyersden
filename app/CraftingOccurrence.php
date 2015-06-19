@@ -2,16 +2,26 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract; use App\Navigatable;
-use App\BaseModel;
-use App\Arcable;
+use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Traits\Arcable;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+
 /**
  * Crafting: when, how, from, by, what.
  */
-class CraftingOccurrence extends BaseModel implements NavigatableContract {
-	use Navigatable;
+class CraftingOccurrence extends BaseModel implements HasPresenter, NavigatableContract {
+	
 	use Arcable;
-	public $relationMethods = ['arc','craft','usedComponents','producedComponents','creator','items'];
+	use Navigatable; use Presentable;
+	public $relationMethods = [ 
+			'arc',
+			'craft',
+			'usedComponents',
+			'producedComponents',
+			'creator',
+			'items' 
+	];
 	/**
 	 * The specific crafting technique that created this item.
 	 *

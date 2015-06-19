@@ -14,40 +14,28 @@
 							<li>{{ $error }}</li> @endforeach
 						</ul>
 					</div>
-					@endif {!! Form::open(array('route'=>strtolower($modelName).'.store', 'method' => 'POST')) !!}
+					@endif {!!
+					Form::open(array('route'=>str_replace('/create','.store',$route->getPath()),
+					'method' => 'POST')) !!}
 					<ul>
 						@foreach($fillables as $input => $properties)
-						<li>
-						{!! Form::label($properties['label']) !!}
-						@if($properties['inputType'] == 'datetime')
-							{!! Form::dateTime($input,$properties) !!}
-						@else
-							{!! Form::input($properties['inputType'],$input, '',[
-								$properties['notNull'] ? ('required') : '',
-								'maxlength' =>$properties['maxLength']
-							]) !!}
-						@endif
-						</li>
+						<li>{!! Form::label($properties['label']) !!}
+							@if($properties['inputType'] == 'datetime') {!!
+							Form::dateTime($input,$properties) !!} @else {!!
+							Form::input($properties['inputType'],$input, '',[
+							$properties['notNull'] ? ('required') : '', 'maxlength'
+							=>$properties['maxLength'] ]) !!} @endif</li> @endforeach
+						@foreach($relationControls as $input => $properties)
+						<li>{!! Form::label($properties['label']) !!} {!!
+							Form::chosen(isset($properties['columnName']) ?
+							$properties['columnName'] : $input,
+							$properties['namespaced']::all(),
+							$model->collectSelections($input), [
+							!empty($properties['notNull']) ? ('required') : '' ]) !!}</li>
 						@endforeach
-						@foreach($relatedModels as $input => $properties)
-						<li>
-							<?php  Debugbar::info($input,$model->$input->lists('id','title'),$model) ?>
-							{!! Form::label($properties['label']) !!}
-							{!! Form::chosen(isset($properties['columnName'])
-								? $properties['columnName']
-								: $input,
-								$properties['namespaced']::all(),
-								$model->$input,
-								[
-									!empty($properties['notNull']) ? ('required') : ''
-								])
-							!!}
-						</li>
-						@endforeach
-			
+
 					</ul>
-					{!! Form::submit() !!}
-					{!! Form::close() !!}
+					{!! Form::submit() !!} {!! Form::close() !!}
 				</div>
 			</div>
 		</div>

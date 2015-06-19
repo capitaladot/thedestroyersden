@@ -3,16 +3,18 @@
 namespace App;
 
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\Traits\Craftable;
+use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\Traits\Requireable;
+use App\Traits\Salvageable;
+use App\Traits\Taggable;
 use App\Item;
-use App\Navigatable;
-use App\Requireable;
-use App\BaseModel;
-use App\Taggable;
-class CraftingComponent extends BaseModel implements NavigatableContract {
-	use App\Craftable;
-	use App\Item;
-	use App\Salvageable;
-	use App\Requireable;
-	use App\Navigatable;
-	use App\Taggable;
+use App\Contracts\ItemContract;
+
+class CraftingComponent extends Item implements ItemContract, NavigatableContract {
+	use Craftable;
+	use Navigatable; use Presentable;
+	use Requireable;
+	use Salvageable;
+	use Taggable;
 }
