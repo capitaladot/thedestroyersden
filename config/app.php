@@ -159,7 +159,8 @@ return [
 				'Stevebauman\Location\LocationServiceProvider',
 				'Thomaswelton\LaravelGravatar\LaravelGravatarServiceProvider',
 				'Caffeinated\Flash\FlashServiceProvider',
-				'Tuurbo\AmazonPayment\AmazonPaymentServiceProvider' 
+				'Tuurbo\AmazonPayment\AmazonPaymentServiceProvider' ,
+				Mews\Captcha\CaptchaServiceProvider::class
 		]
 		
 	,
@@ -184,6 +185,7 @@ return [
 				'Blade' => 'Illuminate\Support\Facades\Blade',
 				'Bus' => 'Illuminate\Support\Facades\Bus',
 				'Cache' => 'Illuminate\Support\Facades\Cache',
+				'Captcha' => Mews\Captcha\Facades\Captcha::class,
 				'Config' => 'Illuminate\Support\Facades\Config',
 				'Cookie' => 'Illuminate\Support\Facades\Cookie',
 				'Crypt' => 'Illuminate\Support\Facades\Crypt',

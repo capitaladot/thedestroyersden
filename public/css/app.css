@@ -6205,9 +6205,8 @@ label,
   font-weight: 300;
 }
 .destroyers-den-graphic{
-	background-image:url('/images/dragontatto.svg');
-	background-color:transparent;
+	background-image:url('/images/DD%20Flier.png');
 	background-repeat:no-repeat;
-	background-size:100% auto;
-	z-index:2;
+	height:784px;
+	width:964px;
 }

@@ -28,6 +28,8 @@ class AppServiceProvider extends ServiceProvider {
 		View::share ( 'menus', $menus );
 		$userMenu = MainMenu::where ( 'name', '=', 'User' )->first ();
 		View::share ( 'userMenu', $userMenu );
+		if(!\Auth::user())
+			\Debugbar::disable();
 	}
 	
 	/**

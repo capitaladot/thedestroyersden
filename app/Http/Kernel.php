@@ -25,8 +25,9 @@ class Kernel extends HttpKernel {
 	 */
 	protected $routeMiddleware = [
 		'amazon' => 'App\Http\Middleware\Secure',
-		'auth' => ['App\Http\Middleware\Authenticate','App\Http\Middleware\Secure'],
+		'auth' => 'App\Http\Middleware\Authenticate',
 		'auth.basic' => ['Illuminate\Auth\Middleware\AuthenticateWithBasicAuth','App\Http\Middleware\Secure'],
+		'captchad' => 'App\Http\Middleware\Captchad',
 		'cart' => 'App\Http\Middleware\Secure',
 		'guest' => 'App\Http\Middleware\RedirectIfAuthenticated',
 	];

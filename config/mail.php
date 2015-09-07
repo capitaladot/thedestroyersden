@@ -28,7 +28,7 @@ return [
 	|
 	*/
 
-	'host' => 'smtp.mailgun.org',
+	'host' => 'email-smtp.us-east-1.amazonaws.com',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -54,7 +54,7 @@ return [
 	|
 	*/
 
-	'from' => ['address' => null, 'name' => null],
+	'from' => ['address' => 'destroyersdenlarp@gmail.com', 'name' => 'The Destroyer\'s Den LARP'],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -79,8 +79,8 @@ return [
 	| connection. You may also set the "password" value below this one.
 	|
 	*/
-
-	'username' => null,
+//***REMOVED***
+	'username' => '***REMOVED***',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -93,7 +93,7 @@ return [
 	|
 	*/
 
-	'password' => null,
+	'password' => '***REMOVED***',
 
 	/*
 	|--------------------------------------------------------------------------

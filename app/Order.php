@@ -26,7 +26,7 @@ class Order extends BaseModel implements HasPresenter{
 		$this->belongsTo('App\Discount');
 	}
 	public function execute(){
-		$this->placed = true;
+		$this->executed = true;
 		if(count($this->discount()))
 			$this->final_total = ($this->getTotal() - $this->discount()->amount) * $this->discount()->percentage;
 		else

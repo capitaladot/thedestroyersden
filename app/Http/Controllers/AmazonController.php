@@ -114,5 +114,7 @@ class AmazonController extends Controller{
 	public function getPrivacyNotice(){
 		return \View::make('amazon.privacy');
 	}
-	public function getReturn(){}
+	public function getReturn(){
+		//@todo
+	}
 }

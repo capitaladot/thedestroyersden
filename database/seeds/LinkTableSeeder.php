@@ -29,9 +29,15 @@ class LinkTableSeeder extends Seeder {
 				'id' => 3 
 		] );
 		Link::create ( [ 
-				'title' => "GenCon 2015 Event",
-				'slug' => str_slug ( "GenCon 2015 Event" ),
-				'link' => "#comingsoon",
+				'title' => "Character Sheet",
+				'slug' => str_slug ( "Character Sheet" ),
+				'link' => "#https://docs.google.com/document/d/1LvrRuPaHhBRsF7qIMNNDekeHaLjha05vx8IXjXXz3wA/pub",
+				'id' => 4 
+		] );
+		Link::create ( [ 
+				'title' => "Contact Us",
+				'slug' => str_slug ( "Contact" ),
+				'link' => "/contact",
 				'id' => 4 
 		] );
 		$this->command->info ( 'Link table seeded!' );

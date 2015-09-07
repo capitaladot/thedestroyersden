@@ -16,11 +16,23 @@ Route::get ( '/', function () {
 Route::get ( '/', 'WelcomeController@index' );
 Route::get ( 'home', 'HomeController@index' );
 Route::controllers ( [ 
-		'amazon' => 'AmazonController',
-		'auth' => 'Auth\AuthController',
-		'cart' => 'CartController',
-		'password' => 'Auth\PasswordController' 
+	'amazon' => 'AmazonController',
+	'auth' => 'Auth\AuthController',
+	'password' => 'Auth\PasswordController' 
 ] );
+Route::group(['middleware' => 'auth'],function(){
+	return [
+		'cart'=>Route::controller('cart', 'CartController'),
+		'user' => Route::resource ( 'user', 'UserController' )
+	];
+});
+Route::resource('captchad', 'MyCaptchaController' );
+Route::resource('contact', 'ContactController' );
+Route::group(['middleware' => 'captchad'],function(){
+	return [Route::post('contact', 'ContactController@store' ),
+	Route::patch('contact', 'ContactController@update' )];
+});
+
 Route::resource ( 'arc', 'ArcController' );
 Route::resource ( 'character-class', 'CharacterClassController' );
 Route::resource ( 'cost', 'CostController' );
@@ -38,7 +50,6 @@ Route::resource ( 'raw-resource', 'RawResourceController' );
 Route::resource ( 'sale', 'SaleController' );
 Route::resource ( 'skill', 'SkillController' );
 Route::resource ( 'tool', 'ToolController' );
-Route::resource ( 'user', 'UserController' );
 
 /* Facebook */
 Route::get ( 'facebook/login', 'FacebookController@login' );

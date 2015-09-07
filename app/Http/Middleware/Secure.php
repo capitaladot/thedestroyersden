@@ -23,7 +23,7 @@ class Secure implements Middleware
 	
 	public function handle($request, Closure $next)
 	{
-		if (!$request->secure() && $this->app->environment() === 'production') {
+		if (!$request->secure()/* && $this->app->environment() === 'production'*/) {
 	    		return redirect()->secure($request->getRequestUri());
 		}
 	
