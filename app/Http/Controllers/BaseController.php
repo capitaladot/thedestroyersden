@@ -6,14 +6,18 @@ use Illuminate\Routing\Route;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent as Eloquent;
 use App;
-use Barryvdh\Debugbar\Facade as Debugbar;
 use SammyK\LaravelFacebookSdk\LaravelFacebookSdk as LaravelFacebookSdk;
 use App\Repositories\BaseRepository;
+use Log;
 
 class BaseController extends Controller {
+	protected $baseUrl;
 	protected $controllerName;
+	protected $modelName;
 	public function __construct() {
 		$this->controllerName = class_basename ( $this );
+		$this->modelName = class_basename ( $this->repository->model () );
+		$this->baseUrl = strtolower($this->modelName);
 	}
 	/**
 	 * Display a listing of the resource.
@@ -22,7 +26,6 @@ class BaseController extends Controller {
 	 */
 	public function index(Route $route) {
 		$all = $this->repository->all ();
-		Debugbar::info ( $all );
 		return view ( 'index', [ 
 				'modelName' => strtolower ( class_basename ( $this->repository->model () ) ),
 				'models' => $all ? $all : [ ],
@@ -56,14 +59,15 @@ class BaseController extends Controller {
 	 */
 	public function store(Request $request) {
 		$validate = $this->repository->makeModel ();
-		$validate->getProcessedFillables ();
-		$validate->provideRelatables ();
-		$validate->validate ( $request );
+		$validate->validate ( $request->all() );
 		if ($validate->validator->fails ()) {
 			return redirect ()->back ()->withInput ()->withErrors ( $validate->validator );
 		} else {
 			if ($validate->validator->passes () && $validate->save ()) {
-				$url = ($this->repository->model->traits ['navigatable'] ? $this->repository->model->getUrl () : strtolower ( class_basename ( get_class ( $this->repository->model ) ) ) . '/' . $validate->id);
+				Log::info("Controller: Saved ".class_basename ( get_class ( $this->repository->model ) ." with ID ".$validate->id ));
+				$url = ($this->repository->model->traits ['navigatable'] 
+					?	$this->repository->model->getUrl () 
+					:	strtolower ( class_basename ( get_class ( $this->repository->model ) ) ) . '/' . $validate->id);
 				return redirect ( $url );
 			} else {
 				dd ( $validate );
@@ -79,19 +83,23 @@ class BaseController extends Controller {
 	 */
 	public function show($idOrSlug, Route $route) {
 		$show = $this->repository->find ( $idOrSlug );
+		if(!$show)
+			return response('Not found.',404);
 		$show->provideRelatables ();
 		$show->getProcessedFillables ();
+		
 		return view ( 'show', [ 
-				'route' => $route,
-				'modelName' => class_basename ( $this->repository->model () ),
-				'model' => $show,
-				'edit' => $show->getUrl () . '/edit',
-				'table' => $show->getTable (),
-				'hidden' => $show->getHidden (),
-				'fillables' => $show->processedFillables,
-				'relationControls' => $show->relationControls,
-				'relationMethods' => $show->relationMethods,
-				'title' => isset ( $show->traits ['Navigatable'] ) ? $show->getTitle () : '' 
+			'route' => $route,
+			'modelName' => $this->modelName,
+			'baseUrl'=>$this->baseUrl,
+			'model' => $show,
+			'edit' => $show->getUrl () . '/edit',
+			'table' => $show->getTable (),
+			'hidden' => $show->getHidden (),
+			'fillables' => $show->processedFillables,
+			'relationControls' => $show->relationControls,
+			'relationMethods' => $show->relationMethods,
+			'title' => isset ( $show->traits ['Navigatable'] ) ? $show->getTitle () : '' 
 		] );
 	}
 	/**
@@ -105,12 +113,14 @@ class BaseController extends Controller {
 		$edit->getProcessedFillables ();
 		$edit->provideRelatables ();
 		return view ( 'edit', array (
-				'route' => $route,
-				'modelName' => class_basename ( $this->repository->model () ),
-				'controllerName' => $this->controllerName,
-				'model' => $edit,
-				'fillables' => $edit->processedFillables,
-				'relationControls' => $edit->relationControls 
+			'baseUrl'=>$this->baseUrl,
+			'route' => $route,
+			'modelName' => class_basename ( $this->repository->model () ),
+			'controllerName' => $this->controllerName,
+			'model' => $edit,
+			'fillables' => $edit->processedFillables,
+			'relationControls' => $edit->relationControls,
+			'table' => $edit->getTable ()
 		) );
 	}
 	
@@ -122,8 +132,6 @@ class BaseController extends Controller {
 	 */
 	public function update($idOrSlug, Request $request) {
 		$update = $this->repository->find ( $idOrSlug );
-		$update->getProcessedFillables ();
-		$update->provideRelatables ();
 		$update->validate ( $request );
 		if ($update->validator->fails ()) {
 			return redirect ()->back ()->withInput ()->withErrors ( $update->validator );
@@ -131,7 +139,10 @@ class BaseController extends Controller {
 			if ($update->validator->passes ()) {
 				$update->push ();
 			}
-			return redirect ( strtolower ( $this->repository->model () ) . '/' . $update->id );
+			$url = ($this->repository->model->traits ['navigatable'] 
+				?	$this->repository->model->getUrl () 
+				:	strtolower ( class_basename ( get_class ( $this->repository->model ) ) ) . '/' . $update->id);
+			return redirect ( $url );
 		}
 	}
 	
@@ -143,8 +154,8 @@ class BaseController extends Controller {
 	 */
 	public function destroy($idOrSlug) {
 		$delete = $this->repository->find ( $idOrSlug );
-		$delete->destroy ();
-		return redirect ( strtolower ( $this->repository->model () ) );
+		$delete->delete();
+		return redirect ( strtolower ( $this->baseUrl ) );
 	}
 }
 

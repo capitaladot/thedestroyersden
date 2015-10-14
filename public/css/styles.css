@@ -5,11 +5,11 @@ html,body {
 h1 {
   font-family: Arial,sans-serif
   font-size:80px;
-  color:#DDCCEE;
+  color:#8a321a;
 }
 
 .lead {
-	color:#DDCCEE;
+	color:#8a321a;
 }
 
 
@@ -31,4 +31,10 @@ h1 {
 .v-center {
   margin-top:7%;
 }
-  
+.facebook-button{
+	border-radius:3px;
+	border-color:#000;
+	height:20px;
+	width:20px;
+	background-color:#8a321a;
+}

@@ -104,17 +104,16 @@ abstract class BaseRepository {
 	 * @param array $columns        	
 	 * @return mixed
 	 */
-	public function find($idOrSlug, $columns = array('*')) {
+	public function find($idOrSlug, $columns = ['*']) {
 		if (is_numeric ( $idOrSlug ))
 			return $this->model->find ( $idOrSlug, $columns );
 		return $this->findBySlug ( $idOrSlug, $columns );
 	}
 	public function findBySlug($slug, $columns) {
-		$this->model->where ( 'slug', '=', $slug );
-		foreach ( $columns as $column ) {
-			$this->model->where ( $column );
-		}
-		return $this->model->firstOrFail ();
+		if($columns == ['*'])
+			$columns = [];
+		$columns[ 'slug'] = $slug;
+		return $this->model->where($columns)->firstOrFail ();
 	}
 	/**
 	 *

@@ -13,11 +13,11 @@ trait Craftable {
 	 * the crafts with which an Item with the Craftable trait may be produced.
 	 */
 	public function crafts() {
-		return $this->hasMany ( 'App\Crafts' );
+		return $this->belongsToMany ( 'App\Craft' )->withTimestamps();
 	}
 	/**
 	 */
 	public function craftingOccurrence() {
-		return $this->belongsTo ( 'App\CraftingOccurrence' );
+		return $this->belongsToMany ( 'App\CraftingOccurrence' );
 	}
 }

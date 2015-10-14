@@ -7,7 +7,9 @@ use McCool\LaravelAutoPresenter\HasPresenter;
 use App\Traits\Fillable;
 use App\Traits\Presentable;
 use App\Order;
-
+/**
+order related discounting.
+*/
 class Discount extends BaseModel{
 	use Fillable;
 	use Presentable;

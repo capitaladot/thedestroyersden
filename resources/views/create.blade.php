@@ -15,27 +15,35 @@
 						</ul>
 					</div>
 					@endif {!!
-					Form::open(array('route'=>str_replace('/create','.store',$route->getPath()),
-					'method' => 'POST')) !!}
-					<ul>
+					Form::open(array('route'=>str_replace('/create','.store',$route->getPath()),'method' => 'POST')) !!}
+					<div class="panel-body">
 						@foreach($fillables as $input => $properties)
-						<li>{!! Form::label($properties['label']) !!}
+						<div class="form-group">{!! Form::label($properties['label']) !!}
 							@if($properties['inputType'] == 'datetime') {!!
-							Form::dateTime($input,$properties) !!} @else {!!
-							Form::input($properties['inputType'],$input, '',[
+								Form::dateTime($input,$properties) !!} 
+							@elseif($input == 'timezone'){!!
+								Form::timezone($input,'',$properties) 
+							!!} 
+							@else {!!
+								Form::input($properties['inputType'],$input, '',[
 							$properties['notNull'] ? ('required') : '', 'maxlength'
-							=>$properties['maxLength'] ]) !!} @endif</li> @endforeach
+							=>$properties['maxLength'] ,'class'=>'form-control']) !!} @endif</div> 
+						@endforeach
 						@foreach($relationControls as $input => $properties)
-						<li>{!! Form::label($properties['label']) !!} {!!
+						<div class="form-group">{!! Form::label($properties['label']) !!} {!!
 							Form::chosen(isset($properties['columnName']) ?
 							$properties['columnName'] : $input,
 							$properties['namespaced']::all(),
 							$model->collectSelections($input), [
-							!empty($properties['notNull']) ? ('required') : '' ]) !!}</li>
+							!empty($properties['notNull']) ? ('required') : '' ]) !!}</div>
 						@endforeach
-
-					</ul>
-					{!! Form::submit() !!} {!! Form::close() !!}
+					</div>
+					<div class="form-group">
+						<div class="col-md-6 col-md-offset-4">
+							{!! Form::submit('Submit',['class'=>'btn btn-primary']) !!} 
+						</div>
+					</div>
+					{!! Form::close() !!}
 				</div>
 			</div>
 		</div>

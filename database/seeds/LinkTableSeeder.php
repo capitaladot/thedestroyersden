@@ -2,6 +2,7 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 use App\Link;
+
 class LinkTableSeeder extends Seeder {
 	
 	/**
@@ -10,36 +11,65 @@ class LinkTableSeeder extends Seeder {
 	 * @return void
 	 */
 	public function run() {
-		Link::create ( [ 
-				'title' => "Rulebook",
-				'slug' => str_slug ( "Rulebook" ),
-				'link' => "https://docs.google.com/document/d/1bIBRcrdKSh6j-yc1aTXAaneE-zh0evW8i0M1K_oUnBY/pub",
-				'id' => 1 
-		] );
-		Link::create ( [ 
-				'title' => "Crafter's Guide",
-				'slug' => str_slug ( "Crafter's Guide" ),
-				'link' => "https://docs.google.com/document/d/1QMInQjjVtDm4Kx0unh8KTtGK_YQaW2nZPl-kWZNBi_Q/pub",
-				'id' => 2 
-		] );
-		Link::create ( [ 
-				'title' => "Facebook",
-				'slug' => str_slug ( "Facebook" ),
-				'link' => "https://www.facebook.com/groups/TheDestroyersDenLARP",
-				'id' => 3 
-		] );
-		Link::create ( [ 
-				'title' => "Character Sheet",
-				'slug' => str_slug ( "Character Sheet" ),
-				'link' => "#https://docs.google.com/document/d/1LvrRuPaHhBRsF7qIMNNDekeHaLjha05vx8IXjXXz3wA/pub",
-				'id' => 4 
-		] );
-		Link::create ( [ 
-				'title' => "Contact Us",
-				'slug' => str_slug ( "Contact" ),
-				'link' => "/contact",
-				'id' => 4 
-		] );
+		$links = array(
+		array( // row #0
+			'id' => 1,
+			'created_at' => '2015-05-08 13:03:42',
+			'updated_at' => '2015-05-08 13:03:42',
+			'link' => 'https://docs.google.com/document/d/1dhJJQw7grt4WcpIB7M-geoj5J6h4thJUE_0FM-jqGMk/pub',
+			'slug' => 'rulebook',
+			'title' => 'Rulebook',
+		),
+		array( // row #1
+			'id' => 2,
+			'created_at' => '2015-05-08 13:03:42',
+			'updated_at' => '2015-05-08 13:03:42',
+			'link' => 'https://docs.google.com/document/d/1hhi1XkIbHBHQClUqKUNsVL8kB6r7apiLa5ZRCAtvSZ8/pub',
+			'slug' => 'crafters-guide',
+			'title' => 'Crafter\'s Guide',
+		),
+		array( // row #2
+			'id' => 3,
+			'created_at' => '2015-05-08 13:03:42',
+			'updated_at' => '2015-05-08 13:03:42',
+			'link' => 'https://www.facebook.com/groups/DestroyersDenLARP',
+			'slug' => 'discussion-group',
+			'title' => 'Discussion Group',
+		),
+		array( // row #3
+			'id' => 4,
+			'link' => 'https://docs.google.com/document/d/1dhJJQw7grt4WcpIB7M-geoj5J6h4thJUE_0FM-jqGMk/pub',
+			'slug' => 'character-sheet',
+			'title' => 'Character Sheet',
+		),
+		array( // row #4
+			'id' => 5,
+			'link' => '/contact',
+			'slug' => 'contact',
+			'title' => 'Contact Us',
+		),
+		array( // row #5
+			'id' => 6,
+			'link' => 'https://docs.google.com/spreadsheets/d/1uoa18-QwjjEaBc2nVxj0USnO6DAUy0KJBh4ATFa8o-I/pubhtml',
+			'slug' => 'perfected-products',
+			'title' => 'Perfected Products',
+		),
+		array( // row #6
+			'id' => 7,
+			'link' => 'https://docs.google.com/spreadsheets/d/1B5THadRF-28p7M-wrrSm2-iATuEt7JVfXo6MDS1DOiU/pubhtml',
+			'slug' => 'crafted-components',
+			'title' => 'Crafted Components',
+		),
+		array( // row #7
+			'id' => 8,
+			'link' => 'https://docs.google.com/spreadsheets/d/1rSwB2Ya9upmddgwxxpieHxPm5DOnFD_t6V5-80pXsus/pubhtml',
+			'slug' => 'raw-resources',
+			'title' => 'Raw Resources',
+		),
+		);
+		foreach($links as $link){
+			Link::create($link);
+		}
 		$this->command->info ( 'Link table seeded!' );
 	}
 }

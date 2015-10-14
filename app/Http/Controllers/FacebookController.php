@@ -6,14 +6,18 @@ use Illuminate\Routing\Route;
 use SammyK\LaravelFacebookSdk\LaravelFacebookSdk as LaravelFacebookSdk;
 use App\User;
 use App\Event;
+use Flash;
 use Illuminate\Support\Facades\Session as Session;
 use Illuminate\Support\Facades\Auth as Auth;
 use Facebook\GraphNodes\GraphObjectFactory;
 use Facebook\GraphNodes\GraphObject;
+use Log;
 use Doctrine\Common\Proxy\Exception\UnexpectedValueException;
-
+use Redirect;
+use Request;
+use Input;
 class FacebookController extends Controller {
-	function callback(LaravelFacebookSdk $fb) {
+	function loginCallback(LaravelFacebookSdk $fb) {
 		// Obtain an access token.
 		try {
 			$token = $fb->getAccessTokenFromRedirect ();
@@ -71,6 +75,34 @@ class FacebookController extends Controller {
 		
 		return redirect ( '/' )->with ( 'message', 'Successfully logged in with Facebook' );
 	}
+	function paymentCallback(LaravelFacebookSdk $fb,Request $request){
+		dd($fb,$request);
+		return response($request->input('hub.challenge'),200);
+	}
+	/**
+	@desc stores Facebook events from the configured group in the database and associates them to a user, creating that user if necessary.
+	**/
+	protected function storeFacebookEvent(GraphObject $event,LaravelFacebookSdk $fb, Route $route){
+		$eventDataArray = $event->asArray ();
+		$enrichedEventResponse = $fb->get ( $eventDataArray ['id'] . '?fields=owner,description,name,start_time,end_time,timezone,updated_time' );
+		$enrichedEventData = $enrichedEventResponse->getGraphObject ();
+		$ownedEventData = [ ];
+		foreach ( $enrichedEventData as $key => $value ) {
+			if ($key == 'owner') {
+				$userArray = $value->asArray ();
+				$enrichedUser = $fb->get ( '/' . $userArray ['id'] . '?fields=name,id' )->getGraphUser ();
+				$owner = User::createOrUpdateGraphNode ( $enrichedUser );
+				if (! $owner)
+					throw new UnexpectedValueException ( 'Owner not created!' );
+			} else
+				$ownedEventData [$key] = $value;
+		}
+		Event::createOrUpdateGraphNode ( $ownedEventData );
+		Log::info('Storing event from Facebook group: '.$ownedEventData['name']);
+		$eventModel = Event::where ( 'facebook_id', '=', $eventDataArray ['id'] )->firstOrFail ();
+		// dd ( $eventModel );
+		$eventModel->owner ()->associate ( $owner )->save ();
+	}
 	/**
 	 *
 	 * @uses groupId from config.services.facebook
@@ -82,39 +114,27 @@ class FacebookController extends Controller {
 			$helper = $fb->getRedirectLoginHelper ();
 			
 			if (! $helper->getError ()) {
-				Flash::error ( 'Please login via Facebook before performing this action.' );
-				die ();
+				return Redirect::to('auth/login')->with('errors', ['Facebook login required.']);
 			}
 		}
 		$fb->setDefaultAccessToken ( $token );
-		$response = $fb->get ( config ( 'services.facebook.groupId' ) . "/events" );
+		$response = $fb->get ( config ( 'services.facebook.groupId' ) . "/events?since=2014-10-01T18%3A30%3A00.000Z&until=2017-10-01T18%3A30%3A00.000Z&limit=1000" );
 		$gof = new GraphObjectFactory ( $response );
 		$events = $gof->makeGraphList ();
-		foreach ( $events as $event ) {
-			$eventDataArray = $event->asArray ();
-			$enrichedEventResponse = $fb->get ( $eventDataArray ['id'] . '?fields=owner,description,name,start_time,end_time,timezone,updated_time' );
-			$enrichedEventData = $enrichedEventResponse->getGraphObject ();
-			$ownedEventData = [ ];
-			foreach ( $enrichedEventData as $key => $value ) {
-				if ($key == 'owner') {
-					$userArray = $value->asArray ();
-					$enrichedUser = $fb->get ( '/' . $userArray ['id'] . '?fields=name,id' )->getGraphUser ();
-					$owner = User::createOrUpdateGraphNode ( $enrichedUser );
-					if (! $owner)
-						throw new UnexpectedValueException ( 'Owner not created!' );
-				} else
-					$ownedEventData [$key] = $value;
+		//dd($events);
+		Log::info('Facebook events response from '.config ( 'services.facebook.groupId' ) . "/events" ,[$events]);
+		if(!empty($events))
+			foreach ( $events as $event ) {
+				if(!empty($event)){
+					Log::info('Storing Facebook event',[$event]);
+					$this->storeFacebookEvent($event, $fb, $route);
+				}
 			}
-			Event::createOrUpdateGraphNode ( $ownedEventData );
-			$eventModel = Event::where ( 'facebook_id', '=', $eventDataArray ['id'] )->firstOrFail ();
-			// dd ( $eventModel );
-			$eventModel->owner ()->associate ( $owner )->save ();
-		}
 		$all = Event::all ();
-		return view ( 'index', [ 
-				'route' => $route,
-				'modelName' => 'events',
-				'models' => $all ? $all : [ ] 
+		return view ( 'facebook.event.index', [ 
+			'route' => $route,
+			'modelName' => 'events',
+			'models' => $all ? $all : [ ] 
 		] );
 	}
 	public function getUserInfo(LaravelFacebookSdk $fb) {

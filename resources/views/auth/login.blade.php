@@ -6,6 +6,17 @@
 		<div class="col-md-8 col-md-offset-2">
 			<div class="panel panel-default">
 				<div class="panel-heading">Login</div>
+				<br>
+				<div class="form-group">
+					<label class="col-md-4 control-label"></label>
+					<div class="col-md-6">
+						<a href="{{ $facebook_login_link or '' }}"><img alt="Login with Facebook" class="facebook-button"
+							src="/images/3d-transparent-glass-icon-social-media-logos-facebook-logo-square.png"
+							>Login with Facebook</a>
+					</div>
+				</div>
+				<br>
+				<hr>
 				<div class="panel-body">
 					@if (count($errors) > 0)
 						<div class="alert alert-danger">
@@ -13,14 +24,17 @@
 							<ul>
 								@foreach ($errors->all() as $error)
 									<li>{{ $error }}</li>
+										<?php unset($error); ?>
 								@endforeach
 							</ul>
 						</div>
+						<br>
 					@endif
-
 					<form class="form-horizontal" role="form" method="POST" action="/auth/login">
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
-
+						@if (!empty($error) || count($errors) > 0)
+						@include('captcha.form')
+						@endif
 						<div class="form-group">
 							<label class="col-md-4 control-label">E-Mail Address</label>
 							<div class="col-md-6">

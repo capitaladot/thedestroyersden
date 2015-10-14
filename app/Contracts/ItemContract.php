@@ -3,5 +3,5 @@
 namespace App\Contracts;
 
 interface ItemContract {
-	public function itemTypes();
+	public function itemType();
 }

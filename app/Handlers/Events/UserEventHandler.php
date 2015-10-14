@@ -4,6 +4,7 @@ namespace App\Handlers\Events;
 
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
+use Log;
 
 class UserEventHandler {
 	
@@ -11,7 +12,7 @@ class UserEventHandler {
 	 * Handle user login events.
 	 */
 	public function onUserLogin($event) {
-		logger ( 'User logged in.' );
+		Log::debug ( 'User logged in.' );
 	}
 	
 	/**
@@ -21,7 +22,7 @@ class UserEventHandler {
 		Session::flush ();
 		Session::regenerate ();
 		Cookie::forget ( 'XSRF-Token' );
-		logger ( 'User logged out.' );
+		Log::debug ( 'User logged out.' );
 	}
 	
 	/**

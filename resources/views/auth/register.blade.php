@@ -6,6 +6,16 @@
 		<div class="col-md-8 col-md-offset-2">
 			<div class="panel panel-default">
 				<div class="panel-heading">Register</div>
+				<br>
+				<div class="form-group">
+					<label class="col-md-4 control-label"></label>
+					<div class="col-md-6">
+						<a href="{{ $facebook_login_link or '' }}"><img alt="Register with Facebook" class="facebook-button"
+							src="/images/3d-transparent-glass-icon-social-media-logos-facebook-logo-square.png"
+							>Register with Facebook</a>
+					</div>
+				</div>
+				<br><hr>
 				<div class="panel-body">
 					@if (count($errors) > 0)
 						<div class="alert alert-danger">
@@ -17,10 +27,9 @@
 							</ul>
 						</div>
 					@endif
-
+					
 					<form class="form-horizontal" role="form" method="POST" action="/auth/register">
 						<input type="hidden" name="_token" value="{{ csrf_token() }}">
-
 						<div class="form-group">
 							<label class="col-md-4 control-label">Name</label>
 							<div class="col-md-6">

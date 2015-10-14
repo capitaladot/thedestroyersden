@@ -2,6 +2,11 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
+use App\Weapon;
+use App\Consumable;
+use App\Craft;
+use App\CraftingRequirement;
+use App\ItemType;
 
 class FinalProductTableSeeder extends Seeder {
 
@@ -13,8 +18,58 @@ class FinalProductTableSeeder extends Seeder {
 	public function run()
 	{
 		Model::unguard();
-
-		// $this->call('UserTableSeeder');
+		$fromCSV = Excel::load(storage_path()."/app/Perfected Products.csv")->get();
+		foreach($fromCSV as $index => $eachItemRow){
+			Model::unguard();
+			if(!empty($eachItemRow->effect)){
+				if(stristr($eachItemRow->effect,' Damage') !== FALSE){
+					$eachItem{$index} = Weapon::create(['title'=>$eachItemRow->name]);
+					$eachItem{$index}->damage = pos(explode(" ",$eachItemRow->effect));
+					$eachItem{$index}->itemType()->associate(ItemType::where(['title'=>'Weapon'])->first());
+				}
+				else{
+					$eachItem{$index} = Consumable::create(['title'=>$eachItemRow->name]);
+					$eachItem{$index}->itemType()->associate(ItemType::where(['title'=>'Consumable'])->first());
+					$eachItem{$index}->consumable = true;
+					$eachItem{$index}->effect = $eachItemRow->effect;
+				}
+			}
+			else if(!empty($eachItemRow->Uses)){
+				$eachItem{$index} = Tool::create(['title'=>$eachItemRow->name]);
+				$eachItem{$index}->itemType->associate(ItemType::where('title','Tool')->first());
+			}
+			else{
+				$this->command->info ( 'Failed creating final product #'.$index.'; title was: '.$eachItemRow->name); 
+				Log::critical('Final Product seeder fall through!',[$eachItemRow]);
+				continue;
+			}
+			foreach($eachItemRow as $columnIndex => $eachColumnValue){
+				if(!empty($eachColumnValue)){
+					switch($columnIndex){
+						case 'technique':
+							$technique = Craft::firstOrCreate(['title'=>$eachColumnValue]);
+							$technique->items()->attach($eachItem{$index}->id);
+						break;
+						case 'gathered_as':
+							$harvest = Craft::firstOrCreate(['title'=>$eachColumnValue]);
+							$eachItem{$index}->harvestingTechniques()->attach($harvest);
+						break;
+						case 'commonality':
+							if($eachColumnValue == 'Rare')
+								$eachItem{$index}->rare = true;
+						break;
+						case 'price':
+							//garbage data from fixed price items
+							$eachItem{$index}->price = $eachColumnValue;
+						break;
+						case 'uses':
+							$eachItem{$index}->uses = $eachColumnValue;
+						break;
+					}
+				}
+			}
+			$this->command->info ( 'Creating final product#'.$index.': '.$eachItem{$index}->title. "... success: ".$eachItem{$index}->save());
+		}
+		$this->command->info ( 'Final products seeded!' );
 	}
-
 }

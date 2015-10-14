@@ -2,11 +2,20 @@
 
 namespace App;
 
+use MartinBean\MenuBuilder\Contracts\NavigatableContract;
 use App\BaseModel;
 use McCool\LaravelAutoPresenter\HasPresenter;
 use App\Contracts\ItemContract;
+use App\Traits\Craftable;
+use App\Traits\Navigatable;
+use App\Traits\Fillable;
+use App\Traits\Operable;
 
-abstract class Item extends BaseModel implements ItemContract {
+class Item extends BaseModel implements ItemContract,NavigatableContract  {
+	use Craftable;
+	use Fillable;
+	use Navigatable;
+	use Operable;
 	protected $table = 'items';
 	/**
 	 */
@@ -24,7 +33,7 @@ abstract class Item extends BaseModel implements ItemContract {
 	public function saleable() {
 		return $this->morphsTo ();
 	}
-	public function itemTypes() {
-		return $this->hasMany ( 'App\ItemType' );
+	public function itemType() {
+		return $this->belongsTo ( 'App\ItemType' );
 	}
 }

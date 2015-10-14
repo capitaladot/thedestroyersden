@@ -52,7 +52,8 @@ class Event extends BaseModel implements HasPresenter, NavigatableContract {
 	public function __construct($values = array()) {
 		parent::__construct ( $values );
 		static::saving ( function (Event $event) {
-			$event->duration = $event->start_time->diff ( $event->end_time );
+			if(!is_null($event->start_time) && !is_null($event->end_time))
+				$event->duration = $event->start_time->diff ( $event->end_time );
 		} );
 	}
 	public function getDates() {

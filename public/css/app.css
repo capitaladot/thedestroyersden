@@ -3765,10 +3765,10 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
 }
-.navbar {
+html body .navbar {
   position: relative;
   min-height: 50px;
-  margin-bottom: 20px;
+  margin-bottom: 0;
   border: 1px solid transparent;
 }
 @media (min-width: 768px) {
@@ -3872,11 +3872,11 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   margin-bottom: 0;
   border-width: 1px 0 0;
 }
-.navbar-brand {
+.navbar-header > .navbar-brand {
   float: left;
-  padding: 15px 15px;
-  font-size: 18px;
-  line-height: 20px;
+  padding: 0;
+  font-size: 50px;
+  line-height: 50px;
   height: 50px;
 }
 .navbar-brand:hover,
@@ -4090,7 +4090,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   }
 }
 .navbar-default {
-  background-color: #f8f8f8;
+  background-color: #000;
   border-color: #e7e7e7;
 }
 .navbar-default .navbar-brand {
@@ -4102,14 +4102,15 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   background-color: transparent;
 }
 .navbar-default .navbar-text {
-  color: #777777;
+	color: #8a321a;
 }
-.navbar-default .navbar-nav > li > a {
-  color: #777777;
+.navbar-default  .navbar-nav > li > a {
+  color: #8a321a;
+  text-shadow:1px 1px #d0a264;
 }
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
-  color: #333333;
+  text-shadow:1px 1px #8a321a;
   background-color: transparent;
 }
 .navbar-default .navbar-nav > .active > a,
@@ -6203,10 +6204,4 @@ body,
 label,
 .checkbox label {
   font-weight: 300;
-}
-.destroyers-den-graphic{
-	background-image:url('/images/DD%20Flier.png');
-	background-repeat:no-repeat;
-	height:784px;
-	width:964px;
 }

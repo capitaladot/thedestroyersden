@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 trait Saleable {
-	public function buyable() {
+	public function saleable() {
 		return $this->morphsTo ();
 	}
 }

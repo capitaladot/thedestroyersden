@@ -2,13 +2,56 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract; use App\Traits\Navigatable; use App\Traits\Presentable;
-use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
+use MartinBean\MenuBuilder\Contracts\NavigatableContract; 
+use App\Traits\Navigatable; 
+use App\Traits\Presentable;
+use App\BaseModel; 
+use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Cost;
+use App\CharacterClass;
+use App\Homeland;
+use App\PlayerCharacter;
+use App\Race;
+use App\Skill;
 
 /**
  */
 class Expenditure extends BaseModel implements HasPresenter, NavigatableContract {
-	use Navigatable; use Presentable;
+	use Navigatable; 
+	use Presentable;
+	public function value(){
+		$costs = Costs::where(['skill_id'=>$this->skill])->get()->sortBy('operation')->filter(function($cost){
+			if (
+				(
+					$cost->characterClass == $this->playerCharacter->characterClass
+						||
+					is_null($cost->characterClass)
+				)
+					&&
+				(
+					$cost->culture == $this->playerCharacter->culture
+						||
+					is_null($cost->culture)
+				)
+					&&
+				(
+					$cost->race == $this->playerCharacter->race
+						||
+					is_null($cost->race)
+				)
+			)
+				return true;
+		});
+		$value = 0;
+		foreach($costs as $cost){
+			if($value == 0 && empty($cost->operation))
+				$value = $cost->value;
+			else if(!empty ($cost->operation))
+				$value = $cost->calculate($value);
+		}
+		return $value;
+	}
+	//relations
 	public function playerCharacter() {
 		return $this->belongsTo ( 'App\PlayerCharacter' );
 	}

@@ -11,4 +11,7 @@ class EventController extends BaseController {
 		$this->repository = $repository;
 		parent::__construct ();
 	}
+	public function index(Route $route){
+		return $this->repository->all();
+	}
 }

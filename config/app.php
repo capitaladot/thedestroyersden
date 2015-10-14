@@ -141,6 +141,7 @@ return [
 		 */
 				'App\Providers\AppServiceProvider',
 				'App\Providers\BusServiceProvider',
+				//'App\Providers\ComposerServiceProvider',
 				'App\Providers\ConfigServiceProvider',
 				'App\Providers\EventServiceProvider',
 				'App\Providers\RouteServiceProvider',
@@ -151,7 +152,7 @@ return [
 		//	'Way\Generators\GeneratorsServiceProvider',
 				'Illuminate\Html\HtmlServiceProvider',
 				'Kris\LaravelFormBuilder\FormBuilderServiceProvider',
-				'Barryvdh\Debugbar\ServiceProvider',
+				//'Barryvdh\Debugbar\ServiceProvider',
 				'MartinBean\MenuBuilder\MenuBuilderServiceProvider',
 				'Teepluss\Theme\ThemeServiceProvider',
 				'SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider',
@@ -160,7 +161,9 @@ return [
 				'Thomaswelton\LaravelGravatar\LaravelGravatarServiceProvider',
 				'Caffeinated\Flash\FlashServiceProvider',
 				'Tuurbo\AmazonPayment\AmazonPaymentServiceProvider' ,
-				Mews\Captcha\CaptchaServiceProvider::class
+				Mews\Captcha\CaptchaServiceProvider::class,
+				"Orangehill\Iseed\IseedServiceProvider",
+				'Maatwebsite\Excel\ExcelServiceProvider'
 		]
 		
 	,
@@ -190,9 +193,10 @@ return [
 				'Cookie' => 'Illuminate\Support\Facades\Cookie',
 				'Crypt' => 'Illuminate\Support\Facades\Crypt',
 				'DB' => 'Illuminate\Support\Facades\DB',
-				'Debugbar' => 'Barryvdh\Debugbar\Facade',
+				//'Debugbar' => 'Barryvdh\Debugbar\Facade',
 				'Eloquent' => 'Illuminate\Database\Eloquent\Model',
 				'Event' => 'Illuminate\Support\Facades\Event',
+				'Excel' => 'Maatwebsite\Excel\Facades\Excel',
 				'Facebook' => 'SammyK\LaravelFacebookSdk\FacebookFacade',
 				'File' => 'Illuminate\Support\Facades\File',
 				'Flash' => 'Caffeinated\Flash\Facades\Flash',

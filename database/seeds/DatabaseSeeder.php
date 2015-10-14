@@ -13,6 +13,11 @@ class DatabaseSeeder extends Seeder {
 	public function run()
 	{
 		Model::unguard();
+		$this->call('ArithmeticOperatorTableSeeder');
+		$this->call('RoleTableSeeder');
+		$this->call('LinkTableSeeder');
+		$this->call('DamageTypeTableSeeder');
+		$this->call('ItemTypeTableSeeder');
 		$this->call('UserTableSeeder');
 		$this->call('CharacterClassTableSeeder');
 		$this->call('HomelandTableSeeder');
@@ -24,12 +29,13 @@ class DatabaseSeeder extends Seeder {
 		$this->call('SlotTableSeeder');
 		$this->call('SpellTableSeeder');
 		$this->call('ArcTableSeeder');
-		$this->call('ItemTableSeeder');
+/*
 		$this->call('ToolTableSeeder');
 		$this->call('WeaponTableSeeder');
 		$this->call('RawResourceTableSeeder');
 		$this->call('CraftingComponentTableSeeder');
 		$this->call('CraftingRequirementTableSeeder');
+*/
 		$this->call('FinalProductTableSeeder');
 		$this->call('SaleTableSeeder');
 		//lastish
@@ -38,6 +44,13 @@ class DatabaseSeeder extends Seeder {
 		$this->call('ExperienceTableSeeder');
 		$this->call('CraftingOccurrenceTableSeeder');
 		$this->call('ExpenditureTableSeeder');
+		$this->call('PermissionTableSeeder');
+		$this->call('PermissionRoleTableSeeder');
+		$this->call('PermissionUserTableSeeder');
+		$this->call('PasswordResetsTableSeeder');
+		$this->call('ExpenditureTableSeeder');
+		$this->call('MenuTableSeeder');
+		$this->call('MenuItemTableSeeder');
 	}
 
 }

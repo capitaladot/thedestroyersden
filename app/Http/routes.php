@@ -30,7 +30,7 @@ Route::resource('captchad', 'MyCaptchaController' );
 Route::resource('contact', 'ContactController' );
 Route::group(['middleware' => 'captchad'],function(){
 	return [Route::post('contact', 'ContactController@store' ),
-	Route::patch('contact', 'ContactController@update' )];
+	Route::post('auth*', 'AuthController' )];
 });
 
 Route::resource ( 'arc', 'ArcController' );
@@ -42,7 +42,7 @@ Route::resource ( 'craft', 'CraftController' );
 Route::resource ( 'economy', 'EconomyController' );
 Route::resource ( 'expenditures', 'ExpendituresController' );
 Route::resource ( 'event', 'EventController' );
-Route::resource ( 'final-product', 'FinalProductController' );
+Route::resource ( 'item', 'ItemController' );
 Route::resource ( 'homeland', 'HomelandController' );
 Route::resource ( 'player-character', 'PlayerCharacterController' );
 Route::resource ( 'race', 'RaceController' );
@@ -52,8 +52,9 @@ Route::resource ( 'skill', 'SkillController' );
 Route::resource ( 'tool', 'ToolController' );
 
 /* Facebook */
-Route::get ( 'facebook/login', 'FacebookController@login' );
-Route::get ( 'facebook/callback', 'FacebookController@callback' );
-Route::get ( 'facebook/events', 'FacebookController@events' );
+Route::any ( 'facebook/login', 'FacebookController@login' );
+Route::any ( 'facebook/login-callback', 'FacebookController@loginCallback' );
+Route::any ( 'facebook/payment-callback', 'FacebookController@paymentCallback' );
+Route::any ( 'facebook/events', 'FacebookController@events' );
 /* form macros */
 require app_path () . '/macros.php';

@@ -4,7 +4,6 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Barryvdh\Debugbar\Facade as Debugbar;
 
 class Handler extends ExceptionHandler {
 	
@@ -40,7 +39,7 @@ class Handler extends ExceptionHandler {
 		if ($this->isHttpException ( $e )) {
 			return $this->renderHttpException ( $e );
 		} else {
-			Debugbar::addException ( $e );
+			//Debugbar::addException ( $e );
 			return parent::render ( $request, $e );
 		}
 	}

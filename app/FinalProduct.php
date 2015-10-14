@@ -21,4 +21,5 @@ abstract class FinalProduct extends Item implements ItemContract, NavigatableCon
 	use Saleable;
 	use Salvageable;
 	use Taggable;
+	public $table = 'items';
 }

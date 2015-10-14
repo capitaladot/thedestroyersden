@@ -24,7 +24,7 @@ class CharacterClassTableSeeder extends Seeder {
 		CharacterClass::create ( [ 
 				'title' => 'Bard',
 				'slug' => str_slug ( 'Bard' ),
-				'id' => 2 
+				'id' => 3 
 		] );
 		CharacterClass::create ( [ 
 				'title' => 'Battle Monk',

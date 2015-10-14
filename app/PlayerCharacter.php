@@ -7,16 +7,18 @@ use App\Traits\Attendable;
 use App\Traits\CharacterClassable;
 use App\Traits\Fillable;
 use App\Traits\Homelandable;
-use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\Traits\Navigatable; 
+use App\Traits\Presentable;
 use App\Traits\Raceable;
-
+use McCool\LaravelAutoPresenter\HasPresenter;
 class PlayerCharacter extends BaseModel implements HasPresenter, NavigatableContract {
 	
 	use Attendable;
 	use CharacterClassable;
 	use Fillable;
 	use Homelandable;
-	use Navigatable; use Presentable;
+	use Navigatable; 
+	use Presentable;
 	use Raceable;
 	public $relationMethods = [ 
 			'user',
@@ -95,8 +97,8 @@ class PlayerCharacter extends BaseModel implements HasPresenter, NavigatableCont
 		return $this->hasMany ( 'App\Expenditure' );
 	}
 	public function unspentExperience() {
-		return $this->earnedExperience () - $this->expenditures->sum ( function ($eachexpenditure) {
-			return $eachexpenditure->value;
+		return $this->earnedExperience () - $this->expenditures->sum ( function ($eachExpenditure) {
+			return $eachExpenditure->value;
 		} );
 	}
 	public function spells() {

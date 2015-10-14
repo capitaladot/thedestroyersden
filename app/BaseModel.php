@@ -8,10 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use Barryvdh\Debugbar\Facade as Debugbar;
 use MartinBean\MenuBuilder\Menu;
 use MartinBean\MenuBuilder\MenuItem;
 use App\Observers\BaseModelObserver;
+use Log;
+use SortedByCreation;
 
 abstract class BaseModel extends Model {
 	protected $hidden = [ 
@@ -31,10 +32,12 @@ abstract class BaseModel extends Model {
 	protected $touches = [ ];
 	protected $traits = [ ];
 	public function __construct(array $attributes = []) {
-		if (get_parent_class ( $this ) == 'App\\BaseModel') {
-			foreach ( $attributes as $key => $value )
+		if (get_parent_class ( $this ) == 'App\\BaseModel' && get_parent_class ( $this ) !=  get_class ( $this )) {
+			foreach ( $attributes as $key => $value ){
+				Log::debug('Setting '.$key,[$value]);
 				$this->setAttribute ( $key, $value );
-				/* manually set table name for each subclass */
+			}
+			/* manually set table name for each subclass */
 			$this->table = snake_case ( class_basename ( str_plural ( get_class ( $this ) ) ) );
 			$this->schemaManager = DB::connection ()->getDoctrineSchemaManager ();
 			/* put public variables from traits into the fillable array */
@@ -57,67 +60,86 @@ abstract class BaseModel extends Model {
 			$newFillable = array_merge ( $this->getFillable (), $filteredFillables );
 			$this->fillable ( $newFillable );
 			$hidables = array_merge ( $hidables, [ 
-					'slug',
-					'relationMethods',
-					'traits',
-					'filteredFillables',
-					'schemaManager',
-					'relatedModels' 
+				'slug',
+				'relationMethods',
+				'traits',
+				'filteredFillables',
+				'schemaManager',
+				'relatedModels' 
 			] );
 			$hidables = array_merge ( $hidables, $this->getHidden () );
 			$this->setHidden ( $hidables );
 			$this->traits = class_uses (get_class($this),false);
 			if (in_array ( 'App\\Traits\\Navigatable', $this->traits )) {
-				static::creating ( function ($modelInstance) {
-					logger ( 'Creating ' . self::class, [ 
-							$modelInstance 
-					] );
-					try {
-						$wasNotNavigable = ! self::isNavigable ( $modelInstance );
-						if ($wasNotNavigable) {
-							$id = self::fixNavigability ( $modelInstance );
-							$modelInstance = $modelInstance::findOrFail ( $id );
-						}
-					} catch ( Exception $e ) {
-						logger ( "exception creating", [ 
-								$e 
-						] );
-					}
-					return true;
-				} );
-				static::created ( function ($modelInstance) {
-					logger ( 'Created ' . self::class, [ 
-							$modelInstance 
-					] );
-				} );
-				static::updating ( function ($modelInstance) {
-					logger ( 'Updating ' . self::class, [ 
-							$modelInstance 
+				static::creating ( function ($modelInstance) use($attributes) {
+					Log::debug ( 'Creating ' . get_class($this), [ 
+							$modelInstance
 					] );
 					$wasNotNavigable = ! self::isNavigable ( $modelInstance );
-					if ($wasNotNavigable)
-						self::fixNavigability ( $modelInstance );
+					if ($wasNotNavigable) {
+						if(self::fixNavigability ( $modelInstance )){
+							Log::info ( 'Fixed navigatibilty during creation of  ' . get_class($this), [ 
+								$modelInstance 
+							] );
+							return true;
+						}
+					}
+				} );
+				static::created ( function ($modelInstance) {
+					Log::info ( 'Created ' . get_class($this), [ 
+						$modelInstance 
+					] );
+					$menuItem = $modelInstance->menuItem;
+					if(!$menuItem)
+						if(self::provideNavigatable($modelInstance)){
+							Log::debug('Created with Menu item',[$modelInstance->menuItem]);
+							return true;
+						}
+				} );
+				static::updating ( function ($modelInstance) {
+					Log::info ( 'Updating ' . get_class($this), [ 
+							$modelInstance 
+					] );
 				} );
 				static::updated ( function ($modelInstance) {
-					logger ( 'Updated ' . self::class, [ 
+					Log::info ( 'Updated ' . get_class($this), [ 
+							$modelInstance 
+					] );
+				} );
+				static::saving ( function ($modelInstance) {
+					Log::info ( 'Saving ' . get_class($this), [ 
 							$modelInstance 
 					] );
 				} );
 				static::saved ( function ($modelInstance) {
-					logger ( 'Saving ' . self::class, [ 
+					Log::debug ( 'Saved ' . get_class($this), [ 
 							$modelInstance 
 					] );
 				} );
-				static::saved ( function ($modelInstance) {
-					logger ( 'Saved ' . self::class, [ 
+				static::deleted(function($modelInstance){
+					Log::debug ( 'Deleted ' . get_class($this), [ 
 							$modelInstance 
 					] );
-				} );
+					$menuItems = $modelInstance->menuItem()->get();
+					if(count($menuItems)){
+						foreach($menuItems as $menuItem){
+							$deleted = $menuItem->delete();
+							Log::debug ( 'Deleted menu item: ',[ 
+								$menuItem
+							] );
+						}
+						return true;
+					}
+				});
 			}
 		}
+		parent::__construct($attributes);
+	}
+	public function getTraits(){
+		return $this->traits;
 	}
 	public static function isNavigable($modelInstance) {
-		return ! (empty ( $modelInstance->slug ) || empty ( $modelInstance->title ) || ! count ( $modelInstance->menuItem ));
+		return ! (empty ( $modelInstance->slug ) || empty ( $modelInstance->title ));
 	}
 	/**
 	 *
@@ -126,38 +148,25 @@ abstract class BaseModel extends Model {
 	 * @param BaseModel $modelInstance        	
 	 */
 	public static function fixNavigability(BaseModel $modelInstance) {
-		logger ( 'Fixing navigability for', [ 
-				$modelInstance 
+		Log::info ( 'Fixing navigability for', [ 
+			$modelInstance 
 		] );
-		if (empty ( $modelInstance->slug )) {
+		if (!empty($modelInstance->name) && empty ( $modelInstance->slug )) {
 			$modelInstance->slug = str_slug ( $modelInstance->name );
 		}
-		if (empty ( $modelInstance->title )) {
+		if (!empty($modelInstance->name) && empty ( $modelInstance->title )) {
 			$modelInstance->title = $modelInstance->name;
 		}
-		self::provideNavigatable ( $modelInstance );
-		if (! empty ( $modelInstance->id )) {
-			$updated = DB::table ( $modelInstance->getTable () )->where ( 'id', $modelInstance->id )->update ( $modelInstance->attributesToArray () );
-			if ($updated)
-				return $modelInstance->id;
-			else
-				logger ( 'Failed Updating ' . self::class . ' ' . $modelInstance->id );
-		} else if (! empty ( $modelInstance->facebook_id )) {
-			if (DB::table ( $modelInstance->getTable () )->where ( 'facebook_id', $modelInstance->facebook_id )) {
-				$updated = DB::table ( $modelInstance->getTable () )->where ( 'facebook_id', $modelInstance->facebook_id )->update ( $modelInstance->attributesToArray () );
-				if ($updated)
-					return $modelInstance->facebook_id;
-				else
-					logger ( 'Failed Updating (Facebook) ' . self::class . ' ' . $modelInstance->facebook_id );
-			}
-		} // fall-through and insert.
-		return DB::table ( $modelInstance->getTable () )->insertGetId ( $modelInstance->attributesToArray () );
+		if (!empty($modelInstance->title) && empty ( $modelInstance->slug )) {
+			$modelInstance->slug = str_slug ( $modelInstance->title );
+		}
 	}
 	/**
 	 *
 	 * @param BaseModel $modelInstance        	
 	 */
 	public static function provideNavigatable(BaseModel $modelInstance) {
+		Log::debug('Providing navigatable.');
 		$basename = class_basename ( $modelInstance );
 		$menu = Menu::all ()->where ( 'name', $basename )->first ();
 		if (! $menu) {
@@ -166,32 +175,36 @@ abstract class BaseModel extends Model {
 			] );
 			$menu->save ();
 		}
-		$menuItem = MenuItem::all ()->where ( 'navigatable_id', $modelInstance->id )->where ( 'navigatable_type', $basename )->where ( 'menu_id', $menu->id )->first ();
-		if (! $menuItem || $modelInstance->isDirty ( [ 
-				'title',
-				'slug' 
-		] )) {
-			logger ( 'Creating MenuItem for ', [ 
-					'attributes' => $modelInstance->attributesToArray (),
-					'backtrace' => debug_backtrace () 
-			] );
-			MenuItem::firstOrNew ( [ 
-					'navigatable_type' => $basename,
-					'menu_id' => $menu->id,
-					'navigatable_id' => $modelInstance->id 
-			] )->navigatable ()->associate ( $modelInstance )->save ();
+		$menuItems = MenuItem::with('menu')->get ()->filter(function($eachMenuItem)use($basename,$menu,$modelInstance){
+			return 
+				$eachMenuItem->menu->id == $menu->id
+					&&
+				$eachMenuItem->navigatable_type == $basename
+					&&
+				$eachMenuItem->navigatable_id = $modelInstance->id;
+		});
+		if (! count($menuItems) ){
+			Log::debug ( 'Creating MenuItem for ', ['model'=>$modelInstance,'basename'=>$basename] );
+			try{
+				$newItem = new MenuItem( ['menu_id' => $menu->id]);
+				$newItem->navigatable()->associate($modelInstance);
+				$newItem->save();
+			}
+			catch(\QueryException $qe){
+				Log::debug ( 'MenuItem already extant? ', ['model'=>$modelInstance,'menuItems'=>$menuItems] );
+			}
 		}
+		return count($menuItems) ? $menuItems->first() : $newItem;
 	}
 	public function collectSelections($relationMethod) {
 		$selected = $this->$relationMethod;
 		if (is_null ( $selected ))
 			return new Collection ();
 		elseif (! ($selected instanceof Collection)) {
-			// dd ( $selected );
+			Log::debug('Selected',(array)$selected);
 			$selected = new Collection ( [ 
 					$selected 
 			] );
-			// dd ( $selected );
 		}
 		return $selected;
 	}
@@ -209,68 +222,75 @@ abstract class BaseModel extends Model {
 				$namespacedClassName = 'App\\' . $relationKey;
 				$repositoryName = 'App\\Repositories\\' . $relationKey . 'Repository';
 			}
-			// dd ( $namespacedClassName );
 			$relatedModel = [ 
-					'label' => ucwords ( str_replace ( "_", " ", snake_case ( $relationMethod ) ) ),
-					'namespaced' => $namespacedClassName 
+				'label' => ucwords ( str_replace ( "_", " ", snake_case ( $relationMethod ) ) ),
+				'namespaced' => $namespacedClassName 
 			];
 			/* must strictly follow Eloquent convention, or no dice. */
 			$foreignKey = snake_case ( str_singular ( $relationMethod ) ) . '_id';
 			$options = [ ];
-			foreach ( $namespacedClassName::all () as $eachOption ) {
-				$attributes = $eachOption->attributesToArray ();
-				if (isset ( $eachOption->attributes ['title'] )) {
-					$options [$eachOption->id] = [ 
+			if(class_exists($namespacedClassName)){
+				foreach ( $namespacedClassName::all () as $eachOption ) {
+					$attributes = $eachOption->attributesToArray ();
+					if (isset ( $eachOption->attributes ['title'] )) {
+						$options [$eachOption->id] = [ 
 							'value' => $eachOption->id,
 							'title' => $eachOption->attributes ['title'],
 							'checked' => false,
 							'attributes' => $attributes 
-					];
-				} else {
-					$options [$eachOption->id] = [ 
+						];
+					} else {
+						$options [$eachOption->id] = [ 
 							'value' => $eachOption->id,
 							'checked' => false,
 							'attributes' => $attributes 
-					];
-				}
-			}
-			if (! empty ( $options )) {
-				$relatedModel ['options'] = $options;
-				$selected = $this->collectSelections ( $relationMethod );
-				if (count ( $selected ) > 0) {
-					logger ( 'Selected', $selected->toArray () );
-					foreach ( $selected as $eachSelection ) {
-						if ($eachSelection->getAttribute ( 'title' )) {
-							$relatedModel ['selected'] [$eachSelection->id] = $eachSelection->getAttribute ( 'title' );
-						} else {
-							$relatedModel ['selected'] [$eachSelection->id] = $eachSelection->id;
-						}
-						$relatedModel ['options'] [$eachSelection->id] ['checked'] = true;
+						];
 					}
 				}
+				if (! empty ( $options )) {
+					$relatedModel ['options'] = $options;
+					$selected = $this->collectSelections ( $relationMethod );
+					if (count ( $selected ) > 0) {
+						Log::info ( 'Selected', $selected->toArray () );
+						foreach ( $selected as $eachSelection ) {
+							if ($eachSelection->getAttribute ( 'title' )) {
+								$relatedModel ['selected'] [$eachSelection->id] = $eachSelection->getAttribute ( 'title' );
+							} else {
+								$relatedModel ['selected'] [$eachSelection->id] = $eachSelection->id;
+							}
+							$relatedModel ['options'] [$eachSelection->id] ['checked'] = true;
+						}
+					}
+				}
+				if (isset ( $columns [$foreignKey] )) {
+					$relatedModel ['columnName'] = $foreignKey;
+					$column = DB::connection ()->getDoctrineColumn ( $this->table, $foreignKey );
+					$relatedModel ['maxLength'] = $column->getLength ();
+					$relatedModel ['notNull'] = $column->getNotnull ();
+					unset ( $this->processedFillables [$foreignKey] );
+					$this->relationControls [$relationMethod] = $relatedModel;
+				}
+				$this->relatedModels [] = $namespacedClassName;
 			}
-			if (isset ( $columns [$foreignKey] )) {
-				$relatedModel ['columnName'] = $foreignKey;
-				$column = DB::connection ()->getDoctrineColumn ( $this->table, $foreignKey );
-				$relatedModel ['maxLength'] = $column->getLength ();
-				$relatedModel ['notNull'] = $column->getNotnull ();
-				unset ( $this->processedFillables [$foreignKey] );
-			}
-			$this->relationControls [$relationMethod] = $relatedModel;
-			$this->relatedModels [] = $namespacedClassName;
 		}
 		return $this;
 	}
 	/**
 	 * add validation rules for the foreign keys on the table.
 	 */
-	public function attachRequiredRelations(Request $request) {
-		foreach ( $this->relatedModels as $relationMethod => $properties ) {
+	public function attachRequiredRelations($request) {
+		foreach ( $this->relationControls as $relationMethod => $properties ) {
 			/* deal with properties local to this object. */
-			if (isset ( $properties ['columnName'] ) && $request->input ( $properties ['columnName'] )) {
-				$associatedModel = $properties ['namespaced']::find ( $request->input ( $properties ['columnName'] ) );
+			if (isset ( $properties ['columnName'] ) && $request[ $properties ['columnName'] ]) {
+				$associatedModel = $properties ['namespaced']::find ( $request[ $properties ['columnName'] ] );
 				$this->$relationMethod ()->associate ( $associatedModel );
-			} else {
+				Log::debug($properties ['columnName'] .' associated.');
+			} elseif(!is_array($properties)){
+				Log::error('Error in attaching required relations; malformed relation control!',$properties);
+			}elseif(!isset ( $properties ['columnName'] )){
+				Log::error('Error in attaching required relations; no column name present!',$properties);
+			}else {
+				Log::debug($properties ['columnName'] .' was absent from input.');
 			}
 		}
 	}
@@ -278,20 +298,30 @@ abstract class BaseModel extends Model {
 	 * @desc add validation rules and bind variables for fillables.
 	 * @param Request $request
 	 */
-	function validateFillables(Request $request) {
+	function validateFillables( $request) {
+		$this->getProcessedFillables ();
+		$this->provideRelatables ();
+		Log::debug('Validating request',$request);
+		Log::debug('Validating fillables',$this->processedFillables);
 		foreach ( $this->processedFillables as $input => $properties ) {
 			/* perform processing for special input types */
 			$pipeSeparatedInputName = str_replace ( '.', '_', $input );
-			if (is_array ( $request->input ( $pipeSeparatedInputName ) )) {
-				$implodedDate = implode ( $request->input ( $pipeSeparatedInputName ), ' ' );
-				$processedDate = \DateTime::createFromFormat ( 'Y n j G O', $implodedDate . ' ' . Config::get ( 'app.timezone' ) );
-				$this->validatorValues [$input] = $processedDate;
-			} else {
-				$this->validatorValues [$input] = $request->input ( $pipeSeparatedInputName );
+			if ($properties['inputType'] == 'datetime') {
+				$processedDate = strtotime($request[ $pipeSeparatedInputName ]);
+				if($processedDate)
+					$this->validatorValues [$input] = $processedDate;
+				else
+					Log::error('Failed to date parse',[$pipeSeparatedInputName => $request[ $pipeSeparatedInputName ]]);
+			} 
+			else {
+				$this->validatorValues [$input] = $request[ $pipeSeparatedInputName ];
 			}
+			Log::debug('Validator value ',[$input => $request[ $pipeSeparatedInputName ] ]);
 			/* set date validator rule for datetimes */
+			if($input == 'timezone')
+				$this->validatorRules [$input] [] = 'timezone';
 			if ($properties ['inputType'] == 'datetime') {
-				$this->validatorRules [$input] [] = 'date';
+				$this->validatorRules [$input] [] = 'digits:10';
 			}
 			/* require non-nullable fields */
 			if ($properties ['notNull']) {
@@ -305,8 +335,9 @@ abstract class BaseModel extends Model {
 				$this->validatorRules [$input] = implode ( '|', $this->validatorRules [$input] );
 		}
 	}
-	function attachValidatedValues(Request $request) {
+	function attachValidatedValues($request) {
 		/* while not ideal, forceFill is the only way to use attributes that are dynamically added by Traits. */
+		Log::debug('Attaching validated values',$this->validatorValues);
 		$this->fill ( $this->validatorValues );
 		$this->attachRequiredRelations ( $request );
 	}
@@ -314,11 +345,16 @@ abstract class BaseModel extends Model {
 	 *
 	 * @param Request $request        	
 	 */
-	function validate(Request $request) {
+	function validate($request) {
 		$this->validateFillables ( $request );
 		$this->validator = Validator::make ( $this->validatorValues, $this->validatorRules );
 		if ($this->validator->passes ()) {
+			Log::debug('Validated',[$this]);
 			$this->attachValidatedValues ( $request );
+			return true;
 		}
+		Log::debug('Validator failed with',$this->validator->errors()->all());
+		return false;
+		
 	}
 }

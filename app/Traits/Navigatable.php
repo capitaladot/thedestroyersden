@@ -16,11 +16,15 @@ trait Navigatable {
 	public function getUrl() {
 		try {
 			$routeString = str_singular ( studly_case ( $this->getTable () ) ) . 'Controller@show';
-			$url = action ( $routeString, [ 
-					$this->slug 
-			] );
+			if(!empty($this->slug)){
+				$url = action ( $routeString, [ 
+						$this->slug 
+				] );
+			}
+			if(empty($url))
+				$url = action($routeString,['id'=>$this->id]);
 		} catch ( FatalErrorException $e ) {
-			Debugbar::addException ( $e );
+			Log::error ( $e );
 		}
 		return $url;
 	}

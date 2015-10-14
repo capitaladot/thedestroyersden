@@ -14,11 +14,14 @@ use Illuminate\Auth\Authenticatable as Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPassword;
 use App\Traits\Attendable;
 use App\Traits\Fillable;
-use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\Traits\Navigatable; 
+use App\Traits\Presentable;
 use SammyK\LaravelFacebookSdk\SyncableGraphNodeTrait as SyncableGraphNodeTrait;
 use Bican\Roles\Traits\HasRoleAndPermission as HasRoleAndPermissionTrait;
 // related
 use App\Order;
+use Bican\Roles\Models\Role;
+
 class User extends BaseModel implements AuthenticatableContract, CanResetPasswordContract, HasRoleAndPermissionContract, NavigatableContract {
 	use Attendable;
 	use Authenticatable;
@@ -29,9 +32,9 @@ class User extends BaseModel implements AuthenticatableContract, CanResetPasswor
 	use Presentable;
 	use SyncableGraphNodeTrait;
 	protected static $graph_node_field_aliases = [ 
-			'id' => 'facebook_id',
-			'name' => 'name',
-			'access_token' => 'access_token' 
+		'id' => 'facebook_id',
+		'name' => 'name',
+		'access_token' => 'access_token' 
 	];
 	/**
 	 * The database table used by the model.
@@ -59,7 +62,6 @@ class User extends BaseModel implements AuthenticatableContract, CanResetPasswor
 	 * @var array
 	 */
 	protected $hidden = [ 
-			'password',
 			'remember_token',
 			'access_token',
 			'slug' 
@@ -67,18 +69,20 @@ class User extends BaseModel implements AuthenticatableContract, CanResetPasswor
 	public $relationMethods = [ 
 			'events',
 			'playerCharacters',
-			'orders' 
+			'orders',
+			'roles'
 	];
-	public function __construct()
+	public function __construct(array $attributes = [])
 	{
-		$cart = \Session::get('cart');
-		if(!empty($cart))
-			$this->cart = Order::find($cart);
-		else{
-			$this->cart = Order::create(['user_id'=>$this->id]);
+		$cartId = \Session::get('cart');
+		if(!empty($cartId))
+			$this->cart = Order::find($cartId);
+		static::created(function($user){
+			$this->cart = Order::create(['user_id'=>$user->id]);
 			\Session::put($this->cart->id);
-		}
-		return parent::__construct();
+			$user->roles()->attach(Role::where(['name'=>'user'])->first()->id);
+		});
+		return parent::__construct($attributes);
 	}	/**
 	 * Override getTitle from Navigatable since user objects have slightly different parameters.
 	 *

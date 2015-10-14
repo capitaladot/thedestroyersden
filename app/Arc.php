@@ -12,7 +12,8 @@ class Arc extends BaseModel implements HasPresenter, NavigatableContract {
 	use Fillable;
 	public $fillable = [ 
 			'start_time',
-			'end_time' 
+			'end_time',
+			'event_id'
 	];
 	public $relationMethods = [ 
 			'event',

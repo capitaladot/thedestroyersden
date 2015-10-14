@@ -13,6 +13,7 @@ class Order extends BaseModel implements HasPresenter{
 	use Presentable;
 	const EVENT_PRICE = 30;
 	public $fillable = ['approved','executed','failed','final_total','processor','reference_id','user_id'];
+	protected $table = 'orders';
 	public function tickets(){
 		return $this->hasMany('App\Ticket');
 	}

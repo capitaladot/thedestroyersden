@@ -21,7 +21,7 @@
 		"doctrine/dbal" : "~2.5.1",
 		"caffeinated/flash" : "*",
 		"teepluss/theme" : "dev-master",
-		"sammyk/laravel-facebook-sdk" : "2.0.x-dev",
+		"sammyk/laravel-facebook-sdk" : "2.*",
 		"facebook/php-sdk-v4": "~5.0@dev",
 		"bican/roles": "1.7.*",
 		"stevebauman/location": "1.1.*",
@@ -30,12 +30,14 @@
 		"tuurbo/amazon-payment": "~1.3.0",
 		"classygeeks/potion":"*",
 		"mccool/laravel-auto-presenter": "~3.1.1",
-		"mews/captcha": "dev-master"
+		"mews/captcha": "dev-master",
+		"orangehill/iseed":"dev-master",
+		"rtconner/laravel-kint": "~2.0",
+		"maatwebsite/excel": "~2.0"
 	},
 	"require-dev" : {
 		"phpunit/phpunit" : "~4.0",
 		"mockery/mockery" : "~0.9",
-		"barryvdh/laravel-debugbar" : "~2.0@dev",
 		"barryvdh/laravel-ide-helper" : "~2.0.3"
 	},
 	"autoload" : {

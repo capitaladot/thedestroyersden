@@ -3,10 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use SammyK\LaravelFacebookSdk\LaravelFacebookSdk as LaravelFacebookSdk;
-use Illuminate\Support\Facades\View;
-use App\MainMenu;
-use App\Presenters\FormattedUnorderedListPresenter;
 
 class AppServiceProvider extends ServiceProvider {
 	
@@ -15,21 +11,8 @@ class AppServiceProvider extends ServiceProvider {
 	 *
 	 * @return void
 	 */
-	public function boot(LaravelFacebookSdk $fb) {
-		$login_link = $fb->getRedirectLoginHelper ()->getLoginUrl ( 'http://destroyersden.com/facebook/callback', [ 
-				'email',
-				'user_events' 
-		] );
-		View::share ( 'facebook_login_link', $login_link );
-		$linkMenu = MainMenu::where ( 'name', '=', 'Link' )->first ();
-		$linkPresenter = new FormattedUnorderedListPresenter ( $linkMenu, "nav navbar-nav" );
-		View::share ( 'linkPresenter', $linkPresenter );
-		$menus = MainMenu::where ( 'name', '<>', 'Link' )->where ( 'name', '<>', 'User' )->get ();
-		View::share ( 'menus', $menus );
-		$userMenu = MainMenu::where ( 'name', '=', 'User' )->first ();
-		View::share ( 'userMenu', $userMenu );
-		if(!\Auth::user())
-			\Debugbar::disable();
+	public function boot() {
+	
 	}
 	
 	/**
