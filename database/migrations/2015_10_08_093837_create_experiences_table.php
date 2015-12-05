@@ -15,6 +15,12 @@ class CreateExperiencesTable extends Migration {
 		Schema::create ( 'experiences', function (Blueprint $table) {
 			$table->increments ( 'id' );
 			$table->timestamps ();
+			$table->integer('player_character_id')
+				->foreign('player_character_id')
+				->references('id')->on('player_characters');
+			$table->integer('arc_id')
+				->foreign('arc_id')
+				->references('id')->on('arcs');
 		});
 	}
 

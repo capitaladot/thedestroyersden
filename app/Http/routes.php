@@ -29,24 +29,25 @@ Route::group(['middleware' => 'auth'],function(){
 Route::resource('captchad', 'MyCaptchaController' );
 Route::resource('contact', 'ContactController' );
 Route::group(['middleware' => 'captchad'],function(){
-	return [Route::post('contact', 'ContactController@store' ),
-	Route::post('auth*', 'AuthController' )];
+	return [Route::post('contact', 'ContactController@store' )/*,
+	Route::post('auth*', 'AuthController' )*/];
 });
 
 Route::resource ( 'arc', 'ArcController' );
-Route::resource ( 'character-class', 'CharacterClassController' );
+Route::resource ( 'characterclass', 'CharacterClassController' );
 Route::resource ( 'cost', 'CostController' );
-Route::resource ( 'crafting-component', 'CraftingComponentController' );
-Route::resource ( 'crafting-requirement', 'CraftingRequirementController' );
+Route::resource ( 'craftingcomponent', 'CraftingComponentController' );
+Route::resource ( 'craftingrequirement', 'CraftingRequirementController' );
 Route::resource ( 'craft', 'CraftController' );
 Route::resource ( 'economy', 'EconomyController' );
 Route::resource ( 'expenditures', 'ExpendituresController' );
 Route::resource ( 'event', 'EventController' );
 Route::resource ( 'item', 'ItemController' );
 Route::resource ( 'homeland', 'HomelandController' );
-Route::resource ( 'player-character', 'PlayerCharacterController' );
+Route::resource ( 'menu', 'MenuController' );
+Route::resource ( 'playercharacter', 'PlayerCharacterController' );
 Route::resource ( 'race', 'RaceController' );
-Route::resource ( 'raw-resource', 'RawResourceController' );
+Route::resource ( 'rawresource', 'RawResourceController' );
 Route::resource ( 'sale', 'SaleController' );
 Route::resource ( 'skill', 'SkillController' );
 Route::resource ( 'tool', 'ToolController' );

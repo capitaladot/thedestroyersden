@@ -118,11 +118,11 @@ class FacebookController extends Controller {
 			}
 		}
 		$fb->setDefaultAccessToken ( $token );
-		$response = $fb->get ( config ( 'services.facebook.groupId' ) . "/events?since=2014-10-01T18%3A30%3A00.000Z&until=2017-10-01T18%3A30%3A00.000Z&limit=1000" );
+		$response = $fb->get ( config ( 'services.facebook.pageId' ) . "/events?since=2014-10-01T18%3A30%3A00.000Z&until=2017-10-01T18%3A30%3A00.000Z&limit=1000" );
 		$gof = new GraphObjectFactory ( $response );
 		$events = $gof->makeGraphList ();
 		//dd($events);
-		Log::info('Facebook events response from '.config ( 'services.facebook.groupId' ) . "/events" ,[$events]);
+		Log::info('Facebook events response from '.config ( 'services.facebook.pageId' ) . "/events" ,[$events]);
 		if(!empty($events))
 			foreach ( $events as $event ) {
 				if(!empty($event)){

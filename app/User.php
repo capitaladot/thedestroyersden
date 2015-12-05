@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use Bican\Roles\Contracts\HasRoleAndPermissionContract;
+use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
 // traits
 use Illuminate\Auth\Authenticatable as Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPassword;
@@ -31,6 +31,7 @@ class User extends BaseModel implements AuthenticatableContract, CanResetPasswor
 	use Navigatable; 
 	use Presentable;
 	use SyncableGraphNodeTrait;
+	public $cart = null;
 	protected static $graph_node_field_aliases = [ 
 		'id' => 'facebook_id',
 		'name' => 'name',
@@ -77,13 +78,20 @@ class User extends BaseModel implements AuthenticatableContract, CanResetPasswor
 		$cartId = \Session::get('cart');
 		if(!empty($cartId))
 			$this->cart = Order::find($cartId);
+		else
+			$this->cart = $this->createOrder($this);
 		static::created(function($user){
-			$this->cart = Order::create(['user_id'=>$user->id]);
-			\Session::put($this->cart->id);
+			self::createOrder($user);
 			$user->roles()->attach(Role::where(['name'=>'user'])->first()->id);
 		});
 		return parent::__construct($attributes);
-	}	/**
+	}	
+	protected static function createOrder(User $user){
+		$user->cart = Order::create(['user_id'=>$user->id]);
+		//ddd($user);
+		\Session::put($user->cart->id);
+	}
+	/**
 	 * Override getTitle from Navigatable since user objects have slightly different parameters.
 	 *
 	 * @return string @@todo: add role decoration here.

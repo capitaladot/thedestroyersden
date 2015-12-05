@@ -13,7 +13,8 @@ return [
 		 * |
 		 */
 		'facebook' => [ 
-				'groupId' => ***REMOVED*** 
+				'groupId' => ***REMOVED***,
+				'pageId' => ***REMOVED***
 		],
 		'mailgun' => [ 
 				'domain' => '',

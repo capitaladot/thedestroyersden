@@ -56,6 +56,13 @@ class Event extends BaseModel implements HasPresenter, NavigatableContract {
 				$event->duration = $event->start_time->diff ( $event->end_time );
 		} );
 	}
+	public function newQuery($excludeDeleted = true)
+    {
+        return parent::newQuery()->orderBy('start_time','ASC');
+    }
+	public function facebookId(){
+		return '<a href="https://www.facebook.com/events/'.$this->facebook_id.'">Link</a>';
+	}
 	public function getDates() {
 		return [ 
 				'created_at',
@@ -98,23 +105,42 @@ class Event extends BaseModel implements HasPresenter, NavigatableContract {
 		
 		static::mapGraphNodeFieldNamesToDatabaseColumnNames ( $graph_node, $data );
 		// dd ( $graph_node );
+		$graph_node->title = $graph_node->name;
+		$graph_node->slug = str_slug($graph_node->name);
 		$graph_node->save ();
-	}
-	
-	/**
-	 * Like static::firstOrNew() but without mass assignment
-	 *
-	 * @param array $attributes        	
-	 *
-	 * @return Model
-	 */
-	public static function firstOrNewGraphNode(array $attributes) {
-		if (is_null ( $facebook_object = static::firstByAttributes ( $attributes ) )) {
-			$facebook_object = new static ();
+		$daysForArcs = self::explodePeriodByDays($graph_node->start_time,$graph_node->end_time);
+		foreach($daysForArcs as $index => $dayForArc){
+			$arc{$index} = Arc::create([
+				'start_time'=>$dayForArc['start_time'],
+				'end_time'=>$dayForArc['end_time'],
+				'title'=>$graph_node->title." ".$dayForArc['start_time']->format('l'),
+				'slug'=>str_slug($graph_node->title." ".$dayForArc['start_time']->format('l')),
+				'event_id'=>$graph_node->id
+			]);
 		}
-		
-		return $facebook_object;
 	}
+	public static function explodePeriodByDays($begin, $end) {
+		$days = [];
+		$dayInterval = new \DateInterval('P1D');
+		$begin = new \DateTime($begin);
+		$end = new \DateTime($end);
+		$_end = clone $end; 
+		$_end->modify('+1 day');
+		foreach ((new \DatePeriod($begin, $dayInterval, $_end)) as $i => $period) {
+			$_begin = $period;
+			if ($i) $_begin->setTime(0, 0, 0);
+			if ($_begin > $end) break;
+			$_end = clone $_begin;
+			$_end->setTime(23, 59, 59);
+			if ($end < $_end) $_end = $end;
+			$days[] = [
+				'start_time' => $_begin,
+				'end_time' => $_end,
+			];
+		}
+		return $days;
+	}
+
 	public function owner() {
 		return $this->belongsTo ( 'App\User' );
 	}

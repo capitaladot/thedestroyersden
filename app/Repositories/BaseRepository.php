@@ -3,10 +3,12 @@
 namespace App\Repositories;
 
 use App\BaseModel;
+use App\Contracts\CriteriaContract;
+use App\Criteria\Criteria;
 use App\Exceptions\RepositoryException;
 use Illuminate\Container\Container as App;
 
-abstract class BaseRepository {
+abstract class BaseRepository implements CriteriaContract {
 	protected $app;
 	
 	/**
@@ -23,8 +25,7 @@ abstract class BaseRepository {
 	protected $modelName;
 	protected $namespacedModelClass;
 	public function __construct(App $app) {
-		$this->modelName = class_basename ( get_class ( $this ) );
-		$this->modelName = str_replace ( "Repository", "", $this->modelName );
+		$this->modelName = str_replace ( "Repository", "", class_basename ( get_class ( $this ) ) );
 		$this->namespacedModelClass = 'App\\' . $this->modelName;
 		$this->app = $app;
 		$this->makeModel ();
@@ -119,12 +120,14 @@ abstract class BaseRepository {
 	 *
 	 * @param
 	 *        	$attribute
-	 * @param
+	 * @param mixed
 	 *        	$value
 	 * @param array $columns        	
 	 * @return mixed
 	 */
 	public function findBy($attribute, $value, $columns = array('*')) {
+		if(is_array($value))
+			return $this->model->whereIn ( $attribute, $value )->get( $columns );
 		return $this->model->where ( $attribute, '=', $value )->first ( $columns );
 	}
 	public function with($relations) {

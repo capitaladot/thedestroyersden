@@ -33,9 +33,11 @@ class ContactController extends Controller{
             'user_message' => $request->get('message')
         ), function($message)use($request)
 		{
-			$message->from('website@destroyersden.com','Destroyersden.com');
+			$message->from('website@destroyersden.com','DestroyersDen.com');
+			$message->replyTo($request->get('email'),$request->get('name'));
 			$message->cc($request->get('email'),$request->get('name'));
-			$message->to('destroyersdenlarp@gmail.com', 'Destroyers Den Staff Gmail')->subject('Question from the Website');
+			$message->to('destroyersdenlarp@gmail.com', 'Destroyers Den Staff Gmail')
+				->subject('Question from the Website');
 		});
 		return view('contact.submitted',['sent'=>$sent]);
   }

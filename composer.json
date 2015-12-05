@@ -11,9 +11,13 @@
 	},{
 		"type": "vcs",
 		"url": "https://github.com/capitaladot/viewer"
+	},
+	{
+		"type": "vcs",
+		"url": "https://github.com/capitaladot/laravel-menu-builder"
 	}],
 	"require" : {
-		"laravel/framework" : "5.0.*",
+		"laravel/framework" : "5.1.*",
 		"laravel/socialite" : "3.0.*@dev",
 		"martinbean/laravel-menu-builder" : "dev-master",
 		"illuminate/html" : "dev-master",
@@ -21,24 +25,27 @@
 		"doctrine/dbal" : "~2.5.1",
 		"caffeinated/flash" : "*",
 		"teepluss/theme" : "dev-master",
-		"sammyk/laravel-facebook-sdk" : "2.*",
+		"sammyk/laravel-facebook-sdk" : "3.*",
 		"facebook/php-sdk-v4": "~5.0@dev",
-		"bican/roles": "1.7.*",
+		"bican/roles": "*",
 		"stevebauman/location": "1.1.*",
 		"darryldecode/cart":"dev-master",
 		"thomaswelton/laravel-gravatar": "dev-master",
 		"tuurbo/amazon-payment": "~1.3.0",
 		"classygeeks/potion":"*",
 		"mccool/laravel-auto-presenter": "~3.1.1",
-		"mews/captcha": "dev-master",
+		"mews/captcha": "*",
 		"orangehill/iseed":"dev-master",
 		"rtconner/laravel-kint": "~2.0",
-		"maatwebsite/excel": "~2.0"
+		"maatwebsite/excel": "~2.0",
+		"pulkitjalan/google-apiclient": "^2.0@dev",
+		"intervention/image":"*"
 	},
 	"require-dev" : {
 		"phpunit/phpunit" : "~4.0",
 		"mockery/mockery" : "~0.9",
-		"barryvdh/laravel-ide-helper" : "~2.0.3"
+		"barryvdh/laravel-ide-helper" : "~2.0.3",
+		"nwidart/db-exporter" : "*"
 	},
 	"autoload" : {
 		"classmap" : [
@@ -47,7 +54,10 @@
 		"psr-4" : {
 			"App\\" : "app/",
 			"App\\Contracts\\" : "app/Contracts",
+			"App\\Criteria\\" : "app/Criteria",
+			"App\\Http\\Composers\\" : "app/Http/Composers",
 			"App\\Presenters\\" : "app/Presenters",
+			"App\\Providers\\" : "app/Providers",
 			"App\\Repositories\\" : "app/Repositories",
 			"App\\Traits\\" : "app/Traits"
 		}

@@ -12,7 +12,7 @@
 	<link href="/css/styles.css" rel="stylesheet">
 	
 	<!-- Fonts -->
-	<link href='//fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Raleway:900,800,700,600,500,400,300' rel='stylesheet' type='text/css'>
 
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -56,7 +56,7 @@
 				<a class="navbar-brand" href="/"><img class="img-responsive" src="/images/logoNoSlogan.png" alt="The Destroyer's Den LARP"></a>
 			</div>
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				{!! isset($linkPresenter) ? $linkPresenter->render () :'' !!}
+				{!!  isset($linkPresenter) ? $linkPresenter->render () :'' !!}
 				<ul class="nav navbar-nav">
 					@if(isset($craftingMenu))
 					<li class="dropdown"><a href="#" class="dropdown-toggle" 
@@ -69,13 +69,13 @@
 							<li><a href="/{{ str_slug($craftingMenu->properName()) }}/create"
 								>Create a new {{ $craftingMenu->properName() }}</a>
 							</li> @endpermission {!!
-							Menu::build ( $craftingMenu->id ) !!}
+							$craftingMenu->render() !!}
 						
 						</ul>
 					</li>
 					@endif
-					@if(isset($linkMenu))
-					<!--<li class="dropdown"><a href="#" class="dropdown-toggle"
+					@if(isset($eventMenu))
+					<li class="dropdown"><a href="#" class="dropdown-toggle"
 						data-toggle="dropdown" role="button" aria-expanded="false">{!!
 							str_plural($eventMenu->properName()) !!}<span class="caret"></span>
 						</a>
@@ -83,43 +83,31 @@
 							@permission('create.'. str_plural(str_slug($eventMenu->properName())) )
 							<li><a href="/{{ str_slug($eventMenu->properName()) }}/create"
 								>Create a new {{ $eventMenu->properName() }}</a>
-							</li> @endpermission {!!
-							Menu::build ( $eventMenu->id ) !!}
+							</li> @endpermission 
+							{!! $eventMenu->render() !!}
 						</ul>
-					</li>-->
-					@endif
-					<li><a 
-						href="https://www.google.com/calendar/embed?src=qs05uvl9b2s4jiapvvealgfg94%40group.calendar.google.com&ctz=America%2FNew_York" 
-						title="Events Calendar">Events Calendar</a>
 					</li>
-				@if(Auth::check() && isset($menus) &&!empty($menus))
+					@endif
+				@if(Auth::check() && isset($menus) && !empty($menus))
 					@foreach($menus as $menu)
 					<li class="dropdown"><a href="#" class="dropdown-toggle"
 						data-toggle="dropdown" role="button" aria-expanded="false">{!!
 							$menu->properName() !!}<span class="caret"></span>
 						</a>
 						<ul class="dropdown-menu" role="menu">
+							@permission('list.'. str_plural(str_slug($menu->properName())) )
+							<li><a href="/{{ str_slug($menu->properName()) }}"
+								>List of {{ $menu->properName() }}s</a>
+							</li>
+							@endpermission
 							@permission('create.'. str_plural(str_slug($menu->properName())) )
 							<li><a href="/{{ str_slug($menu->properName()) }}/create"
 								>Create a new {{ $menu->properName() }}</a>
 							</li> @endpermission {!!
-							Menu::build ( $menu->id ) !!}
+							$menu->render() !!}
 						</ul>
 					</li> 
 					@endforeach
-					<li class="dropdown"><a href="#" class="dropdown-toggle"
-						data-toggle="dropdown" role="button" aria-expanded="false"
-							>{!! $userMenu->name !!}
-							<span class="caret"></span>
-						</a>
-						<ul class="dropdown-menu" role="menu">
-							@permission('create.'. str_plural(str_slug($menu->properName())) )
-							<li><a href="/{{ str_slug($menu->properName()) }}/create"
-								>Create a new {{ $userMenu->properName() }}</a></li>
-							@endpermission {!!
-							$userMenu->render () !!}
-						</ul>
-					</li> 
 				@endif
 				@if (Auth::guest())
 					<li><a href="/auth/login">Login</a></li>					
@@ -128,15 +116,25 @@
 					<li class="dropdown"><a href="#" class="dropdown-toggle" 
 						data-toggle="dropdown" role="button" aria-expanded="false">{{
 							Auth::user()->name }}
-							@if(!empty(Auth::user()->facebook_id)) 
-								<img alt="Logged in with Facebook" class="facebook-button"
-								src="/images/3d-transparent-glass-icon-social-media-logos-facebook-logo-square.png">	
-							@endif <span class="caret"></span>
+							@if(!empty(Auth::user()->facebook_id))<span title="Logged in with Facebook" class="facebook-button"
+							><span></span></span>@endif 
+							<span class="caret"></span>
 						</a>
 						<ul class="dropdown-menu" role="menu">
-							<li><a href="/facebook/events">Load Facebook Events</a></li>		
+							@if(!empty(Auth::user()->facebook_id)) 
+							<li><a href="/facebook/events">Load Facebook Events</a></li>
+							@endif
 							<li><a href="/auth/logout">Logout</a></li>
 						</ul>
+						<li><a href="#" class="dropdown-toggle" 
+							data-toggle="dropdown" role="button" aria-expanded="false"
+								>Player Characters<span class="caret"></span></a>
+								<ul class="dropdown-menu" role="menu">
+							<li><a href="/{{ str_slug($menus->where('name','PlayerCharacter')->first()->properName()) }}/create"
+								>Create a new Player Character</a>
+							</li>{{ 
+							$menus->where('name','PlayerCharacter')->first()->render() 
+						}}</ul></li>
 					</li>
 				@endif
 				</ul>

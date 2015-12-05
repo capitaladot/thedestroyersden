@@ -8,13 +8,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use MartinBean\MenuBuilder\Menu;
-use MartinBean\MenuBuilder\MenuItem;
+use App\MainMenu;
+use App\MainMenuItem;
 use App\Observers\BaseModelObserver;
 use Log;
 use SortedByCreation;
+use App\Contracts\RelatableContract;
 
-abstract class BaseModel extends Model {
+class BaseModel extends Model implements RelatableContract {
 	protected $hidden = [ 
 			'relationMethods',
 			'processedFillables',
@@ -33,13 +34,15 @@ abstract class BaseModel extends Model {
 	protected $traits = [ ];
 	public function __construct(array $attributes = []) {
 		if (get_parent_class ( $this ) == 'App\\BaseModel' && get_parent_class ( $this ) !=  get_class ( $this )) {
+			$this->schemaManager = DB::connection ()->getDoctrineSchemaManager ();
 			foreach ( $attributes as $key => $value ){
 				Log::debug('Setting '.$key,[$value]);
 				$this->setAttribute ( $key, $value );
 			}
 			/* manually set table name for each subclass */
-			$this->table = snake_case ( class_basename ( str_plural ( get_class ( $this ) ) ) );
-			$this->schemaManager = DB::connection ()->getDoctrineSchemaManager ();
+			if(empty($this->table))
+				$this->table = snake_case ( class_basename ( str_plural ( get_class ( $this ) ) ) );
+			
 			/* put public variables from traits into the fillable array */
 			$fillables = $this->schemaManager->listTableColumns ( $this->table );
 			/* except those that are foreign keys */
@@ -59,6 +62,7 @@ abstract class BaseModel extends Model {
 			}
 			$newFillable = array_merge ( $this->getFillable (), $filteredFillables );
 			$this->fillable ( $newFillable );
+			$this->traits = class_uses (get_class($this),false);
 			$hidables = array_merge ( $hidables, [ 
 				'slug',
 				'relationMethods',
@@ -69,74 +73,8 @@ abstract class BaseModel extends Model {
 			] );
 			$hidables = array_merge ( $hidables, $this->getHidden () );
 			$this->setHidden ( $hidables );
-			$this->traits = class_uses (get_class($this),false);
-			if (in_array ( 'App\\Traits\\Navigatable', $this->traits )) {
-				static::creating ( function ($modelInstance) use($attributes) {
-					Log::debug ( 'Creating ' . get_class($this), [ 
-							$modelInstance
-					] );
-					$wasNotNavigable = ! self::isNavigable ( $modelInstance );
-					if ($wasNotNavigable) {
-						if(self::fixNavigability ( $modelInstance )){
-							Log::info ( 'Fixed navigatibilty during creation of  ' . get_class($this), [ 
-								$modelInstance 
-							] );
-							return true;
-						}
-					}
-				} );
-				static::created ( function ($modelInstance) {
-					Log::info ( 'Created ' . get_class($this), [ 
-						$modelInstance 
-					] );
-					$menuItem = $modelInstance->menuItem;
-					if(!$menuItem)
-						if(self::provideNavigatable($modelInstance)){
-							Log::debug('Created with Menu item',[$modelInstance->menuItem]);
-							return true;
-						}
-				} );
-				static::updating ( function ($modelInstance) {
-					Log::info ( 'Updating ' . get_class($this), [ 
-							$modelInstance 
-					] );
-				} );
-				static::updated ( function ($modelInstance) {
-					Log::info ( 'Updated ' . get_class($this), [ 
-							$modelInstance 
-					] );
-				} );
-				static::saving ( function ($modelInstance) {
-					Log::info ( 'Saving ' . get_class($this), [ 
-							$modelInstance 
-					] );
-				} );
-				static::saved ( function ($modelInstance) {
-					Log::debug ( 'Saved ' . get_class($this), [ 
-							$modelInstance 
-					] );
-				} );
-				static::deleted(function($modelInstance){
-					Log::debug ( 'Deleted ' . get_class($this), [ 
-							$modelInstance 
-					] );
-					$menuItems = $modelInstance->menuItem()->get();
-					if(count($menuItems)){
-						foreach($menuItems as $menuItem){
-							$deleted = $menuItem->delete();
-							Log::debug ( 'Deleted menu item: ',[ 
-								$menuItem
-							] );
-						}
-						return true;
-					}
-				});
-			}
 		}
 		parent::__construct($attributes);
-	}
-	public function getTraits(){
-		return $this->traits;
 	}
 	public static function isNavigable($modelInstance) {
 		return ! (empty ( $modelInstance->slug ) || empty ( $modelInstance->title ));
@@ -168,14 +106,14 @@ abstract class BaseModel extends Model {
 	public static function provideNavigatable(BaseModel $modelInstance) {
 		Log::debug('Providing navigatable.');
 		$basename = class_basename ( $modelInstance );
-		$menu = Menu::all ()->where ( 'name', $basename )->first ();
+		$menu = MainMenu::all ()->where ( 'name', $basename )->first ();
 		if (! $menu) {
-			$menu = Menu::create ( [ 
+			$menu = MainMenu::create ( [ 
 					'name' => $basename 
 			] );
 			$menu->save ();
 		}
-		$menuItems = MenuItem::with('menu')->get ()->filter(function($eachMenuItem)use($basename,$menu,$modelInstance){
+		$menuItems = MainMenuItem::with('menu')->get ()->filter(function($eachMenuItem)use($basename,$menu,$modelInstance){
 			return 
 				$eachMenuItem->menu->id == $menu->id
 					&&
@@ -186,7 +124,7 @@ abstract class BaseModel extends Model {
 		if (! count($menuItems) ){
 			Log::debug ( 'Creating MenuItem for ', ['model'=>$modelInstance,'basename'=>$basename] );
 			try{
-				$newItem = new MenuItem( ['menu_id' => $menu->id]);
+				$newItem = new MainMenuItem( ['menu_id' => $menu->id]);
 				$newItem->navigatable()->associate($modelInstance);
 				$newItem->save();
 			}

@@ -878,10 +878,10 @@ html {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 body {
-  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-family: "Raleway", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #333333;
+  color: rgb(128, 128, 128);
 }
 input,
 button,
@@ -2803,7 +2803,7 @@ fieldset[disabled] .btn-default.active {
 }
 .btn-primary {
   color: #ffffff;
-  background-color: #337ab7;
+  background-color: #8a321a;
   border-color: #2e6da4;
 }
 .btn-primary:hover,
@@ -3584,7 +3584,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav > li > a {
   position: relative;
   display: block;
-  padding: 10px 15px;
+ /* padding: 10px 15px; */
+	vertical-align: bottom;
 }
 .nav > li > a:hover,
 .nav > li > a:focus {
@@ -3925,9 +3926,10 @@ html body .navbar {
   margin: 7.5px -15px;
 }
 .navbar-nav > li > a {
-  padding-top: 10px;
+  /*padding-top: 10px;
   padding-bottom: 10px;
-  line-height: 20px;
+  */line-height: 20px;
+  vertical-align:bottom;
 }
 @media (max-width: 767px) {
   .navbar-nav .open .dropdown-menu {
@@ -4104,9 +4106,10 @@ html body .navbar {
 .navbar-default .navbar-text {
 	color: #8a321a;
 }
-.navbar-default  .navbar-nav > li > a {
+.navbar-default  .navbar-nav li a {
   color: #8a321a;
   text-shadow:1px 1px #d0a264;
+  text-transform:uppercase;
 }
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
@@ -5477,7 +5480,7 @@ button.close {
   z-index: 1070;
   display: block;
   visibility: visible;
-  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-family: "Raleway", Helvetica, Arial, sans-serif;
   font-size: 12px;
   font-weight: normal;
   line-height: 1.4;
@@ -5584,7 +5587,7 @@ button.close {
   display: none;
   max-width: 276px;
   padding: 1px;
-  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-family: "Raleway", Helvetica, Arial, sans-serif;
   font-size: 14px;
   font-weight: normal;
   line-height: 1.42857143;

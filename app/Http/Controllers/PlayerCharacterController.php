@@ -8,6 +8,7 @@ use App\Repositories\PlayerCharacterRepository;
 class PlayerCharacterController extends BaseController {
 	function __construct(PlayerCharacterRepository $repository) {
 		$this->repository = $repository;
+		parent::__construct();
 	}
 }
 

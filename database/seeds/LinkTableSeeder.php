@@ -32,13 +32,13 @@ class LinkTableSeeder extends Seeder {
 			'id' => 3,
 			'created_at' => '2015-05-08 13:03:42',
 			'updated_at' => '2015-05-08 13:03:42',
-			'link' => 'https://www.facebook.com/groups/DestroyersDenLARP',
-			'slug' => 'discussion-group',
-			'title' => 'Discussion Group',
+			'link' => 'https://www.facebook.com/DestroyersDen/',
+			'slug' => 'facebook',
+			'title' => 'Facebook',
 		),
 		array( // row #3
 			'id' => 4,
-			'link' => 'https://docs.google.com/document/d/1dhJJQw7grt4WcpIB7M-geoj5J6h4thJUE_0FM-jqGMk/pub',
+			'link' => 'https://docs.google.com/document/d/1d1rS_OhdkENDZVjdG-Wo4LUCCqlgZvy3eZOzpIDo7ls/pub',
 			'slug' => 'character-sheet',
 			'title' => 'Character Sheet',
 		),
@@ -65,6 +65,12 @@ class LinkTableSeeder extends Seeder {
 			'link' => 'https://docs.google.com/spreadsheets/d/1rSwB2Ya9upmddgwxxpieHxPm5DOnFD_t6V5-80pXsus/pubhtml',
 			'slug' => 'raw-resources',
 			'title' => 'Raw Resources',
+		),
+		array( // row #8
+			'id' => 9,
+			'link' => 'https://www.google.com/calendar/embed?src=qs05uvl9b2s4jiapvvealgfg94%40group.calendar.google.com&ctz=America%2FNew_York',
+			'slug' => 'calendar',
+			'title' => 'Calendar',
 		),
 		);
 		foreach($links as $link){

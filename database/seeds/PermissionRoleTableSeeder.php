@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Bican\Roles\Models\Permission;
+use Bican\Roles\Models\Role;
 
 class PermissionRoleTableSeeder extends Seeder {
 
@@ -12,65 +14,49 @@ class PermissionRoleTableSeeder extends Seeder {
 	public function run()
 	{
 		\DB::table('permission_role')->delete();
-        
-		\DB::table('permission_role')->insert(array (
-			0 => 
-			array (
-				'id' => '1',
-				'permission_id' => '1',
-				'role_id' => '1',
-				'created_at' => '0000-00-00 00:00:00',
-				'updated_at' => '0000-00-00 00:00:00',
-			),
-			1 => 
-			array (
-				'id' => '2',
-				'permission_id' => '2',
-				'role_id' => '1',
-				'created_at' => '0000-00-00 00:00:00',
-				'updated_at' => '0000-00-00 00:00:00',
-			),
-			2 => 
-			array (
-				'id' => '4',
-				'permission_id' => '3',
-				'role_id' => '1',
-				'created_at' => '0000-00-00 00:00:00',
-				'updated_at' => '0000-00-00 00:00:00',
-			),
-			3 => 
-			array (
-				'id' => '5',
-				'permission_id' => '4',
-				'role_id' => '1',
-				'created_at' => '0000-00-00 00:00:00',
-				'updated_at' => '0000-00-00 00:00:00',
-			),
-			4 => 
-			array (
-				'id' => '6',
-				'permission_id' => '5',
-				'role_id' => '1',
-				'created_at' => '0000-00-00 00:00:00',
-				'updated_at' => '0000-00-00 00:00:00',
-			),
-			5 => 
-			array (
-				'id' => '7',
-				'permission_id' => '6',
-				'role_id' => '1',
-				'created_at' => '0000-00-00 00:00:00',
-				'updated_at' => '0000-00-00 00:00:00',
-			),
-			6 => 
-			array (
-				'id' => '8',
-				'permission_id' => '7',
-				'role_id' => '1',
-				'created_at' => '0000-00-00 00:00:00',
-				'updated_at' => '0000-00-00 00:00:00',
-			),
-		));
+        $permissionRoles = [];
+		$permissionTypes = ['create','delete','edit','list','read'];
+		$roles = ['admin','user','guest'];
+		foreach([
+			'Advantage','Arc','ArithmeticOperator','CharacterClass','Consumable','Consumption','Cost',
+			'CraftingComponent','CraftingOccurrence','CraftingRequirement','CraftingRequirementAlternative',
+			'DamageType','Description','Discount','Durable','Economy','Event','Expenditure','Experience',
+			'FinalProduct','Homeland','Item','ItemType','Link','MainMenu','MainMenuItem','Memorization',
+			'Order','Ownable','PlayerCharacter','Prerequisite','Race','RawResource','Sale','Skill','Slot',
+			'Spell','Tag','Ticket','Tool','User','Weapon'
+		] as $model){
+			foreach($permissionTypes as $permissionType){
+				foreach($roles as $role)
+					switch($role){
+						case 'admin':
+							$permissionRoles[] = [
+									'role_id' => Role::where('name','=',$role)->first()->id,
+									'permission_id' => Permission::where('slug','=',$permissionType.'.'.str_slug($model).'s')->first()->id
+								];					
+						break;
+						case 'user';
+							if(in_array($permissionType,['read']))
+								$permissionRoles[] = [
+									'role_id' => Role::where('name','=',$role)->first()->id,
+									'permission_id' => Permission::where('slug','=',$permissionType.'.'.str_slug($model).'s')->first()->id
+								];
+							elseif(in_array($permissionType,['create','edit']) && in_array($model,['Order','Expenditure','PlayerCharacter']))
+								$permissionRoles[] = [
+									'role_id' => Role::where('name','=',$role)->first()->id,
+									'permission_id' => Permission::where('slug','=',$permissionType.'.'.str_slug($model).'s')->first()->id
+								];
+						break;
+						case 'guest';
+							if(in_array($permissionType,['read']) && (in_array($model,['User']) && $permissionType =='create'))
+								$permissionRoles[] = [
+									'role_id' => Role::where('name','=',$role)->first()->id,
+									'permission_id' => Permission::where('slug','=',$permissionType.'.'.str_slug($model).'s')->first()->id
+								];
+						break;
+					}
+			}
+		}
+		\DB::table('permission_role')->insert($permissionRoles);
 	}
 
 }

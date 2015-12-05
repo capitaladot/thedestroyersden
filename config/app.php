@@ -141,7 +141,7 @@ return [
 		 */
 				'App\Providers\AppServiceProvider',
 				'App\Providers\BusServiceProvider',
-				//'App\Providers\ComposerServiceProvider',
+				'App\Providers\ComposerServiceProvider',
 				'App\Providers\ConfigServiceProvider',
 				'App\Providers\EventServiceProvider',
 				'App\Providers\RouteServiceProvider',
@@ -163,7 +163,8 @@ return [
 				'Tuurbo\AmazonPayment\AmazonPaymentServiceProvider' ,
 				Mews\Captcha\CaptchaServiceProvider::class,
 				"Orangehill\Iseed\IseedServiceProvider",
-				'Maatwebsite\Excel\ExcelServiceProvider'
+				'Maatwebsite\Excel\ExcelServiceProvider',
+				PulkitJalan\Google\GoogleServiceProvider::class
 		]
 		
 	,
@@ -202,6 +203,7 @@ return [
 				'Flash' => 'Caffeinated\Flash\Facades\Flash',
 				'Form' => 'Illuminate\Html\FormFacade',
 				'FormBuilder' => 'Kris\LaravelFormBuilder\Facades\FormBuilder',
+				'Google' => PulkitJalan\Google\Facades\Google::class,
 				'Gravatar' => 'Thomaswelton\LaravelGravatar\Facades\Gravatar',
 				'Hash' => 'Illuminate\Support\Facades\Hash',
 				'Html' => 'Illuminate\Html\HtmlFacade',
