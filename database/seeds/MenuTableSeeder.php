@@ -16,56 +16,103 @@ class MenuTableSeeder extends Seeder {
 		Model::unguard();
 
 		$menus = array(
-			array( // row #0
+			array( 
 				'id' => 1,
 				'name' => 'Link',
 				'created_at' => '2015-05-08 13:03:42',
 				'updated_at' => '2015-05-08 13:03:42',
 			),
-			array( // row #1
+			array( 
 				'id' => 2,
 				'name' => 'User',
 				'created_at' => '2015-05-08 13:39:26',
 				'updated_at' => '2015-05-08 13:39:26',
 			),
-			array( // row #2
+			array( 
 				'id' => 3,
 				'name' => 'Event',
 				'created_at' => '2015-05-12 11:52:26',
 				'updated_at' => '2015-05-12 11:52:26',
 			),
-			array( // row #3
+			array( 
 				'id' => 4,
 				'name' => 'Arc',
 				'created_at' => '0000-00-00 00:00:00',
 				'updated_at' => '0000-00-00 00:00:00',
 			),
-			array( // row #4
+			array(
 				'id' => 5,
 				'name' => 'PlayerCharacter',
 				'created_at' => '0000-00-00 00:00:00',
 				'updated_at' => '0000-00-00 00:00:00',
 			),
-			array( // row #5
+			array( 
 				'id' => 6,
 				'name' => 'Economy',
 				'created_at' => '0000-00-00 00:00:00',
 				'updated_at' => '0000-00-00 00:00:00',
 			),
-			array( // row #6
+			array( 
 				'id' => 8,
 				'name' => 'Order',
 				'created_at' => '2015-06-19 14:34:31',
 				'updated_at' => '2015-06-19 14:34:31',
 			),
-			array( // row #7
+			array( 
 				'id' => 9,
+				'name' => 'Item',
+				'created_at' => '2015-06-19 14:34:31',
+				'updated_at' => '2015-06-19 14:34:31',
+			),
+			array( 
+				'id' => 10,
 				'name' => 'Crafting',
 				'created_at' => '0000-00-00 00:00:00',
 				'updated_at' => '0000-00-00 00:00:00',
 			),
+			array(
+				'id' => 11,
+				'name' => 'Skill',
+				'created_at' => '0000-00-00 00:00:00',
+				'updated_at' => '0000-00-00 00:00:00',
+			),
+			array(
+				'id' => 12,
+				'name' => 'Weapon',
+				'created_at' => '0000-00-00 00:00:00',
+				'updated_at' => '0000-00-00 00:00:00',
+			),
+			array(
+				'id' => 13,
+				'name' => 'Tool',
+				'created_at' => '0000-00-00 00:00:00',
+				'updated_at' => '0000-00-00 00:00:00',
+			),
+			array(
+				'id' => 14,
+				'name' => 'Consumable',
+				'created_at' => '0000-00-00 00:00:00',
+				'updated_at' => '0000-00-00 00:00:00',
+			),
+			array(
+				'id' => 15,
+				'name' => 'Armor',
+				'created_at' => '0000-00-00 00:00:00',
+				'updated_at' => '0000-00-00 00:00:00',
+			),
+			array(
+				'id' => 16,
+				'name' => 'RawResource',
+				'created_at' => '0000-00-00 00:00:00',
+				'updated_at' => '0000-00-00 00:00:00',
+			),
+			array(
+				'id' => 17,
+				'name' => 'CraftingComponent',
+				'created_at' => '0000-00-00 00:00:00',
+				'updated_at' => '0000-00-00 00:00:00',
+			),
 		);
-
 		foreach($menus as $menu){
 			$this->command->info ( 'Creating menu:'.$menu['name']. "... success: ".!empty(Menu::create($menu)));
 		}

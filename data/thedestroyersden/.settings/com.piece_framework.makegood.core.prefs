@@ -1,6 +1,0 @@
-eclipse.preferences.version=1
-phpunit_config_file=/ec2-52-0-25-209.compute-1.amazonaws.com_thedestroyersden/phpunit.xml
-preload_script=
-test_file_pattern=
-test_folders=/ec2-52-0-25-209.compute-1.amazonaws.com_thedestroyersden/tests
-testing_framework=PHPUnit

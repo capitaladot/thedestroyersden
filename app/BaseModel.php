@@ -32,107 +32,46 @@ class BaseModel extends Model implements RelatableContract {
 	protected $table;
 	protected $touches = [ ];
 	protected $traits = [ ];
-	public function __construct(array $attributes = []) {
-		if (get_parent_class ( $this ) == 'App\\BaseModel' && get_parent_class ( $this ) !=  get_class ( $this )) {
-			$this->schemaManager = DB::connection ()->getDoctrineSchemaManager ();
-			foreach ( $attributes as $key => $value ){
-				Log::debug('Setting '.$key,[$value]);
-				$this->setAttribute ( $key, $value );
-			}
-			/* manually set table name for each subclass */
-			if(empty($this->table))
-				$this->table = snake_case ( class_basename ( str_plural ( get_class ( $this ) ) ) );
-			
-			/* put public variables from traits into the fillable array */
-			$fillables = $this->schemaManager->listTableColumns ( $this->table );
-			/* except those that are foreign keys */
-			$hidables = [ ];
-			$filteredFillables = [ ];
-			foreach ( $fillables as $fillable ) {
-				$name = $fillable->getName ();
-				if ($name == 'facebook_id' || $name == 'id' || ends_with ( $name, '_at' )) {
-					// don't mess with id or dates.
-				} elseif (ends_with ( $name, '_id' )) {
-					$hidables [] = $name;
-				} elseif (ends_with ( $name, 'able_type' )) {
-					$hidables [] = $name;
-				} else {
-					$filteredFillables [] = $name;
-				}
-			}
-			$newFillable = array_merge ( $this->getFillable (), $filteredFillables );
-			$this->fillable ( $newFillable );
-			$this->traits = class_uses (get_class($this),false);
-			$hidables = array_merge ( $hidables, [ 
-				'slug',
-				'relationMethods',
-				'traits',
-				'filteredFillables',
-				'schemaManager',
-				'relatedModels' 
-			] );
-			$hidables = array_merge ( $hidables, $this->getHidden () );
-			$this->setHidden ( $hidables );
+	public function __construct(array $attributes = []) {		
+		foreach ( $attributes as $key => $value ){
+			//Log::debug('Setting '.$key,[$value]);
+			$this->setAttribute ( $key, $value );
 		}
-		parent::__construct($attributes);
-	}
-	public static function isNavigable($modelInstance) {
-		return ! (empty ( $modelInstance->slug ) || empty ( $modelInstance->title ));
-	}
-	/**
-	 *
-	 * set slug and/or title, and if necessary, create MenuItems.
-	 *
-	 * @param BaseModel $modelInstance        	
-	 */
-	public static function fixNavigability(BaseModel $modelInstance) {
-		Log::info ( 'Fixing navigability for', [ 
-			$modelInstance 
+		/* manually set table name for each subclass */
+		if(empty($this->table))
+			$this->table = snake_case ( class_basename ( str_plural ( get_class ( $this ) ) ) );
+		
+		/* put public variables from traits into the fillable array */
+		$fillables = DB::connection ()->getDoctrineSchemaManager ()->listTableColumns ( $this->table );
+		/* except those that are foreign keys */
+		$hidables = [ ];
+		$filteredFillables = [ ];
+		foreach ( $fillables as $fillable ) {
+			$name = $fillable->getName ();
+			if ($name == 'facebook_id' || $name == 'id' || ends_with ( $name, '_at' )) {
+				// don't mess with id or dates.
+			} elseif (ends_with ( $name, '_id' )) {
+				$hidables [] = $name;
+			} elseif (ends_with ( $name, 'able_type' )) {
+				$hidables [] = $name;
+			} else {
+				$filteredFillables [] = $name;
+			}
+		}
+		$newFillable = array_merge ( $this->getFillable (), $filteredFillables );
+		$this->fillable ( $newFillable );
+		$this->traits = class_uses (get_class($this),false);
+		$hidables = array_merge ( $hidables, [ 
+			'slug',
+			'relationMethods',
+			'traits',
+			'filteredFillables',
+			'schemaManager',
+			'relatedModels' 
 		] );
-		if (!empty($modelInstance->name) && empty ( $modelInstance->slug )) {
-			$modelInstance->slug = str_slug ( $modelInstance->name );
-		}
-		if (!empty($modelInstance->name) && empty ( $modelInstance->title )) {
-			$modelInstance->title = $modelInstance->name;
-		}
-		if (!empty($modelInstance->title) && empty ( $modelInstance->slug )) {
-			$modelInstance->slug = str_slug ( $modelInstance->title );
-		}
-	}
-	/**
-	 *
-	 * @param BaseModel $modelInstance        	
-	 */
-	public static function provideNavigatable(BaseModel $modelInstance) {
-		Log::debug('Providing navigatable.');
-		$basename = class_basename ( $modelInstance );
-		$menu = MainMenu::all ()->where ( 'name', $basename )->first ();
-		if (! $menu) {
-			$menu = MainMenu::create ( [ 
-					'name' => $basename 
-			] );
-			$menu->save ();
-		}
-		$menuItems = MainMenuItem::with('menu')->get ()->filter(function($eachMenuItem)use($basename,$menu,$modelInstance){
-			return 
-				$eachMenuItem->menu->id == $menu->id
-					&&
-				$eachMenuItem->navigatable_type == $basename
-					&&
-				$eachMenuItem->navigatable_id = $modelInstance->id;
-		});
-		if (! count($menuItems) ){
-			Log::debug ( 'Creating MenuItem for ', ['model'=>$modelInstance,'basename'=>$basename] );
-			try{
-				$newItem = new MainMenuItem( ['menu_id' => $menu->id]);
-				$newItem->navigatable()->associate($modelInstance);
-				$newItem->save();
-			}
-			catch(\QueryException $qe){
-				Log::debug ( 'MenuItem already extant? ', ['model'=>$modelInstance,'menuItems'=>$menuItems] );
-			}
-		}
-		return count($menuItems) ? $menuItems->first() : $newItem;
+		$hidables = array_merge ( $hidables, $this->getHidden () );
+		$this->setHidden ( $hidables );
+		parent::__construct($attributes);
 	}
 	public function collectSelections($relationMethod) {
 		$selected = $this->$relationMethod;
@@ -150,7 +89,7 @@ class BaseModel extends Model implements RelatableContract {
 	 * attach the relatedModels array, to be used in form generation.
 	 */
 	public function provideRelatables() {
-		$columns = $this->schemaManager->listTableColumns ( $this->table );
+		$columns = DB::connection ()->getDoctrineSchemaManager ()->listTableColumns ( $this->table );
 		foreach ( $this->relationMethods as $relationKey => $relationMethod ) {
 			if (is_numeric ( $relationKey )) {
 				$entity = str_singular ( studly_case ( $relationMethod ) );

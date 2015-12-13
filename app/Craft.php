@@ -5,7 +5,6 @@ namespace App;
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
 use App\Traits\Navigatable; 
 use App\Traits\Presentable;
-use App\Traits\Requireable;
 use App\Traits\Taggable;
 use App\BaseModel; 
 use McCool\LaravelAutoPresenter\HasPresenter;
@@ -13,10 +12,12 @@ use McCool\LaravelAutoPresenter\HasPresenter;
 class Craft extends Skill implements NavigatableContract {
 	use Navigatable; 
 	use Presentable;
-	use Requireable;
 	use Taggable;
 	protected $table = 'skills';
 	public $fillable = ['quantity','skill_id','variable'];
+	public function craftingRequirements(){
+		return $this->hasMany('App\CraftingRequirement');
+	}
 	/**
 	 * the list of items this technique may produce.
 	 *

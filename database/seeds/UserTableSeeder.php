@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 use App\User;
+use Bican\Roles\Models\Role;
 
 class UserTableSeeder extends Seeder {
 
@@ -57,7 +58,7 @@ class UserTableSeeder extends Seeder {
 				'amazon_id' => NULL,
 			),
 			array( // row #3
-				'id' => 24,
+				'id' => 4,
 				'name' => 'Test Account',
 				'email' => 'austin.clerkin@facebook.com',
 				'password' => '$2y$10$f/9AACz1Qqwe9m0xjp5SLeTfrrK2PFJIUWFioTxD3bAXIUo3t2VkG',
@@ -71,7 +72,7 @@ class UserTableSeeder extends Seeder {
 				'amazon_id' => NULL,
 			),
 			array( // row #4
-				'id' => 25,
+				'id' => 5,
 				'name' => 'Test Account 2',
 				'email' => 'capitaladot@yahoo.com',
 				'password' => '$2y$10$B.s/ygfsxASYbT7/2BkI9O1Fnyrzn6ebCSVgSSs9V6Jnu7UzJOBnO',
@@ -85,7 +86,7 @@ class UserTableSeeder extends Seeder {
 				'amazon_id' => NULL,
 			),
 			array( // row #6
-				'id' => 27,
+				'id' => 6,
 				'name' => 'Richard Wetzel',
 				'email' => 'mew314159@yahoo.com',
 				'password' => NULL,
@@ -99,7 +100,7 @@ class UserTableSeeder extends Seeder {
 				'amazon_id' => NULL,
 			),
 			array( // row #7
-				'id' => 28,
+				'id' => 7,
 				'name' => 'Killraven',
 				'email' => 'damienkillraven@gmail.com',
 				'password' => '$2y$10$SVq5yt3oiBePAILWPoXKxObpNzaKPI/t98ZTsgUlXXnnNB9cfE1Je',
@@ -113,8 +114,12 @@ class UserTableSeeder extends Seeder {
 				'amazon_id' => NULL,
 			),
 		);
+		$admins = ['Austin'=>1,'Ashley'=>3];
+		$adminRole = Role::where('name','=','admin')->firstOrFail();
 		foreach($users as $user){
-			$userObj = new User($user);
+			$userObj = User::create($user);
+			if(in_array($userObj->id,$admins))
+				$userObj->attachRole($adminRole);
 			$this->command->info ( 'Creating user:'.$user['email']. "... success:".$userObj->save());
 		}
 		$this->command->info ( 'User table seeded!' );

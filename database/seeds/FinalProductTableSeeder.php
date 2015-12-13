@@ -7,6 +7,7 @@ use App\Consumable;
 use App\Craft;
 use App\CraftingRequirement;
 use App\ItemType;
+use App\Item;
 
 class FinalProductTableSeeder extends Seeder {
 
@@ -21,6 +22,7 @@ class FinalProductTableSeeder extends Seeder {
 		$fromCSV = Excel::load(storage_path()."/app/Perfected Products.csv")->get();
 		foreach($fromCSV as $index => $eachItemRow){
 			Model::unguard();
+			$eachItemRow->name = trim($eachItemRow->name);
 			if(!empty($eachItemRow->effect)){
 				if(stristr($eachItemRow->effect,' Damage') !== FALSE){
 					$eachItem{$index} = Weapon::create(['title'=>$eachItemRow->name]);
@@ -36,15 +38,14 @@ class FinalProductTableSeeder extends Seeder {
 			}
 			else if(!empty($eachItemRow->Uses)){
 				$eachItem{$index} = Tool::create(['title'=>$eachItemRow->name]);
-				$eachItem{$index}->itemType->associate(ItemType::where('title','Tool')->first());
+				$eachItem{$index}->itemType->associate(ItemType::where('title','Container')->first());
 			}
 			else{
-				$this->command->info ( 'Failed creating final product #'.$index.'; title was: '.$eachItemRow->name); 
-				Log::critical('Final Product seeder fall through!',[$eachItemRow]);
-				continue;
+				$eachItem{$index} = Item::create(['title'=>$eachItemRow->name]);
 			}
 			foreach($eachItemRow as $columnIndex => $eachColumnValue){
 				if(!empty($eachColumnValue)){
+					$eachColumnValue = trim($eachColumnValue);
 					switch($columnIndex){
 						case 'technique':
 							$technique = Craft::firstOrCreate(['title'=>$eachColumnValue]);

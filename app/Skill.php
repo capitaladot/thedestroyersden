@@ -20,7 +20,7 @@ class Skill extends BaseModel implements HasPresenter, NavigatableContract {
 		return $this->morphTo ();
 	}
 	public function costs() {
-		return $this->hasMany ( 'App\Cost' );
+		return $this->belongsTo ( 'App\Cost' );
 	}
 	public function prerequisites() {
 		return $this->hasMany ( 'App\Prerequisite');

@@ -13,30 +13,39 @@ class DatabaseSeeder extends Seeder {
 	public function run()
 	{
 		Model::unguard();
-		$this->call('ArithmeticOperatorTableSeeder');
-		$this->call('RoleTableSeeder');
+		//nav
+		$this->call('MenuTableSeeder');
+		$this->call('MenuItemTableSeeder');
 		$this->call('LinkTableSeeder');
+		//site
+		$this->call('RoleTableSeeder');
+		$this->call('PermissionTableSeeder');
+		$this->call('UserTableSeeder');
+		$this->call('PermissionUserTableSeeder');
+		$this->call('PermissionRoleTableSeeder');
+		$this->call('PasswordResetsTableSeeder');
+		//game
+		$this->call('ArithmeticOperatorTableSeeder');
 		$this->call('DamageTypeTableSeeder');
 		$this->call('ItemTypeTableSeeder');
-		$this->call('UserTableSeeder');
 		$this->call('CharacterClassTableSeeder');
 		$this->call('HomelandTableSeeder');
 		$this->call('RaceTableSeeder');
 		$this->call('SkillTableSeeder');
-		$this->call('CraftTableSeeder');
 		$this->call('PrerequisiteTableSeeder');
 		$this->call('CostTableSeeder');
 		$this->call('SlotTableSeeder');
 		$this->call('SpellTableSeeder');
 		$this->call('ArcTableSeeder');
 /*
-		$this->call('ToolTableSeeder');
-		$this->call('WeaponTableSeeder');
+		
+		$this->call('WeaponTableSeeder');*/
 		$this->call('RawResourceTableSeeder');
 		$this->call('CraftingComponentTableSeeder');
-		$this->call('CraftingRequirementTableSeeder');
-*/
+		//$this->call('CraftingRequirementTableSeeder');
 		$this->call('FinalProductTableSeeder');
+		$this->call('ToolTableSeeder');
+		$this->call('CraftTableSeeder');
 		$this->call('SaleTableSeeder');
 		//lastish
 		$this->call('PlayerCharacterTableSeeder');
@@ -44,13 +53,8 @@ class DatabaseSeeder extends Seeder {
 		$this->call('ExperienceTableSeeder');
 		$this->call('CraftingOccurrenceTableSeeder');
 		$this->call('ExpenditureTableSeeder');
-		$this->call('PermissionTableSeeder');
-		$this->call('PermissionRoleTableSeeder');
-		$this->call('PermissionUserTableSeeder');
-		$this->call('PasswordResetsTableSeeder');
-		$this->call('ExpenditureTableSeeder');
-		$this->call('MenuTableSeeder');
-		$this->call('MenuItemTableSeeder');
+		
+		
 	}
 
 }

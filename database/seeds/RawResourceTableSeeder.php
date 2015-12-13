@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\RawResource;
 use App\Craft;
 use App\CraftingRequirement;
+use App\ItemType;
 
 class RawResourceTableSeeder extends Seeder {
 
@@ -18,13 +19,16 @@ class RawResourceTableSeeder extends Seeder {
 	public function run()
 	{
 		$fromCSV = Excel::load(storage_path()."/app/Raw Resources.csv")->get();
+		$itemType = ItemType::where('title','Raw Resource')->first();
 		foreach($fromCSV as $index => $eachItemRow)
 		{
 			Model::unguard();
 			$this->command->info ( 'Creating raw resource #'.$index.':'.$eachItemRow->title);
-			$eachItem{$index} = RawResource::create(['title'=>$eachItemRow->name]);
+			$eachItem{$index} = RawResource::create(['title'=>$eachItemRow->name,'item_type_id'=>$itemType->id]);
+			$eachItemRow->name = trim($eachItemRow->name);
 			foreach($eachItemRow as $columnIndex => $eachColumnValue){
 				if(!empty($eachColumnValue)){
+					$eachColumnValue = trim($eachColumnValue);
 					switch($columnIndex){
 						case 'technique':
 							$technique = Craft::firstOrCreate(['title'=>$eachColumnValue]);

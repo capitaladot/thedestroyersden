@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\CraftingComponent;
 use App\Craft;
 use App\CraftingRequirement;
+use App\ItemType;
 
 class CraftingComponentTableSeeder extends Seeder {
 
@@ -18,11 +19,14 @@ class CraftingComponentTableSeeder extends Seeder {
 	public function run()
 	{
 		$fromCSV = Excel::load(storage_path()."/app/Crafted Components.csv")->get();
+		$itemType = ItemType::where('title','Crafting Component')->first();
 		foreach($fromCSV as $index => $eachItemRow){
 			Model::unguard();
-			$eachItem{$index} = CraftingComponent::create(['title'=>$eachItemRow->name]);
+			$eachItemRow->name = trim($eachItemRow->name);
+			$eachItem{$index} = CraftingComponent::create(['title'=>trim($eachItemRow->name),'item_type_id'=>$itemType->id]);
 			foreach($eachItemRow as $columnIndex => $eachColumnValue){
 				if(!empty($eachColumnValue)){
+					$eachColumnValue = trim($eachColumnValue);
 					switch($columnIndex){
 						case 'technique':
 							$technique = Craft::firstOrCreate(['title'=>$eachColumnValue]);

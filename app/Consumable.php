@@ -9,22 +9,28 @@ use App\PlayerCharacter;
 use App\Traits\Craftable;
 use App\Traits\Navigatable; 
 use App\Traits\Presentable;
-use App\Traits\Requireable;
+use App\Traits\Requirable;
 use App\Traits\Salvageable;
 use App\Traits\Taggable;
 use App\Traits\ItemTypeable;
+
+use App\ItemType;
 
 class Consumable extends Item implements NavigatableContract {
 	use Craftable;
 	use ItemTypeable;
 	use Navigatable; 
 	use Presentable;
-	use Requireable;
+	use Requirable;
 	use Salvageable;
 	use Taggable;
 	protected $table = 'items';
 	public $fillable = ['*'];
 	protected $consumable = true;
+	public function __construct($attributes=[]){
+		parent::__construct($attributes);
+		$this->itemType = ItemType::where('title','Consumable')->first();
+	}
 	public function consume(PlayerCharacter $consumer) {
 		if (count ( $this->consumption ))
 			return false;

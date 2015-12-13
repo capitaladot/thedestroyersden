@@ -3,13 +3,16 @@
 namespace App;
 
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Traits\Navigatable; use App\Traits\Presentable;
-use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Traits\Navigatable; 
+use App\Traits\Presentable;
+use App\BaseModel; 
+use McCool\LaravelAutoPresenter\HasPresenter;
 use App\Traits\Fillable;
 
 class Arc extends BaseModel implements HasPresenter, NavigatableContract {
-	use Navigatable; use Presentable;
 	use Fillable;
+	use Navigatable; 
+	use Presentable;
 	public $fillable = [ 
 			'start_time',
 			'end_time',

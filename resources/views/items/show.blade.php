@@ -24,7 +24,9 @@
 							@elseif($properties['inputType'] == 'text') {!!
 								$model->getAttribute($properties['columnName'])
 							!!} 
-							@elseif(method_exists($model,$properties['columnName'])){!! call_user_method($properties['columnName'],$model)
+							@elseif(method_exists($model,lcfirst(studly_case($properties['columnName']))))
+							{!! 
+								call_user_func([&$model, lcfirst(studly_case($properties['columnName']))]);
 							!!}
 							@else {{ $model->getAttribute($properties['columnName']) 
 							}}

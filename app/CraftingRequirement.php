@@ -5,12 +5,15 @@ namespace App;
 use MartinBean\MenuBuilder\Contracts\NavigatableContract; 
 use App\Traits\Navigatable; 
 use App\Traits\Presentable;
+use App\Traits\Requirable;
+
 use App\BaseModel; 
 use McCool\LaravelAutoPresenter\HasPresenter;
 
 class CraftingRequirement extends BaseModel implements HasPresenter, NavigatableContract {
 	use Navigatable; 
 	use Presentable;
+	use Requirable;
 	protected $table = 'crafting_requirements';
 	public $timestamps = true;
 	protected $dates = [
@@ -23,12 +26,15 @@ class CraftingRequirement extends BaseModel implements HasPresenter, Navigatable
 		return $this->belongsTo ( 'App\Craft' );
 	}
 	public function craftingComponents() {
-		return $this->morphedByMany ( 'App\CraftingComponent', 'requireable' );
+		return $this->belongsToMany ( 'App\CraftingComponent','App\Craft' );
 	}
 	public function rawResources() {
-		return $this->morphedByMany ( 'App\RawResource', 'requireable' );
+		return $this->belongsToMany ( 'App\RawResource','App\Craft');
+	}
+	public function requirables(){
+		return $this->morphTo();
 	}
 	public function tools() {
-		return $this->morphedByMany ( 'App\Tool', 'requireable' );
+		return $this->belongsToMany ( 'App\Tool','App\Craft');
 	}
 }

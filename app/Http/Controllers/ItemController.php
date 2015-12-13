@@ -9,6 +9,19 @@ class ItemController extends BaseController {
 		$this->repository = $repository;
 		parent::__construct ();
 	}
+	/**
+	 * Display a listing of the resource.
+	 *
+	 * @return Response
+	 */
+	public function index(Route $route) {
+		$all = $this->repository->all ();
+		return view ( 'items/index', [ 
+				'modelName' => strtolower ( class_basename ( $this->repository->model () ) ),
+				'models' => $all ? $all : [ ],
+				'route' => $route 
+		] );
+	}
 	public function show($idOrSlug, Route $route) {
 		$show = $this->repository->find ( $idOrSlug );
 		if(!$show)

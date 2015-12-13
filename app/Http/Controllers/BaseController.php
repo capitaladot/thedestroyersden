@@ -29,13 +29,30 @@ class BaseController extends Controller {
 	 */
 	public function index(Route $route) {
 		$all = $this->repository->all ();
-		return view ( 'index', [ 
+		return view ( (view()->exists($this->baseUrl.'s/index')
+			?	($this->baseUrl.'s/index') 
+			: 'index'
+		), [ 
 				'modelName' => strtolower ( class_basename ( $this->repository->model () ) ),
 				'models' => $all ? $all : [ ],
 				'route' => $route 
 		] );
 	}
-	
+	public function trim(Route $route) {
+		$all = $this->repository->all ();
+		foreach($all as $eachItem){
+			$eachItem->title = trim($eachItem->title);
+			$eachItem->save();
+		}
+		return view ( (view()->exists($this->baseUrl.'s/trim')
+			?	($this->baseUrl.'s/trim') 
+			:	'trim'
+		), [  
+				'modelName' => strtolower ( class_basename ( $this->repository->model () ) ),
+				'models' => $all ? $all : [ ],
+				'route' => $route 
+		] );
+	}
 	/**
 	 * Show the form for creating a new resource.
 	 *
@@ -45,7 +62,10 @@ class BaseController extends Controller {
 		$create = $this->repository->makeModel ();
 		$create->getProcessedFillables ();
 		$create->provideRelatables ();
-		return view ( 'create', [ 
+		return view ( (view()->exists($this->baseUrl.'s/create')
+			?	($this->baseUrl.'s/create') 
+			:	'trim'
+		), [
 				'model' => $create,
 				'route' => $route,
 				'modelName' => class_basename ( $this->repository->model () ),
@@ -70,7 +90,7 @@ class BaseController extends Controller {
 				Log::info("Controller: Saved ".class_basename ( get_class ( $this->repository->model ) ." with ID ".$validate->id ));
 				$url = ($this->repository->model->traits ['navigatable'] 
 					?	$this->repository->model->getUrl () 
-					:	strtolower ( class_basename ( get_class ( $this->repository->model ) ) ) . '/' . $validate->id);
+					:	$this->baseUrl . '/' . $validate->id);
 				return redirect ( $url );
 			} else {
 				dd ( $validate );
@@ -91,7 +111,10 @@ class BaseController extends Controller {
 		$show->provideRelatables ();
 		$show->getProcessedFillables ();
 		
-		return view ( 'show', [ 
+		return view ( (view()->exists($this->baseUrl.'s/show')
+			?	($this->baseUrl.'s/show') 
+			:	'trim'
+		), [
 			'route' => $route,
 			'modelName' => $this->modelName,
 			'baseUrl'=>$this->baseUrl,
@@ -115,7 +138,10 @@ class BaseController extends Controller {
 		$edit = $this->repository->find ( $idOrSlug );
 		$edit->getProcessedFillables ();
 		$edit->provideRelatables ();
-		return view ( 'edit', array (
+		return view ( (view()->exists($this->baseUrl.'s/edit')
+			?	($this->baseUrl.'s/edit') 
+			:	'edit'
+		), [
 			'baseUrl'=>$this->baseUrl,
 			'route' => $route,
 			'modelName' => class_basename ( $this->repository->model () ),
@@ -124,7 +150,7 @@ class BaseController extends Controller {
 			'fillables' => $edit->processedFillables,
 			'relationControls' => $edit->relationControls,
 			'table' => $edit->getTable ()
-		) );
+		] );
 	}
 	
 	/**
@@ -144,7 +170,7 @@ class BaseController extends Controller {
 			}
 			$url = ($this->repository->model->traits ['navigatable'] 
 				?	$this->repository->model->getUrl () 
-				:	strtolower ( class_basename ( get_class ( $this->repository->model ) ) ) . '/' . $update->id);
+				:	$this->baseUrl . '/' . $update->id);
 			return redirect ( $url );
 		}
 	}

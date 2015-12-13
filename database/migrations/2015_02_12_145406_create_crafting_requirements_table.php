@@ -15,12 +15,6 @@ class CreateCraftingRequirementsTable extends Migration {
 			$table->string('slug');
 			$table->integer('quantity');
 			$table->boolean('variable')->default(false);
-			$table
-			->integer ( 'crafting_requirement_alternative_id' )
-			->nullable()
-			->foreign ( 'crafting_requirement_alternative_id' )
-			->references ( 'id' )->on ( 'crafting_requirement_alternatives' );
-			$table->integer ( 'craft_id' )->foreign ( 'craft_id' )->references ( 'id' )->on ( 'skills' );
 		});
 	}
 

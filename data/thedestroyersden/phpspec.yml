@@ -1,7 +1,0 @@
-extensions:
-    - PhpSpec\Laravel\Extension\LaravelExtensionsuites:
-    main:
-        namespace: App
-        psr4_prefix: App
-        src_path: app
-        spec_path: spec
