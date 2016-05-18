@@ -19,8 +19,10 @@
 						</li>
 					@endforeach
 				@endif
-				@if (Auth::guest())
+				@if(!Auth::user()->isAdmin())
 					{!!  isset($linkPresenter) ? $linkPresenter->render () :'' !!}
+				@endif
+				@if (Auth::guest())
 					<li><a href="/auth/login">Login</a></li>
 					<li><a href="/auth/register">Register</a></li>
 				@else

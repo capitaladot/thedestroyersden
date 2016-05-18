@@ -10,6 +10,7 @@ use App\MainMenu;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use Bican\Roles\Models\Role;
+use Bican\Roles\Models\Permission;
 use Riari\Forum\Models\Category as Forum;
 
 class AppComposer {
@@ -30,16 +31,15 @@ class AppComposer {
 	 */
     public function __construct(MainMenuRepository $mainMenu)
     {
-		$this->user = Auth::user();
-		if(is_null($this->user)){
-			$this->user = new User();
-			$this->user->roles = collect(Role::where('name','=','guest')->first());
+		if(Auth::guest()){
+			$this->user = User::findOrFail(1);
+		}
+		else{
+			$this->user = Auth::user();
 		}
         // Dependencies automatically resolved by service container...
 		$baseMenus = [
 			'link',
-			'event',
-			'rule'
 		];
 		foreach($baseMenus as $menuName) {
 			$eachMenu = $mainMenu->findBy ( 'name', ucfirst($menuName) );
@@ -53,14 +53,15 @@ class AppComposer {
 			}
 			$this->{$menuName.'Menu'} = $eachMenu;
 		}
-		$this->menus = $mainMenu->all()->filter(function($eachMenu)use($baseMenus){
-			if ($this->user->isAdmin()) {
-				return true;
-			}
-			elseif($this->user->can('list.'.snake_case(str_plural($eachMenu->name)))) {
-				return true;
-			}
-		});
+		$this->menus = $mainMenu->all();
+		if (!$this->user->isAdmin()) {
+			$this->menus = $this->menus->filter(function ($eachMenu) use ($baseMenus) {
+				$permissionString = 'list.' . str_slug(str_plural($eachMenu->name));
+				if ($this->user->can($permissionString)) {
+					return true;
+				}
+			});
+		}
 		$this->menus = $this->menus->transform(function($eachMenu){
 			if($this->canCreate($eachMenu)){
 				$eachMenu = $this->createAddLink($eachMenu);
