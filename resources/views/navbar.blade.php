@@ -19,7 +19,7 @@
 						</li>
 					@endforeach
 				@endif
-				@if(!Auth::user()->isAdmin())
+				@if(Auth::guest()||!Auth::user()->isAdmin())
 					{!!  isset($linkPresenter) ? $linkPresenter->render () :'' !!}
 				@endif
 				@if (Auth::guest())
