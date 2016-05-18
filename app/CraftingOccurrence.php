@@ -27,8 +27,8 @@ class CraftingOccurrence extends BaseModel implements HasPresenter, NavigatableC
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function craft() {
-		return $this->belongsTo ( 'App\Craft' );
+	public function craftingSolution() {
+		return $this->belongsTo ( 'App\CraftingSolution' );
 	}
 	
 	/**
@@ -36,14 +36,20 @@ class CraftingOccurrence extends BaseModel implements HasPresenter, NavigatableC
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
-	public function usedComponents() {
-		return $this->hasMany ( 'App\CraftingComponent' );
+	public function tools() {
+		return $this->belongsToMany ( 'App\Item','crafting_occurrences_tools','crafting_occurrence_id','item_id' );
+	}
+	public function consumptions(){
+		return $this->belongsToMany('App\Consumption');
+	}
+	public function consumedItems(){
+		return $this->hasManyThrough('App\Item','App\Consumption');
 	}
 	/**
-	 * Those crafting components produced by this occurrence.
+	 * the items produced on this occurrence; many are possible due to batching.
 	 */
-	public function producedComponents() {
-		return $this->hasMany ( 'App\CraftingComponent' );
+	public function craftedItems() {
+		return $this->belongsToMany ( 'App\Item','crafting_occurrences_crafted_items','crafting_occurrence_id','item_id' );
 	}
 	/**
 	 * which player character did the creating?
@@ -51,12 +57,5 @@ class CraftingOccurrence extends BaseModel implements HasPresenter, NavigatableC
 	public function creator() {
 		return $this->belongsTo ( 'App\PlayerCharacter', 'creator_id' );
 	}
-	/**
-	 * the items produced on this occurrence; many are possible due to batching.
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
-	 */
-	public function items() {
-		return $this->morphMany ( 'App\Item', 'craftable' );
-	}
+
 }

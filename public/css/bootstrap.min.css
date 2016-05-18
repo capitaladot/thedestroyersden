@@ -279,11 +279,13 @@ input,button,select,textarea {
 
 a {
 	color: #8a321a;
+	text-shadow:1px 1px #d0a264;
 	text-decoration: none
 }
 
 a:hover,a:focus {
 	color: #DDDDEE;
+	text-shadow:1px 1px #8a321a;
 	text-decoration: underline
 }
 

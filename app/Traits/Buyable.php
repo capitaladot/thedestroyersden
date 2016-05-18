@@ -9,31 +9,32 @@ trait Buyable {
 	 *
 	 * @param string $transactionType
 	 *        	'buy'|'sell'
-	 * @return number
+	 * @return array of number
 	 */
-	public function price($transactionType = 'buy') {
-		$craft = $this->crafts()
-			->first();
-		if(! empty ( $this->getAttribute('price') ))
-			$price = $this->getAttribute('price');
-		elseif(is_null($craft))
-			return '-';
-		else{
-			$requirementsCost = $craft
-				->craftingRequirements
-				->filter(function($eachRequirement){
-					return $eachRequirement->requirable_type == 'App\RawResource' 
-						|| 
-					$eachRequirement->requirable_type == 'App\CraftingComponent' ;
-				})->sum ( function ($eachRequirement) use($transactionType) {
-					return 
-						$eachRequirement->requirable->price ( $transactionType );
-				} ); 
-			$price = $requirementsCost + count ( $craft->craftingRequirements->filter(function($eachRequirement){
-				return !empty($eachRequirement->tools());
-			}));
+	public function prices($transactionType = 'buy') {
+		$prices = [];
+		foreach($this->getCrafts() as $craft){
+			if(! empty ( $this->getAttribute('price') ))
+				$prices['(Fixed Price)'] = $this->getAttribute('price');
+			elseif(is_null($craft))
+				$prices[$craft->title] =  '-';
+			else{
+				$requirementsCost = $craft
+					->craftingRequirements
+					->filter(function($eachRequirement){
+						return $eachRequirement->requirable_type == 'App\RawResource'
+							||
+						$eachRequirement->requirable_type == 'App\CraftingComponent' ;
+					})->sum ( function ($eachRequirement) use($transactionType) {
+						return
+							$eachRequirement->requirable->price ( $transactionType );
+					} );
+				$prices[$craft->title] = $requirementsCost + count ( $craft->craftingRequirements->filter(function($eachRequirement){
+					return !empty($eachRequirement->tools());
+				}));
+			}
 		}
-		return $price;
+		return $prices;
 	}
 	public function buyable() {
 		return $this->morphsTo ();

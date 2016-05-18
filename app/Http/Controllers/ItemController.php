@@ -15,12 +15,7 @@ class ItemController extends BaseController {
 	 * @return Response
 	 */
 	public function index(Route $route) {
-		$all = $this->repository->all ();
-		return view ( 'items/index', [ 
-				'modelName' => strtolower ( class_basename ( $this->repository->model () ) ),
-				'models' => $all ? $all : [ ],
-				'route' => $route 
-		] );
+		return parent::index($route);
 	}
 	public function show($idOrSlug, Route $route) {
 		$show = $this->repository->find ( $idOrSlug );

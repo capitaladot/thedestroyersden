@@ -3,11 +3,15 @@
 
 namespace App;
 
-use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
+use App\BaseModel;
+use McCool\LaravelAutoPresenter\HasPresenter;
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\Traits\Navigatable;
+use App\Traits\Presentable;
 
 class Tag extends BaseModel implements HasPresenter, NavigatableContract {
+	use Navigatable;
+	use Presentable;
 	public function rawResources() {
 		return $this->morphedByMany ( 'App\RawResource', 'taggable' );
 	}

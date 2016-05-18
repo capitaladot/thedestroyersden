@@ -26,7 +26,7 @@ class Weapon extends FinalProduct implements NavigatableContract {
 	public $loss_factor = 3;
 	public function __construct($attributes=[]){
 		parent::__construct($attributes);
-		$this->itemType = ItemType::where('title','Weapon')->first();
+		$this->itemType()->associate(ItemType::where('title','=','Weapon')->first());
 	}
 	public function newQuery($excludeDeleted = true){
 		return parent::newQuery()->where('item_type_id',ItemType::where('title','Weapon')->first()->id);

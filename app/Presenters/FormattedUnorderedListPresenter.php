@@ -28,18 +28,21 @@ class FormattedUnorderedListPresenter implements PresenterContract {
 		$this->li_class = $li_class;
 		$this->menu = $menu;
 	}
-	
+
 	/**
-	 * @ERROR!!!
+
+	 * @return \Illuminate\Database\Eloquent\Collection|string
 	 */
 	public function render() {
 		$this->menu->load ( 'items', 'items.navigatable' );
-		
-		if ($this->hasItems ()) {
-			return sprintf ( '<ul class="%s">%s</ul>', $this->ul_class, $this->getItems () );
+		$interpolation = '';
+		if($this->hasAppendedItems()){
+			$interpolation .= $this->getAppendedItems ();
 		}
-		
-		return '';
+		if ($this->hasItems ()) {
+			$interpolation .= $this->getItems();
+		}
+		return sprintf('<ul role="menu" class="%s">%s</ul>',$this->ul_class,$interpolation);
 	}
 	
 	/**
@@ -48,20 +51,33 @@ class FormattedUnorderedListPresenter implements PresenterContract {
 	public function hasItems() {
 		return ! $this->menu->items->isEmpty ();
 	}
-	
+	public function hasAppendedItems(){
+		return ! $this->menu->appendedItems->isEmpty ();
+	}
 	/**
 	 * @{inheritdoc}
 	 */
 	public function getItems() {
-		$items = '';
-		
-		foreach ( $this->menu->items as $item ) {
-			$items .= $this->getItemWrapper ( $item );
+		$itemsString = '';
+		$itemsArray = $this->menu->items->sortBy('navigatable.title')->values()->all();
+		foreach ( $itemsArray as $item ) {
+			$itemsString .= $this->getItemWrapper ( $item );
 		}
 		
+		return $itemsString;
+	}
+	/**
+	 * @{inheritdoc}
+	 */
+	public function getAppendedItems() {
+		$items = '';
+
+		foreach ( $this->menu->appendedItems as $item ) {
+			$items .= $this->getItemWrapper ( $item );
+		}
+
 		return $items;
 	}
-	
 	/**
 	 * Get HTML wrapper for a menu item.
 	 *

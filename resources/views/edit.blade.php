@@ -51,10 +51,8 @@
 						@foreach($relationControls as $input => $properties)
 						<div class="form-group">
 						{!! Form::label($properties['label']) !!} {!!
-							Form::chosen(isset($properties['columnName']) ?
-							$properties['columnName'] : $input,
-							$properties['namespaced']::all(),
-							$model->collectSelections($input), [
+							Form::chosen(isset($properties['columnName']) ?	$properties['columnName'] : $input,
+							$properties['options'], [
 							!empty($properties['notNull']) ? ('required') : '' ]) !!}
 						</div>
 						@endforeach

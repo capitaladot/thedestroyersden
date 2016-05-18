@@ -29,7 +29,7 @@ class Consumable extends Item implements NavigatableContract {
 	protected $consumable = true;
 	public function __construct($attributes=[]){
 		parent::__construct($attributes);
-		$this->itemType = ItemType::where('title','Consumable')->first();
+		$this->itemType()->associate(ItemType::where('title','=','Consumable')->first());
 	}
 	public function consume(PlayerCharacter $consumer) {
 		if (count ( $this->consumption ))

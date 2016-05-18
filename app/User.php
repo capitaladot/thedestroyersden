@@ -2,13 +2,15 @@
 
 namespace App;
 
-use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
+use App\BaseModel;
+use McCool\LaravelAutoPresenter\HasPresenter;
 use Illuminate\Support\Facades\DB;
 // contracts
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use MartinBean\MenuBuilder\Contracts\NavigatableContract;
 use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 // traits
 use Illuminate\Auth\Authenticatable as Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPassword;
@@ -22,7 +24,7 @@ use Bican\Roles\Traits\HasRoleAndPermission as HasRoleAndPermissionTrait;
 use App\Order;
 use Bican\Roles\Models\Role;
 
-class User extends BaseModel implements AuthenticatableContract, CanResetPasswordContract, HasRoleAndPermissionContract, NavigatableContract {
+class User extends BaseModel implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, HasRoleAndPermissionContract, NavigatableContract {
 	use Attendable;
 	use Authenticatable;
 	use CanResetPassword;
@@ -99,6 +101,7 @@ class User extends BaseModel implements AuthenticatableContract, CanResetPasswor
 	public function getTitle() {
 		return $this->name . '(' . $this->title . ')';
 	}
+	//relations
 	public function events() {
 		return $this->hasMany ( 'App\Event', 'owner_id' );
 	}

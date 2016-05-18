@@ -20,7 +20,11 @@ class CraftTableSeeder extends Seeder {
 	 *
 	 * @return void
 	 Gathered As	Commonality	Name	Price	Uses	Technique	Effect
-
+	 * @param $title
+	 * @param $parentCraftObject
+	 * @param $spreadsheetRow
+	 * @param string $quantity
+	 * @param bool $variable
 	 */
 	protected function createItem($title,$parentCraftObject,$spreadsheetRow,$quantity="",$variable=false){
 		//$this->command->info(s($spreadsheetRow));
@@ -32,7 +36,7 @@ class CraftTableSeeder extends Seeder {
 			$itemYield->quantity = $quantity;
 		if($variable)
 			$itemYield->variable = true;
-		switch($spreadsheetRow->category){								
+		switch($spreadsheetRow->category){
 			case 'Consumable':
 			case 'Crafting Component':
 			case 'Rune':
@@ -50,6 +54,7 @@ class CraftTableSeeder extends Seeder {
 		$this->command->info("Saved item: ".$itemYield->title ." ? ". $itemYield->save());
 		$itemYield->crafts()->attach($parentCraftObject->id);
 	}
+	protected function createCraftingRequirement(){}
 	public function run()
 	{
 		$fromCSV = Excel::load(storage_path()."/app/Crafting Techniques - Sheet1.tsv")->get();
@@ -114,51 +119,48 @@ class CraftTableSeeder extends Seeder {
 											$eachSplitRequirementByOr = preg_split("/([0-9N]{1,2}) /",$eachSplitRequirementByOr,1,PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
 											if(count($eachSplitRequirementByOr) > 1){
 												if($eachSplitRequirementByOr[0] == 'N'){
-													$requirable = Item::firstOrCreate(['title'=>trim($eachSplitRequirementByOr[1])]);
+													$requisite = Item::firstOrCreate(['title'=>trim($eachSplitRequirementByOr[1])]);
 													$craftingRequirements{$index}[] = CraftingRequirement::firstOrCreate([
 														'title'=>trim($eachSplitRequirementByOr[1]),
 														'variable'=>true,
 														'crafting_requirement_alternative_id'=>$craftingRequirementAlternative->id,
-														'craft_id'=>$eachCraft->id,
-														'requirable_type'=>'App\\'.str_replace(' ','',$requirable->itemType->title),
-														'requirable_id'=>$requirable->id
-													]);
+														'requisite_type'=>'App\\'.str_replace(' ','',$requisite->itemType->title),
+														'requisite_id'=>$requisite->id
+													])->crafts()->attach($eachCraft->id);
 												}
 												else{
-													$requirable = Item::firstOrCreate(['title'=>trim($eachSplitRequirementByOr[1])]);
+													$requisite = Item::firstOrCreate(['title'=>trim($eachSplitRequirementByOr[1])]);
 													$craftingRequirements{$index}[] = CraftingRequirement::firstOrCreate([
 														'title'=>trim($eachSplitRequirementByOr[1]),
 														'quantity'=>$eachSplitRequirementByOr[0],
 														'crafting_requirement_alternative_id'=>$craftingRequirementAlternative->id,
-														'craft_id'=>$eachCraft->id,
-														'requirable_type'=>'App\\'.str_replace(' ','',$requirable->itemType->title),
-														'requirable_id'=>$requirable->id
-													]);
+														'requisite_type'=>'App\\'.str_replace(' ','',$requisite->itemType->title),
+														'requisite_id'=>$requisite->id
+													])->crafts()->attach($eachCraft->id);
 												}
 											}
 											else{
-												$requirable = Item::firstOrCreate(['title'=>trim($eachSplitRequirementByOr[0])]);
+												$requisite = Item::firstOrCreate(['title'=>trim($eachSplitRequirementByOr[0])]);
 												$craftingRequirements{$index}[] = CraftingRequirement::firstOrCreate([
 													'title'=>trim($eachSplitRequirementByOr[0]),
 													'quantity'=> 1,
 													'crafting_requirement_alternative_id'=>$craftingRequirementAlternative->id,
-													'craft_id'=>$eachCraft->id,
-													'requirable_type'=>'App\\'.str_replace(' ','',$requirable->itemType->title),
-													'requirable_id'=>$requirable->id
-												]);
+													'requisite_type'=>'App\\'.str_replace(' ','',$requisite->itemType->title),
+													'requisite_id'=>$requisite->id
+												])->crafts()->attach($eachCraft->id);
 											}
 										}
 									}
 									else{
 										$eachRequirement = preg_split("/([0-9]{1,2}) /",$eachRequirement,1,PREG_SPLIT_DELIM_CAPTURE);
-										$requirable = Item::firstOrCreate(['title'=>(count($eachRequirement) > 1 ? trim($eachRequirement[1]) : trim($eachRequirement[0]))]);
-										$craftingRequirements{$index}[] = CraftingRequirement::firstOrCreate([
+										$requisiteItem = Item::firstOrCreate(['title'=>(count($eachRequirement) > 1 ? trim($eachRequirement[1]) : trim($eachRequirement[0]))]);
+										$craftingRequirements{$index}[] = CraftingRequirement::with(['requisites' => function ($query)use($requisiteItem) {
+											$query->where('requisite_type','=','App\\'.str_replace(' ','',$requisiteItem->itemType->title))
+											->where('requisite_id','=',$requisiteItem->id);
+										}])->create([
 											'title'=>count($eachRequirement) > 1 ? trim($eachRequirement[1]) : trim($eachRequirement[0]),
-											'quantity'=>count($eachRequirement) > 1 ? $eachRequirement[0] : 1,
-											'craft_id'=>$eachCraft->id,
-											'requirable_type'=>'App\\'.str_replace(' ','',$requirable->itemType->title),
-											'requirable_id'=>$requirable->id
-										]);
+											'quantity'=>count($eachRequirement) > 1 ? $eachRequirement[0] : 1
+										])->crafts()->attach($eachCraft->id);
 									}
 								}
 								catch(\ErrorException $ee){

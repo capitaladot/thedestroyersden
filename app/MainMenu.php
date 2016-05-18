@@ -11,8 +11,24 @@ use App\Traits\Relatable;
 class MainMenu extends Menu {
 	use Relatable;
 	protected $table = 'menus';
+	protected $fillable = ['appendedItems'];
+	protected $appends = ['appendedItems'];
+	public $appendedItems;
+
+	/**
+	 * MainMenu constructor.
+	 * @param array $attributes
+	 */
+	public function __construct(array $attributes =[])
+	{
+		parent::__construct($attributes);
+		$this->appendedItems = collect();
+	}
 	public function properName() {
 		return ucwords ( str_replace ( '_', ' ', snake_case ( $this->name ) ) );
+	}
+	public function pluralName(){
+		return str_plural ( ucwords ( str_replace ( '_', ' ', snake_case ( $this->name ) ) ) );
 	}
 	public function items() {
 		return $this->hasMany ( 'App\MainMenuItem', 'menu_id' );

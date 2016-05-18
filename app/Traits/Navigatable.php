@@ -111,7 +111,6 @@ trait Navigatable {
 				Log::critical('Failed creating menu with: '.$ee->getMessage());
 			}		
 		}
-		Log::debug('Menu: ',[$menu]);
 		$menuItems = MainMenuItem::with('menu')->get ()->filter(function($eachMenuItem)use($basename,$menu,$modelInstance){
 			return 
 				$eachMenuItem->menu->id == $menu->id

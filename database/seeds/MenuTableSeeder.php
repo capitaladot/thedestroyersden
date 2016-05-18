@@ -18,7 +18,7 @@ class MenuTableSeeder extends Seeder {
 		$menus = array(
 			array( 
 				'id' => 1,
-				'name' => 'Link',
+				'name' => 'Rule',
 				'created_at' => '2015-05-08 13:03:42',
 				'updated_at' => '2015-05-08 13:03:42',
 			),

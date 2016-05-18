@@ -1,5 +1,4 @@
 @extends('app') @section('content')
-{!! ddd($model) !!}
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2">
@@ -32,27 +31,30 @@
 							@endif</li> 
 						@endforeach
 						<?php $baseCost = 0; ?>
-						@foreach($model->costs as $eachCost)
-							<li>
-							@if(is_null($eachCost->operation))
-								<?php $baseCost = $eachCost->value; ?>
-								<h4>Base Cost</h4>
-								{{ $eachCost->value }}
-							@else
-								@if(!empty($eachCost->character_class_id))
-									<h5>{!! $eachCost->characterClass->title !!}}</h5>
-								@elseif(!empty($eachCost->homeland_id))
-									<h5>{!! $eachCost->homeland->title !!}}</h5>
-								@elseif(!empty($eachCost->race_id))
-									<h5>{!! $eachCost->race->title !!}}</h5>
+						@if(count($model->costs))
+							@foreach($model->costs as $eachCost)
+								<li>
+								@if(is_null($eachCost->operation))
+									<?php $baseCost = $eachCost->value; ?>
+									<h4>Base Cost</h4>
+									{{ $eachCost->value }}
+								@else
+									@if(!empty($eachCost->character_class_id))
+										<h5>{!! $eachCost->characterClass->title !!}}</h5>
+									@elseif(!empty($eachCost->homeland_id))
+										<h5>{!! $eachCost->homeland->title !!}}</h5>
+									@elseif(!empty($eachCost->race_id))
+										<h5>{!! $eachCost->race->title !!}}</h5>
+									@endif
+									{!! $eachCost->calculate($baseCost) !!}
 								@endif
-								{!! $eachCost->calculate($baseCost) !!}
-							@endif
-							</li>
-						@endforeach
+								</li>
+							@endforeach
+						@endif
 						@foreach($relationControls as $input => $properties)
 						<li>{{ $properties['label'] }} {!! $model->{$input}->title !!}</li>
 						@endforeach
+
 					</ul>
 				</div>
 			</div>

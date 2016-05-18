@@ -6,6 +6,7 @@ use App\CraftingComponent;
 use App\Craft;
 use App\CraftingRequirement;
 use App\ItemType;
+use App\Requisite;
 
 class CraftingComponentTableSeeder extends Seeder {
 
@@ -30,10 +31,17 @@ class CraftingComponentTableSeeder extends Seeder {
 					switch($columnIndex){
 						case 'technique':
 							$technique = Craft::firstOrCreate(['title'=>$eachColumnValue]);
-							$technique->items()->attach($eachItem{$index}->id);
+							$craftingRequirement = CraftingRequirement::create(['title'=>$eachItem{$index}->title .' - '. $eachColumnValue]);
+							$craftingRequirement->crafts()->attach($technique->id);
+							$craftingRequirement->items()->attach($eachItem{$index}->id);
+							$requisite = new Requisite;
+							$requisite->requisite_type = get_class($eachItem{$index});
+							$requisite->requisite_id = $eachItem{$index}->id;
+							$requisite->crafting_requirement_id = $craftingRequirement->id;
+							$requisite->save();
 						break;
 						case 'gathered_as':
-							$harvest = Craft::firstOrCreate(['title'=>$eachColumnValue]);
+							$harvest = Craft::firstOrCreate(['title'=>$eachColumnValue]); 
 							$eachItem{$index}->harvestingTechniques()->attach($harvest);
 						break;
 						case 'commonality':

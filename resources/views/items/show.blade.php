@@ -35,6 +35,7 @@
 						@foreach($relationControls as $input => $properties)
 						<li>{{ $properties['label'] }} {!! $model->{$input}->title !!}</li>
 						@endforeach
+						@foreach($model->prices('buy') as $craftTitle => $price)<li>{{ $craftTitle }}: {{ $price  }}</li>@endforeach
 					</ul>
 				</div>
 			</div>

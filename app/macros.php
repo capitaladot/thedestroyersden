@@ -49,16 +49,11 @@ Form::macro ( "chosen", function ($name, $defaults = array(), $selected = array(
 	
 	$ret = '<select ' . $attributes . '>';
 	foreach ( $defaults as $def ) {
-		$ret .= '<option value="' . $def->id . '"';
-		foreach ( $selected as $selection ) {
-			// dd ( $selection );
-			// session array or passed stdClass obj
-			$current = $selection->id ? $selection->id : $selection;
-			if ($def->id == $current) {
-				$ret .= ' selected="selected"';
-			}
+		$ret .= '<option value="' . ( !is_object($def) ? $def['value'] : $def->id )  . '"';
+		if($def['checked']){
+			$ret .= ' selected="selected"';
 		}
-		$ret .= '>' . Html::entities ( @$def->title ? $def->title : json_encode ( $def->getAttributes () ) ) . '</option>';
+		$ret .= '>' . Html::entities ( $def['title']) . '</option>';
 	}
 	$ret .= '</select>';
 	return $ret;

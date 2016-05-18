@@ -15,16 +15,13 @@ class Craft extends Skill implements NavigatableContract {
 	use Taggable;
 	protected $table = 'skills';
 	public $fillable = ['quantity','skill_id','variable'];
-	public function craftingRequirements(){
-		return $this->hasMany('App\CraftingRequirement');
-	}
 	/**
 	 * the list of items this technique may produce.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
 	public function items() {
-		return $this->belongsToMany ( 'App\Item' );
+		return $this->hasManyThrough ( 'App\Item', 'App\Requisite' );
 	}
 	
 	/**

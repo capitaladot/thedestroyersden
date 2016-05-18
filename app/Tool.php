@@ -30,7 +30,7 @@ class Tool extends FinalProduct implements NavigatableContract {
 	public $table = 'items';
 	public function __construct($attributes=[]){
 		parent::__construct($attributes);
-		$this->itemType = ItemType::where('title','Tool')->first();
+		$this->itemType()->associate(ItemType::where('title','=','Tool')->first());
 	}
 	public function newQuery( $excludeDeleted = true){
 		return parent::newQuery()->where('item_type_id',ItemType::where('title','Tool')->first()->id);

@@ -4,19 +4,22 @@
 		<div class="col-md-8 col-md-offset-2">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h1>{{studly_case($modelName)}}: <span class="lead">{{ $model->title or '#'.$model->id }}</span></h1>
-					@permission('edit.'.$table) <a href="{{ $edit }}">Edit {{
-						$model->title or '#'.$model->id }}</a> 
-					@endpermission
-					@permission('delete.'.$table) 
-					{!! Form::open(array('resource'=>$baseUrl.'.destroy','method' => 'DELETE')) !!}
+					<h1> <span class="lead">{{studly_case($modelName)}}:</span>{{ $model->title or '#'.$model->id }}
+						@permission('edit.'.$table) <span class="lead"><a href="{{ $edit }}">Edit {{
+						$model->title or '#'.$model->id }}</a></span>
+						@endpermission
+					</h1>
+				</div>
+				<div class="panel-body">
+					@permission('delete.'.$table)
+					{!! Form::open(array('class'=>'form-inline','resource'=>$baseUrl.'.destroy','method' => 'DELETE')) !!}
 					{!! Form::submit('Delete '.($model->title ? $model->title : '#'.$model->id),['class'=>'btn btn-primary']) !!}
 					{!! Form::close() !!}
 					@endpermission
-				</div>
-				<div class="panel-body">
 					<ul>
-						@foreach($fillables as $input => $properties)
+					@foreach($fillables as $input => $properties)
+						@if($properties['columnName'] == 'title')
+						@else
 						<li><h4>{!! str_replace(' Id','',$properties['label']) !!}</h4>
 							@if($properties['inputType'] == 'datetime') {!!
 								date ( "Y-m-d\TH:i:s", strtotime ( $model->getAttribute($properties['columnName'] ) ) )
@@ -31,17 +34,26 @@
 							@else {{ 
 								$model->getAttribute($properties['columnName']) 
 							}}
-							@endif</li> 
-						@endforeach
-						@foreach($relationMethods as $relation)
-							<?php $relations = call_user_func([&$model,$relation])->get(); ?>
-							<li>{{ucfirst($relation)}}<ul>
-							@foreach($relations as $eachRelation)
-								<li><a href="{{ $eachRelation->getUrl() }}">{{ $eachRelation->title }}</a></li>
+							@endif</li>
+						@endif
+					@endforeach
+					@foreach($relationMethods as $relation)
+						<?php $relations = $model->$relation()->get();
+							$relationTitle = studly_case(str_replace("_"," ",$relation));?>
+							<li>{{$relationTitle}}<ul>
+						@if($relationTitle == "Description" && count($relations->first()))
+							{{$relations->first()->body}}
+						@else
+							@foreach($relations as $relationIndex => $eachRelation)
+								<li><a href="{{ $eachRelation->getUrl() }}">{{ $eachRelation->title }}</a>
+								<a href="#{{$relationTitle.$relationIndex}}" data-toggle="collapse" title="Collapse/Expand the {{ $relationTitle }}\"{{$eachRelation->title}}\"">+</a>
+									<ul id="{{$relationTitle.$relationIndex}}" class="collapse">@foreach($eachRelation->getAttributes() as $key => $eachAttribute)
+								<li>{{$key.": ".$eachAttribute }}</li>@endforeach</ul></li>
 							@endforeach
+						@endif
 							</ul>
 						</li>
-						@endforeach
+					@endforeach
 					</ul>
 				</div>
 			</div>

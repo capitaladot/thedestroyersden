@@ -41,11 +41,9 @@ class DatabaseSeeder extends Seeder {
 		
 		$this->call('WeaponTableSeeder');*/
 		$this->call('RawResourceTableSeeder');
-		$this->call('CraftingComponentTableSeeder');
-		//$this->call('CraftingRequirementTableSeeder');
-		$this->call('FinalProductTableSeeder');
-		$this->call('ToolTableSeeder');
 		$this->call('CraftTableSeeder');
+		$this->call('CraftingComponentTableSeeder');
+		$this->call('FinalProductTableSeeder');
 		$this->call('SaleTableSeeder');
 		//lastish
 		$this->call('PlayerCharacterTableSeeder');

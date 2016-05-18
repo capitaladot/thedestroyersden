@@ -16,8 +16,7 @@ use App\Skill;
 
 /**
  */
-class Expenditure extends BaseModel implements HasPresenter, NavigatableContract {
-	use Navigatable; 
+class Expenditure extends BaseModel implements HasPresenter {
 	use Presentable;
 	public function value(){
 		$costs = Costs::where(['skill_id'=>$this->skill])->get()->sortBy('operation')->filter(function($cost){

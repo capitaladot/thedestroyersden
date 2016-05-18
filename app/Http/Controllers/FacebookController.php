@@ -16,6 +16,11 @@ use Doctrine\Common\Proxy\Exception\UnexpectedValueException;
 use Redirect;
 use Request;
 use Input;
+
+/**
+ * Class FacebookController
+ * @package App\Http\Controllers
+ */
 class FacebookController extends Controller {
 	function loginCallback(LaravelFacebookSdk $fb) {
 		// Obtain an access token.
@@ -68,20 +73,29 @@ class FacebookController extends Controller {
 		
 		// Create the user if it does not exist or update the existing entry.
 		// This will only work if you've added the SyncableGraphNodeTrait to your User model.
-		$user = \App\User::createOrUpdateGraphNode ( $facebook_user );
+		$user = User::createOrUpdateGraphNode ( $facebook_user );
 		
 		// Log the user into Laravel
 		Auth::login ( $user );
 		
 		return redirect ( '/' )->with ( 'message', 'Successfully logged in with Facebook' );
 	}
+
+	/** @desc stores Facebook events from the configured group in the database and associates them to a user, creating that user if necessary.
+	 * @param LaravelFacebookSdk $fb
+	 * @param Request $request
+	 * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+	 */
 	function paymentCallback(LaravelFacebookSdk $fb,Request $request){
 		dd($fb,$request);
 		return response($request->input('hub.challenge'),200);
 	}
+
 	/**
-	@desc stores Facebook events from the configured group in the database and associates them to a user, creating that user if necessary.
-	**/
+	 * @param GraphObject $event
+	 * @param LaravelFacebookSdk $fb
+	 * @param Route $route
+	 */
 	protected function storeFacebookEvent(GraphObject $event,LaravelFacebookSdk $fb, Route $route){
 		$eventDataArray = $event->asArray ();
 		$enrichedEventResponse = $fb->get ( $eventDataArray ['id'] . '?fields=owner,description,name,start_time,end_time,timezone,updated_time' );
@@ -103,10 +117,11 @@ class FacebookController extends Controller {
 		// dd ( $eventModel );
 		$eventModel->owner ()->associate ( $owner )->save ();
 	}
+
 	/**
-	 *
-	 * @uses groupId from config.services.facebook
-	 * @param LaravelFacebookSdk $fb        	
+	 * @param LaravelFacebookSdk $fb
+	 * @param Route $route
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */
 	function events(LaravelFacebookSdk $fb, Route $route) {
 		$token = Session::get ( 'facebook_access_token' );
@@ -137,6 +152,10 @@ class FacebookController extends Controller {
 			'models' => $all ? $all : [ ] 
 		] );
 	}
+
+	/**
+	 * @param LaravelFacebookSdk $fb
+	 */
 	public function getUserInfo(LaravelFacebookSdk $fb) {
 		$token = Session::get ( 'facebook_access_token' );
 		$fb->setDefaultAccessToken ( $token );

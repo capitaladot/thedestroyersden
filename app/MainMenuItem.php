@@ -2,7 +2,7 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Menu;
+use App\MainMenu;
 use MartinBean\MenuBuilder\MenuItem;
 
 class MainMenuItem extends MenuItem {
@@ -14,5 +14,16 @@ class MainMenuItem extends MenuItem {
 	//relations
 	public function menu() {
 		return $this->belongsTo ( 'App\MainMenu', 'menu_id' );
+	}
+	public function getUrl() {
+		if (count($this->navigatable)){
+			try {
+				return $this->navigatable->getUrl ();
+			} catch ( \ErrorException $e ) {
+				Log::critical ( 'MenuItem exception', [
+					$e
+				] );
+			}
+		}
 	}
 }

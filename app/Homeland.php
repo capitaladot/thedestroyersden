@@ -16,10 +16,10 @@ class Homeland extends BaseModel implements NavigatableContract{
 	use Describable;
 	use Fillable;
 	use Navigatable;
-	use Playable; 	
+	use Playable;
 	use Presentable;
 	
-	public $relationMethods = ['costs','playerCharacters'];
+	public $relationMethods = ['costs','description','playerCharacters'];
 	public function costs(){
 		return $this->hasMany('App\Cost');
 	}

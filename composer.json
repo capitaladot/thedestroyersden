@@ -17,8 +17,8 @@
 		"url": "https://github.com/capitaladot/laravel-menu-builder"
 	}],
 	"require" : {
-		"laravel/framework" : "5.1.*",
-		"laravel/socialite" : "3.0.*@dev",
+		"laravel/framework" : "5.1.35",
+		"laravel/socialite" : "3.*",
 		"martinbean/laravel-menu-builder" : "dev-master",
 		"illuminate/html" : "dev-master",
 		"kris/laravel-form-builder" : "~1.1",
@@ -39,7 +39,13 @@
 		"rtconner/laravel-kint": "~2.0",
 		"maatwebsite/excel": "~2.0",
 		"pulkitjalan/google-apiclient": "^2.0@dev",
-		"intervention/image":"*"
+		"intervention/image":"*",
+		"barryvdh/laravel-ide-helper": "*",
+		"mitni/laravel-google-spreadsheet": "^0.1.2",
+		"felixkiss/uniquewith-validator": "2.*",
+		"riari/laravel-forum": "~3.0",
+		"riari/laravel-forum-frontend": "~1.0",
+		"illuminate/auth": "5.1.*"
 	},
 	"require-dev" : {
 		"phpunit/phpunit" : "~4.0",

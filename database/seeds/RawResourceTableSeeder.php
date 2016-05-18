@@ -22,17 +22,20 @@ class RawResourceTableSeeder extends Seeder {
 		$itemType = ItemType::where('title','Raw Resource')->first();
 		foreach($fromCSV as $index => $eachItemRow)
 		{
-			Model::unguard();
-			$this->command->info ( 'Creating raw resource #'.$index.':'.$eachItemRow->title);
-			$eachItem{$index} = RawResource::create(['title'=>$eachItemRow->name,'item_type_id'=>$itemType->id]);
+			$eachItemRow->name = trim($eachItemRow->name);
+			$this->command->info ( 'Creating raw resource #'.$index.':'.$eachItemRow->name);
+			$eachItem{$index} = RawResource::create(['title'=>$eachItemRow->name]);
 			$eachItemRow->name = trim($eachItemRow->name);
 			foreach($eachItemRow as $columnIndex => $eachColumnValue){
 				if(!empty($eachColumnValue)){
 					$eachColumnValue = trim($eachColumnValue);
+					$columnIndex = snake_case($columnIndex);
 					switch($columnIndex){
 						case 'technique':
 							$technique = Craft::firstOrCreate(['title'=>$eachColumnValue]);
-							$technique->items()->attach($eachItem{$index}->id);
+							$craftingRequirement = CraftingRequirement::create(['title'=>$eachItem{$index}->title .' - '. $eachColumnValue]);
+							$craftingRequirement->crafts()->attach($technique->id);
+							$craftingRequirement->rawResources()->save([$eachItem{$index}]);
 						break;
 						case 'gathered_as':
 							$harvest = Craft::firstOrCreate(['title'=>$eachColumnValue]);
@@ -50,6 +53,7 @@ class RawResourceTableSeeder extends Seeder {
 							$eachItem{$index}->uses = $eachColumnValue;
 						break;
 						case 'effect':
+							$eachItem{$index}->effect = $eachColumnValue;
 							$eachItem{$index}->consumable = true;
 						break;
 					}

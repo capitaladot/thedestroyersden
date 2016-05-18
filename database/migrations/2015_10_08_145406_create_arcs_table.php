@@ -11,6 +11,7 @@ class CreateArcsTable extends Migration {
 			$table->timestamp ( 'start_time' );
 			$table->timestamp ( 'end_time' );
 			$table->integer ( 'event_id' )->foreign ( 'event_id' )->references ( 'id' )->on ( 'events' );
+			$table->unique(['event_id','title']);
 		} );
 	}
 	public function down() {

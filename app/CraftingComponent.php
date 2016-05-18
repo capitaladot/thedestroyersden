@@ -23,7 +23,7 @@ class CraftingComponent extends Consumable implements NavigatableContract {
 	public $fillable = ['*'];
 	public function __construct($attributes=[]){
 		parent::__construct($attributes);
-		$this->itemType = ItemType::where('title','Crafting Component')->first();
+		$this->itemType()->associate(ItemType::where('title','=','Crafting Component')->first());
 	}
 	public function newQuery($excludeDeleted = true){
 		return parent::newQuery()->where('item_type_id',ItemType::where('title','Crafting Component')->first()->id);

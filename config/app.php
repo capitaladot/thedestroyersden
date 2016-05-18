@@ -115,6 +115,7 @@ return [
 				 */
 				Illuminate\Foundation\Providers\ArtisanServiceProvider::class,
 				Illuminate\Auth\AuthServiceProvider::class,
+				'Illuminate\Broadcasting\BroadcastServiceProvider',
 				'Illuminate\Bus\BusServiceProvider',
 				'Illuminate\Cache\CacheServiceProvider',
 				'Illuminate\Foundation\Providers\ConsoleSupportServiceProvider',
@@ -125,6 +126,7 @@ return [
 				'Illuminate\Filesystem\FilesystemServiceProvider',
 				'Illuminate\Foundation\Providers\FoundationServiceProvider',
 				'Illuminate\Hashing\HashServiceProvider',
+				Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 				'Illuminate\Mail\MailServiceProvider',
 				'Illuminate\Pagination\PaginationServiceProvider',
 				'Illuminate\Pipeline\PipelineServiceProvider',
@@ -164,7 +166,10 @@ return [
 				Mews\Captcha\CaptchaServiceProvider::class,
 				"Orangehill\Iseed\IseedServiceProvider",
 				'Maatwebsite\Excel\ExcelServiceProvider',
-				PulkitJalan\Google\GoogleServiceProvider::class
+				PulkitJalan\Google\GoogleServiceProvider::class,
+				'Riari\Forum\ForumServiceProvider',
+				'Riari\Forum\Frontend\ForumFrontendServiceProvider',
+				\Conner\Likeable\LikeableServiceProvider::class,
 		]
 		
 	,
@@ -203,6 +208,7 @@ return [
 				'Flash' => 'Caffeinated\Flash\Facades\Flash',
 				'Form' => 'Illuminate\Html\FormFacade',
 				'FormBuilder' => 'Kris\LaravelFormBuilder\Facades\FormBuilder',
+				'Gate' => Illuminate\Support\Facades\Gate::class,
 				'Google' => PulkitJalan\Google\Facades\Google::class,
 				'Gravatar' => 'Thomaswelton\LaravelGravatar\Facades\Gravatar',
 				'Hash' => 'Illuminate\Support\Facades\Hash',

@@ -2,6 +2,7 @@
 
 namespace App\Contracts;
 
-interface ItemContract {
-	public function itemType();
+interface ItemContract{
+	function itemType();
+	
 }
