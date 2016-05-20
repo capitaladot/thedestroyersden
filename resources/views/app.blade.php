@@ -45,7 +45,7 @@
 </head>
 <body>
 	@include('navbar')
-
+	@include('flash::message')
 	@yield('content')
 
 	<!-- Scripts -->
