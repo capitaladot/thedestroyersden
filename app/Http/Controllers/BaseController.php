@@ -21,10 +21,11 @@ class BaseController extends Controller {
 		$this->controllerName = class_basename ( $this );
 		$this->modelName = class_basename ( $this->repository->model () );
 		$this->baseUrl = strtolower($this->modelName);
-		$this->user = Auth::user();
-		if(is_null($this->user)){
-			$this->user = new User();
-			$this->user->roles = collect(Role::where('name','=','guest')->first());
+		if(Auth::guest()){
+			$this->user = User::findOrFail(1);
+		}
+		else{
+			$this->user = Auth::user();
 		}
 	}
 	/**
