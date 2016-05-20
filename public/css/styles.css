@@ -3,7 +3,7 @@ html,body {
 }
 
 h1 {
-  font-family: Arial,sans-serif
+  font-family: Arial,sans-serif;
   font-size:80px;
   color:#8a321a;
 }
@@ -53,4 +53,10 @@ h1 {
 }
 .left-link{
 	max-width:90%;
+}
+ul.csv li:after {
+	content: ",";
+}
+ul.csv li:last-child:after {
+	content: "";
 }

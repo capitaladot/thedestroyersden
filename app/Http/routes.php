@@ -64,5 +64,7 @@ Route::any ( 'facebook/login', 'FacebookController@login' );
 Route::any ( 'facebook/login-callback', 'FacebookController@loginCallback' );
 Route::any ( 'facebook/payment-callback', 'FacebookController@paymentCallback' );
 Route::any ( 'facebook/events', 'FacebookController@events' );
+/* Like */
+Route::any('like/toggle-like/{likeable_type}/{likeable_id}','LikeController@anyToggleLike');
 /* form macros */
 require app_path () . '/macros.php';
