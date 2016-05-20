@@ -8,6 +8,7 @@ use Riari\Forum\Frontend\Events\UserViewingIndex;
 use Illuminate\Support\Facades\Gate;
 use App\Thread;
 use Conner\Likeable\Likeable;
+use App\Forum;
 
 class CategoryController extends BaseController
 {
