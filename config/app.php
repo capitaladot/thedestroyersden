@@ -126,7 +126,6 @@ return [
 				'Illuminate\Filesystem\FilesystemServiceProvider',
 				'Illuminate\Foundation\Providers\FoundationServiceProvider',
 				'Illuminate\Hashing\HashServiceProvider',
-				Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 				'Illuminate\Mail\MailServiceProvider',
 				'Illuminate\Pagination\PaginationServiceProvider',
 				'Illuminate\Pipeline\PipelineServiceProvider',
@@ -146,13 +145,15 @@ return [
 				'App\Providers\ComposerServiceProvider',
 				'App\Providers\ConfigServiceProvider',
 				'App\Providers\EventServiceProvider',
+				'App\Providers\ForumServiceProvider',
+				'App\Providers\ForumFrontendServiceProvider',
 				'App\Providers\RouteServiceProvider',
 		/*
 		 *
 		 * Module service providers...
 		 * */
 		//	'Way\Generators\GeneratorsServiceProvider',
-				'Illuminate\Html\HtmlServiceProvider',
+				Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 				'Kris\LaravelFormBuilder\FormBuilderServiceProvider',
 				//'Barryvdh\Debugbar\ServiceProvider',
 				'MartinBean\MenuBuilder\MenuBuilderServiceProvider',
@@ -164,13 +165,13 @@ return [
 				'Caffeinated\Flash\FlashServiceProvider',
 				'Tuurbo\AmazonPayment\AmazonPaymentServiceProvider' ,
 				Mews\Captcha\CaptchaServiceProvider::class,
-				"Orangehill\Iseed\IseedServiceProvider",
+				'Orangehill\Iseed\IseedServiceProvider',
 				'Maatwebsite\Excel\ExcelServiceProvider',
 				PulkitJalan\Google\GoogleServiceProvider::class,
-				'Riari\Forum\ForumServiceProvider',
-				'Riari\Forum\Frontend\ForumFrontendServiceProvider',
 				\Conner\Likeable\LikeableServiceProvider::class,
-		]
+				Collective\Html\HtmlServiceProvider::class,
+				Unisharp\Ckeditor\ServiceProvider::class,
+	]
 		
 	,
  
@@ -206,13 +207,13 @@ return [
 				'Facebook' => 'SammyK\LaravelFacebookSdk\FacebookFacade',
 				'File' => 'Illuminate\Support\Facades\File',
 				'Flash' => 'Caffeinated\Flash\Facades\Flash',
-				'Form' => 'Illuminate\Html\FormFacade',
+				'Form' => Collective\Html\FormFacade::class,
 				'FormBuilder' => 'Kris\LaravelFormBuilder\Facades\FormBuilder',
 				'Gate' => Illuminate\Support\Facades\Gate::class,
 				'Google' => PulkitJalan\Google\Facades\Google::class,
 				'Gravatar' => 'Thomaswelton\LaravelGravatar\Facades\Gravatar',
 				'Hash' => 'Illuminate\Support\Facades\Hash',
-				'Html' => 'Illuminate\Html\HtmlFacade',
+				'Html' => Collective\Html\HtmlFacade::class,
 				'Input' => 'Illuminate\Support\Facades\Input',
 				'Inspiring' => 'Illuminate\Foundation\Inspiring',
 				'Lang' => 'Illuminate\Support\Facades\Lang',

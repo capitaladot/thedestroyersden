@@ -36,13 +36,21 @@ return [
 		],
 		
 		'ses' => [ 
-				'key' => '',
-				'secret' => '',
+				'key' => '***REMOVED***',
+				'secret' => '***REMOVED***',
 				'region' => 'us-east-1' 
 		],
 		
 		'stripe' => [ 
 				'model' => 'User',
 				'secret' => '' 
-		] 
+		],
+		'square'=>[
+			'signature_key'=>'***REMOVED***',
+			/*'applicaiton_id'=>'***REMOVED***',
+			'application_secret=>'***REMOVED***'*/
+			//sandbox
+			'application_id'=>'sandbox-***REMOVED***',
+			'application_secret'=>'***REMOVED***'
+		]
 ];
