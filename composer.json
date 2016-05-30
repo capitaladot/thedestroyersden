@@ -43,7 +43,7 @@
 		"barryvdh/laravel-ide-helper": "*",
 		"mitni/laravel-google-spreadsheet": "^0.1.2",
 		"felixkiss/uniquewith-validator": "2.*",
-		"riari/laravel-forum": "~3.0",
+		"riari/laravel-forum": "3.0.4",
 		"riari/laravel-forum-frontend": "1.0.3",
 		"illuminate/auth": "5.1.*",
 		"rtconner/laravel-likeable":"~1.2",
