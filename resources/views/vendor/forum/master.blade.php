@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
+@extends('app')
+@yield('head')
+@yield('styles')
+@section('title')
     <title>
         @if (isset($thread))
             {{ $thread->title }} -
@@ -13,43 +11,20 @@
         @endif
         {{ trans('forum::general.home_title') }}
     </title>
-
-    <!-- jQuery -->
-    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-
-    <!-- Bootstrap -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <!-- -->
-    <link href="/css/app.css" rel="stylesheet">
-    <!-- -->
-    <link href="/css/styles.css" rel="stylesheet">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="/js/raleway.js"></script>
-
-    <style>
-    body {
-        padding: 30px 0;
-    }
-
-    textarea {
-        min-height: 200px;
-    }
-
-    .deleted {
-        opacity: 0.65;
-    }
-    </style>
-</head>
-<body>
-    @include('navbar')
-    @include('flash::message')
+@endsection
+@yield('scripts')
+@yield('startbody')
+@section('content')
     <div class="container">
         @include ('forum::partials.breadcrumbs')
         @include ('forum::partials.alerts')
-
         @yield('content')
     </div>
-
+@endsection
+@section('bodyscripts')
+    @parent
+	<script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
+	<script src="/vendor/unisharp/laravel-ckeditor/adapters/jquery.js"></script>
     <script>
     var toggle = $('input[type=checkbox][data-toggle-all]');
     var checkboxes = $('table tbody input[type=checkbox]');
@@ -114,7 +89,10 @@
         return confirm(confirmString);
     });
     </script>
-
+    <script>
+        $('textarea').ckeditor();
+        // $('.textarea').ckeditor(); // if class is prefered.
+    </script>
     @yield('footer')
-</body>
-</html>
+@endsection
+@yield('endbody')

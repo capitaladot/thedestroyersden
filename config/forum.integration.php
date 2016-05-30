@@ -15,9 +15,9 @@ return [
     'policies' => [
         'forum' => App\Policies\ForumPolicy::class,
         'model' => [
-            Riari\Forum\Models\Category::class  => App\Policies\CategoryPolicy::class,
-            Riari\Forum\Models\Thread::class    => App\Policies\ThreadPolicy::class,
-            Riari\Forum\Models\Post::class      => App\Policies\PostPolicy::class
+            App\Category::class  => App\Policies\CategoryPolicy::class,
+            App\Thread::class    => App\Policies\ThreadPolicy::class,
+            App\Post::class      => App\Policies\PostPolicy::class
         ]
     ],
 

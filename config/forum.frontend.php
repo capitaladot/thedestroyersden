@@ -13,7 +13,7 @@ return [
     */
 
     'controllers' => [
-        'namespace' => 'Riari\Forum\Frontend\Http\Controllers',
+        'namespace' => 'App\Http\Controllers\Forum\Frontend',
         'category'  => 'CategoryController',
         'thread'    => 'ThreadController',
         'post'      => 'PostController'
@@ -30,7 +30,7 @@ return [
     |
     */
 
-    'utility_class' => Riari\Forum\Frontend\Support\Forum::class,
+    'utility_class' => App\Forum::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -42,6 +42,6 @@ return [
     |
     */
 
-    'middleware' => null
+    'middleware' => ['auth' => 'App\Http\Middleware\Authenticate']
 
 ];
