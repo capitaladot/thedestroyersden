@@ -16,5 +16,8 @@ class Post extends ForumPost
 	{
 		return $this->morphMany(Like::class, 'likeable');
 	}
+	public function thread(){
+		return $this->belongsTo('App\Thread');
+	}
 }
 

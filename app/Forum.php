@@ -9,7 +9,17 @@
 namespace App;
 
 use Riari\Forum\Frontend\Support\Forum as F;
-
+use ReflectionClass;
 class Forum extends F
 {
+	/**
+	 * Render the given content.
+	 *
+	 * @param  string  $content
+	 * @return string
+	 */
+	public static function render($content)
+	{
+		return nl2br($content);
+	}
 }
