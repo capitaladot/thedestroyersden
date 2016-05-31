@@ -1,4 +1,5 @@
-@extends('app') @section('content')
+@extends('app')
+@section('content')
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2">
@@ -21,19 +22,16 @@
 						@if($properties['columnName'] == 'title')
 						@else
 						<li><h4>{!! str_replace(' Id','',$properties['label']) !!}</h4>
-							@if($properties['inputType'] == 'datetime') {!!
-								date ( "Y-m-d\TH:i:s", strtotime ( $model->getAttribute($properties['columnName'] ) ) )
-							!!} 
-							@elseif($properties['inputType'] == 'text') {!!
-								$model->getAttribute($properties['columnName'])
-							!!}
-							@elseif(method_exists($model,lcfirst(studly_case($properties['columnName']))))
-							{!! 
-								call_user_func([&$model, lcfirst(studly_case($properties['columnName']))]);
-							!!}
-							@else {{ 
-								$model->getAttribute($properties['columnName']) 
-							}}
+							@if(method_exists($model,$properties['columnName'])){!! $model->$properties['columnName']()
+						!!}
+							@elseif(method_exists($model,'get'.studly_case($properties['columnName'])))	{!! $model->{'get'.studly_case($properties['columnName'])}()
+						!!}
+							@elseif($model->$properties['columnName'] instanceof \DateTime){{
+							$model->$properties['columnName']->format($model::READABLE_DATE)
+						}}
+							@else {{
+							$model->getAttribute($properties['columnName'])
+						}}
 							@endif</li>
 						@endif
 					@endforeach
@@ -45,10 +43,50 @@
 							{{$relations->first()->body}}
 						@else
 							@foreach($relations as $relationIndex => $eachRelation)
-								<li><a href="{{ $eachRelation->getUrl() }}">{{ $eachRelation->title }}</a>
-								<a href="#{{$relationTitle.$relationIndex}}" data-toggle="collapse" title="Collapse/Expand the {{ $relationTitle }}\"{{$eachRelation->title}}\"">+</a>
-									<ul id="{{$relationTitle.$relationIndex}}" class="collapse">@foreach($eachRelation->getAttributes() as $key => $eachAttribute)
-								<li>{{$key.": ".$eachAttribute }}</li>@endforeach</ul></li>
+							<li>
+								@if($depth < 1)
+								<a href="#{{$relationTitle.$relationIndex}}" data-toggle="collapse" title="Collapse/Expand the {{ $relationTitle }}&nbsp;{{$eachRelation->title}}">+</a>
+								<div id="{{$relationTitle.$relationIndex}}" class="collapse">
+									@if(isset ($eachRelation->traits ['App\Traits\Navigatable']))
+										@section('content')
+										@parent
+										@include('show',[
+											'depth'=>($depth+1),
+											'model'=>$eachRelation,
+											'baseUrl'=>$eachRelation->baseUrl(),
+											'modelName' => get_class($eachRelation),
+											'edit' => $eachRelation->getUrl() . '/edit',
+											'table' => $eachRelation->getTable(),
+											'hidden' => $eachRelation->getHidden(),
+											'fillables' => $eachRelation->getProcessedFillables()->processedFillables,
+											'relationControls' => [],
+											'relationMethods' => $eachRelation->relationMethods,
+											'title' =>$eachRelation->getTitle()
+										])@endsection
+									@elseif($eachRelation instanceof \App\BaseModel)
+										@section('content')
+										@parent
+										@include('show',[
+											'depth'=>($depth+1),
+											'model'=>$eachRelation,
+											'baseUrl'=>$eachRelation->baseUrl(),
+											'modelName' => get_class($eachRelation),
+											'edit' => '#',
+											'table' => $eachRelation->getTable(),
+											'hidden' => $eachRelation->getHidden(),
+											'fillables' => $eachRelation->getProcessedFillables()->processedFillables,
+											'relationControls' => [],
+											'relationMethods' => $eachRelation->relationMethods,
+											'title' => get_class($eachRelation) . " #".$eachRelation->id
+										])@endsection
+										@else{{ $eachRelation->name }}
+									@endif
+								</div>
+								@elseif(isset ($eachRelation->traits ['App\Traits\Navigatable']))
+									<a href="{{$eachRelation->getUrl()}}" title="{{$depth}}">{{ $eachRelation->getTitle() }}</a>
+								@else
+									Depth: {{$depth}}
+								@endif
 							@endforeach
 						@endif
 							</ul>

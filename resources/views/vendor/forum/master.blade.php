@@ -12,8 +12,12 @@
         {{ trans('forum::general.home_title') }}
     </title>
 @endsection
-@yield('scripts')
-@yield('startbody')
+@section('scripts')
+    @parent
+@endsection
+@section('startbody')
+    @parent
+@endsection
 @section('content')
     <div class="container">
         @include ('forum::partials.breadcrumbs')
