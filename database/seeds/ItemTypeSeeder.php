@@ -1,9 +1,10 @@
 <?php
+namespace App\Database\Seeds;
 
-use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 use App\ItemType;
-class ItemTypeTableSeeder extends Seeder {
+
+class ItemTypeTableSeeder extends BaseSeeder {
 
 	/**
 	 * Run the database seeds.

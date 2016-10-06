@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\MainMenuItem;
 use App\MainMenu;
 use Illuminate\Support\Facades\Log;
@@ -11,7 +11,7 @@ use App\BaseModel;
 
 trait Navigatable {
 	public static function bootNavigatable(){
-		static::creating ( function ($modelInstance){
+		static::creating ( function (NavigatableContract $modelInstance){
 			Log::debug ( 'Creating ' . get_class($modelInstance), [ 
 					$modelInstance
 			] );
@@ -26,10 +26,9 @@ trait Navigatable {
 			}
 			return true;
 		} );
-		static::created ( function ($modelInstance) {
+		static::created ( function (NavigatableContract $modelInstance) {
 			Log::info ( 'Created ' . get_class($modelInstance), [$modelInstance]);
-			$modelInstance->load('menuItem');
-			if(! count($modelInstance->menuItem)){
+			if(!self::isNavigable($modelInstance)){
 				Log::debug('Menu item test',[$modelInstance->menuItem]);
 				self::provideNavigatable($modelInstance);
 				Log::debug('Created with Menu item',[$modelInstance->menuItem]);
@@ -39,65 +38,73 @@ trait Navigatable {
 			Log::debug ( 'After created ' , [$modelInstance->menuItem]);
 			return true;
 		} );
-		static::updating ( function ($modelInstance) {
+		static::updating ( function (NavigatableContract $modelInstance) {
 			Log::info ( 'Updating ' . get_class($modelInstance), [$modelInstance]);
 		} );
-		static::updated ( function ($modelInstance) {
+		static::updated ( function (NavigatableContract $modelInstance) {
 			Log::info ( 'Updated ' . get_class($modelInstance),[$modelInstance]);
 		} );
-		static::saving ( function ($modelInstance) {
+		static::saving ( function (NavigatableContract $modelInstance) {
 			Log::info ( 'Saving ' . get_class($modelInstance), [$modelInstance]);
 		} );
-		static::saved ( function ($modelInstance) {
+		static::saved ( function (NavigatableContract $modelInstance) {
 			Log::debug ( 'Saved ' . get_class($modelInstance),[$modelInstance]);
 		} );
-		static::deleted(function($modelInstance){
+		static::deleted(function(NavigatableContract $modelInstance){
 			Log::debug ( 'Deleted ' . get_class($modelInstance), [$modelInstance] );
 			$menuItems = $modelInstance->menuItem()->get();
 			if(count($menuItems)){
 				foreach($menuItems as $menuItem){
 					$deleted = $menuItem->delete();
 					Log::debug ( 'Deleted menu item: ',[ 
-						$menuItem
+						$menuItem->getTitle()=>$deleted
 					] );
 				}
 				return true;
 			}
 		});
 	}
-	public static function isNavigable($modelInstance) {
-		return ! (empty ( $modelInstance->slug ) || empty ( $modelInstance->title ));
+
+	/**
+	 * @param $modelInstance
+	 * @return bool
+	 */
+	public static function isNavigable(NavigatableContract $modelInstance) {
+		$modelInstance->load('menuItem');
+		return ! (empty ( $modelInstance->getUrl() ) || empty ( $modelInstance->getTitle() ) || !count($modelInstance->menuItem));
 	}
 	/**
 	 *
-	 * set slug and/or title, and if necessary, create MenuItems.
+	 * @desc set slug and/or title, and if necessary, create MenuItems.
 	 *
 	 * @param BaseModel $modelInstance        	
 	 */
-	public static function fixNavigability($modelInstance) {
+	public static function fixNavigability(NavigatableContract $modelInstance) {
 		Log::info ( 'Fixing navigability for', [ 
 			$modelInstance 
 		] );
 		if (!empty($modelInstance->name) && empty ( $modelInstance->slug )) {
 			$modelInstance->slug = str_slug ( $modelInstance->name );
-			return true;
+			return $modelInstance;
 		}
 		if (!empty($modelInstance->name) && empty ( $modelInstance->title )) {
 			$modelInstance->title = $modelInstance->name;
-			return true;
+			return $modelInstance;
 		}
 		if (!empty($modelInstance->title) && empty ( $modelInstance->slug )) {
 			$modelInstance->slug = str_slug ( $modelInstance->title );
-			return true;
+			return $modelInstance;
 		}
+		if(!empty($modelInstance->getTitle()) && !empty($modelInstance->getUrl()))
+			return $modelInstance;
 		return false;
 	}
 	/**
 	 *
 	 * @param BaseModel $modelInstance        	
 	 */
-	public static function provideNavigatable($modelInstance) {
-		Log::debug('Providing navigatable.');
+	public static function provideNavigatable(NavigatableContract $modelInstance) {
+		Log::debug('Providing navigatable for :',[$modelInstance]);
 		$basename = class_basename ( $modelInstance );
 		$menu = MainMenu::where ( 'name', $basename )->first ();
 		if (is_null($menu)) {
@@ -109,6 +116,7 @@ trait Navigatable {
 			}
 			catch(\ErrorException $ee){
 				Log::critical('Failed creating menu with: '.$ee->getMessage());
+				return false;
 			}		
 		}
 		$menuItems = MainMenuItem::with('menu')->get ()->filter(function($eachMenuItem)use($basename,$menu,$modelInstance){
@@ -122,19 +130,23 @@ trait Navigatable {
 		if (! count($menuItems) ){
 			Log::debug ( 'Creating MenuItem for ', ['model'=>$modelInstance,'basename'=>$basename] );
 			try{
-				$newItem = new MainMenuItem( ['menu_id' => $menu->id]);
+				$newItem = MainMenuItem::create( ['menu_id' => $menu->id]);
 				$newItem->navigatable()->associate($modelInstance);
 				$newItem->save();
 			}
 			catch(\QueryException $qe){
 				Log::debug ( 'MenuItem already extant? ', ['model'=>$modelInstance,'menuItems'=>$menuItems] );
+				return false;
 			}
 		}
-		return count($menuItems) ? $menuItems->first() : $newItem;
+		$modelInstance->load('menuItem');
+		return $modelInstance;
 	}
-	/* relations */
 	public function getTitle() {
 		return $this->title;
+	}
+	public function getSlug() {
+		return str_slug($this->title);
 	}
 	public function getUrl() {
 		try {
@@ -148,9 +160,11 @@ trait Navigatable {
 				$url = action($routeString,['id'=>$this->id]);
 		} catch ( FatalErrorException $e ) {
 			Log::error ( $e );
+			return false;
 		}
 		return $url;
 	}
+	/* relations */
 	public function menuItem() {
 		return $this->morphMany ( 'App\MainMenuItem', 'navigatable' );
 	}

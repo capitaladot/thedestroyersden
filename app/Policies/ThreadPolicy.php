@@ -2,11 +2,12 @@
 
 namespace App\Policies;
 
-use Riari\Forum\Policies\ThreadPolicy as RFP;
-use Riari\Forum\Models\Thread;
+use Illuminate\Support\Facades\Gate;
+use App\Thread;
 use App\User;
 
-class ThreadPolicy extends RFP{
+
+class ThreadPolicy{
 	/**
 	 * Permission: Delete posts in thread.
 	 *
@@ -56,7 +57,7 @@ class ThreadPolicy extends RFP{
 	 */
 	public function delete($user, Thread $thread)
 	{
-		return Gate::allows('deleteThreads', $thread->category) || $user->id === $thread->author_id;
+		return $user->isAdmin() || Gate::allows('deleteThreads', $thread->category) || $user->id === $thread->author_id;
 	}
 }
 

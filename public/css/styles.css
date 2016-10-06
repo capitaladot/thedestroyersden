@@ -1,10 +1,9 @@
 html,body {
-  height:100%;
+	height:100%;
+	background-color:#000;
 }
 
 h1 {
-  font-family: Arial,sans-serif;
-  font-size:80px;
   color:#8a321a;
 }
 
@@ -34,8 +33,8 @@ h1 {
 .facebook-button{
 	border-radius:3px;
 	border-color:#000;
-	height:16px;
-	width:16px;
+	height:5px;
+	width:5px;
 	background-color:rgba(138,50,26,0.5);
 	display:inline-block;
 }
@@ -48,15 +47,29 @@ h1 {
 	width:100%;
 	height:100%;
 }
-.right-link{
-	width:10%;
-}
-.left-link{
-	max-width:90%;
-}
 ul.csv li:after {
 	content: ",";
 }
 ul.csv li:last-child:after {
 	content: "";
+}
+textarea {
+	min-height: 200px;
+}
+
+.deleted {
+	opacity: 0.65;
+}
+.nav>li>a>i{
+	line-height:.33;
+}
+.panel-body{
+	background-color:#000;
+}
+form.form-inline{
+	display:inline-block;
+}
+.hiddenSelect{
+	visibility: hidden;
+	width:0;
 }

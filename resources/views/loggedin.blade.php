@@ -10,3 +10,15 @@
 		@endif
 		<li><a href="/auth/logout">Logout</a></li>
 	</ul>
+</li>
+@if(Auth::check() && count(Auth::user()->cart))
+<li>
+	<a href="/order/open" title="Your open order.">
+		{{ count(Auth::user()->cart->tickets) }}<i class="fa fa-2xlg fa-ticket" aria-hidden="true"></i><i class="fa fa-2xlg fa-shopping-cart" aria-hidden="true"></i></a>
+</li>
+	@if(count(Auth::user()->cart->tickets))
+<li>
+	<a href="{!! action('Payment\SquareController@getCard') !!}" title="Checkout"><i class="fa fa-2xlg fa-credit-card" aria-hidden="true"></i></a>
+	@endif
+</li>
+@endif

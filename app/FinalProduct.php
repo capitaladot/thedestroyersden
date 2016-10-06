@@ -2,7 +2,8 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\Traits\Ruled;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\Item;
 use App\Contracts\ItemContract;
 use App\Traits\Craftable;
@@ -18,6 +19,7 @@ abstract class FinalProduct extends Item implements ItemContract, NavigatableCon
 	use Craftable;
 	use Navigatable;
 	use Presentable;
+	use Ruled;
 	use Saleable;
 	use Salvageable;
 	use Taggable;

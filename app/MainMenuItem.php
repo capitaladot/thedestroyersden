@@ -11,10 +11,19 @@ class MainMenuItem extends MenuItem {
     {
         return parent::newQuery()->orderBy('sort_order','ASC');
     }
-	//relations
-	public function menu() {
-		return $this->belongsTo ( 'App\MainMenu', 'menu_id' );
+	public function getTitle()
+	{
+		if (count($this->navigatable)){
+			try {
+				return $this->navigatable->getTitle ();
+			} catch ( \ErrorException $e ) {
+				Log::critical ( 'MenuItem exception', [
+					$e
+				] );
+			}
+		}
 	}
+
 	public function getUrl() {
 		if (count($this->navigatable)){
 			try {
@@ -26,4 +35,9 @@ class MainMenuItem extends MenuItem {
 			}
 		}
 	}
+	//relations
+	public function menu() {
+		return $this->belongsTo ( 'App\MainMenu', 'menu_id' );
+	}
+
 }

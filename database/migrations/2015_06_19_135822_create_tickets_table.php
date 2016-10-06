@@ -17,7 +17,6 @@ class CreateTicketsTable extends Migration {
 			$table->increments('id');
 			$table->timestamps();
 			$table->datetime('redeemed_at');
-			$table->integer('player_character_id')->unsigned()->foreign('player_character_id')->references('id')->on('player_characters');
 			$table->integer('order_id')->unsigned()->foreign('order_id')->references('id')->on('orders');
 		});
 	}

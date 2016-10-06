@@ -18,11 +18,11 @@ class PermissionRoleTableSeeder extends Seeder {
 		$permissionTypes = ['create','delete','edit','list','read'];
 		$roles = ['admin','user','guest'];
 		foreach([
-			'Advantage','Arc','ArithmeticOperator','CharacterClass','Consumable','Consumption','Cost',
+			'Arc','ArithmeticOperator','CharacterClass','Consumable','Consumption','Cost',
 			'CraftingComponent','CraftingOccurrence','CraftingRequirement','CraftingRequirementAlternative',
 			'DamageType','Description','Discount','Durable','Economy','Event','Expenditure','Experience',
 			'FinalProduct','Homeland','Item','ItemType','Link','MainMenu','MainMenuItem','Memorization',
-			'Order','Ownable','PlayerCharacter','Prerequisite','Race','RawResource','Sale','Skill','Slot',
+			'Order','Ownable','PlayerCharacter','Prerequisite','Race','RawResource','Rule','Sale','Skill','Slot',
 			'Spell','Tag','Ticket','Tool','User','Weapon'
 		] as $model){
 			foreach($permissionTypes as $permissionType){
@@ -30,12 +30,12 @@ class PermissionRoleTableSeeder extends Seeder {
 					switch($role){
 						case 'admin':
 							$permissionRoles[] = [
-									'role_id' => Role::where('name','=',$role)->first()->id,
-									'permission_id' => Permission::where('slug','=',$permissionType.'.'.str_slug($model).'s')->first()->id
+								'role_id' => Role::where('name','=',$role)->first()->id,
+								'permission_id' => Permission::where('slug','=',$permissionType.'.'.str_slug($model).'s')->first()->id
 								];					
 						break;
 						case 'user';
-							if(in_array($permissionType,['read']))
+							if(in_array($permissionType,['list','read']))
 								$permissionRoles[] = [
 									'role_id' => Role::where('name','=',$role)->first()->id,
 									'permission_id' => Permission::where('slug','=',$permissionType.'.'.str_slug($model).'s')->first()->id

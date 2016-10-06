@@ -2,32 +2,31 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Traits\Navigatable; 
-use App\Traits\Presentable;
-use App\Traits\Taggable;
-use App\BaseModel; 
+use App\Traits\Ruled;
 use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Contracts\FillableContract;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
+use App\Contracts\RelatableContract;
+use App\Traits\Fillable;
+use App\Traits\Navigatable;
+use App\Traits\Presentable;
+use App\Traits\Requirable;
+use App\Traits\Requiring;
+use App\Traits\SkillTypeable;
 
-class Craft extends Skill implements NavigatableContract {
-	use Navigatable; 
+
+class Craft extends Skill implements FillableContract, HasPresenter, NavigatableContract, RelatableContract {
+	use Fillable;
+	use Navigatable;
 	use Presentable;
-	use Taggable;
+	use Requirable;
+	use Requiring;
+	use Ruled;
+	use SkillTypeable;
 	protected $table = 'skills';
-	public $fillable = ['quantity','skill_id','variable'];
-	/**
-	 * the list of items this technique may produce.
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
-	 */
-	public function items() {
-		return $this->hasManyThrough ( 'App\Item', 'App\Requisite' );
-	}
-	
-	/**
-	 * the skill this crafting technique resides under.
-	 */
-	public function skill() {
-		return $this->belongsTo ( 'App\Skill' );
+	public $fillable = ['title'];
+	public function getForeignKey()
+	{
+		return 'skill_id';
 	}
 }

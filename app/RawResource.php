@@ -3,7 +3,9 @@
 namespace App;
 
 use App\Consumable;
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\Contracts\FillableContract;
+use App\Contracts\RelatableContract;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\Traits\Harvestable;
 use App\Traits\ItemTypeable;
 use App\Traits\Navigatable; 
@@ -12,7 +14,7 @@ use App\Traits\Requirable;
 use App\Traits\Buyable;
 use App\ItemType;
 
-class RawResource extends Consumable implements NavigatableContract {
+class RawResource extends Consumable implements FillableContract, NavigatableContract, RelatableContract {
 	use Buyable;
 	use Harvestable;
 	use ItemTypeable;

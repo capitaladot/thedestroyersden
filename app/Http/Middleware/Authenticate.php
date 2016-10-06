@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\Guard;
 use Event;
 use App\Events\UserLoggedIn;
 use App\Events\UserLoggedOut;
+use Illuminate\Http\Request;
 
 class Authenticate {
 	
@@ -34,7 +35,7 @@ class Authenticate {
 	 * @param \Closure $next        	
 	 * @return mixed
 	 */
-	public function handle($request, Closure $next) {
+	public function handle(Request $request, Closure $next) {
 		if ($this->auth->guest ()) {
 			if ($request->ajax ()) {
 				return response ( 'Unauthorized.', 401 );

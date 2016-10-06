@@ -2,29 +2,36 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\Contracts\FillableContract;
+use App\Contracts\RelatableContract;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\Consumption;
 use App\Item;
 use App\PlayerCharacter;
 use App\Traits\Craftable;
-use App\Traits\Navigatable; 
+use App\Traits\Fillable;
+use App\Traits\ItemTypeable;
+use App\Traits\Navigatable;
 use App\Traits\Presentable;
+use App\Traits\Relatable;
 use App\Traits\Requirable;
 use App\Traits\Salvageable;
 use App\Traits\Taggable;
-use App\Traits\ItemTypeable;
+
 
 use App\ItemType;
 
-class Consumable extends Item implements NavigatableContract {
+class Consumable extends Item implements FillableContract, NavigatableContract, RelatableContract {
 	use Craftable;
+	use Fillable;
 	use ItemTypeable;
 	use Navigatable; 
 	use Presentable;
 	use Requirable;
+	use Relatable;
 	use Salvageable;
 	use Taggable;
-	protected $table = 'items';
+	public $table = 'items';
 	public $fillable = ['*'];
 	protected $consumable = true;
 	public function __construct($attributes=[]){

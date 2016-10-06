@@ -2,7 +2,7 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\Traits\Craftable;
 use App\Traits\ItemTypeable;
 use App\Traits\Navigatable; 
@@ -10,7 +10,7 @@ use App\Traits\Presentable;
 use App\Traits\Requirable;
 use App\Traits\Salvageable;
 use App\Traits\Taggable;
-use App\Consumable;
+use App\Traits\Ruled;
 
 class CraftingComponent extends Consumable implements NavigatableContract {
 	use Craftable;
@@ -18,6 +18,7 @@ class CraftingComponent extends Consumable implements NavigatableContract {
 	use Navigatable; 
 	use Presentable;
 	use Requirable;
+	use Ruled;
 	use Salvageable;
 	use Taggable;
 	public $fillable = ['*'];

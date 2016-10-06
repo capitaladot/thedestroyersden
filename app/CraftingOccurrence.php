@@ -2,18 +2,25 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\Contracts\FillableContract;
+use App\Traits\Fillable;
+use App\Traits\Relatable;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
 use App\Traits\Arcable;
-use App\Traits\Navigatable; use App\Traits\Presentable;
+use App\Traits\RoutedById;
+use App\Traits\Presentable;
 
 /**
  * Crafting: when, how, from, by, what.
  */
-class CraftingOccurrence extends BaseModel implements HasPresenter, NavigatableContract {
+class CraftingOccurrence extends BaseModel implements FillableContract,HasPresenter, NavigatableContract {
 	
 	use Arcable;
-	use Navigatable; use Presentable;
+	use Fillable;
+	use RoutedById;
+	use Presentable;
+	use Relatable;
 	public $relationMethods = [ 
 			'arc',
 			'craft',

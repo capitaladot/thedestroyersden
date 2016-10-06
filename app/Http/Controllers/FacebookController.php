@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Description;
 use Illuminate\Routing\Route;
 use SammyK\LaravelFacebookSdk\LaravelFacebookSdk as LaravelFacebookSdk;
+use Facebook\Exceptions\FacebookSDKException;
 use App\User;
 use App\Event;
 use Flash;
@@ -16,20 +17,26 @@ use Doctrine\Common\Proxy\Exception\UnexpectedValueException;
 use Redirect;
 use Request;
 use Input;
-
+use Webpatser\Countries\CountriesFacade as Countries;
+use DougSisk\CountryState\CountryStateFacade as CountryState;
 /**
  * Class FacebookController
  * @package App\Http\Controllers
  */
 class FacebookController extends Controller {
+	/** @desc stores Facebook events from the configured group in the database and associates them to a user, creating that user if necessary.
+	 * @param LaravelFacebookSdk $fb
+	 * @param Request $request
+	 * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+	 */
 	function loginCallback(LaravelFacebookSdk $fb) {
 		// Obtain an access token.
+		$token = false;
 		try {
 			$token = $fb->getAccessTokenFromRedirect ();
-		} catch ( Facebook\Exceptions\FacebookSDKException $e ) {
-			dd ( $e->getMessage () );
+		} catch ( FacebookSDKException $e ) {
+			Log::error ( $e->getMessage () );
 		}
-		
 		// Access token will be null if the user denied the request
 		// or if someone just hit this URL outside of the OAuth flow.
 		if (! $token) {
@@ -41,7 +48,7 @@ class FacebookController extends Controller {
 			}
 			
 			// User denied the request
-			dd ( $helper->getError (), $helper->getErrorCode (), $helper->getErrorReason (), $helper->getErrorDescription () );
+			Log::error ( $helper->getError (), $helper->getErrorCode (), $helper->getErrorReason (), $helper->getErrorDescription () );
 		}
 		
 		if (! $token->isLongLived ()) {
@@ -51,8 +58,8 @@ class FacebookController extends Controller {
 			// Extend the access token.
 			try {
 				$token = $oauth_client->getLongLivedAccessToken ( $token );
-			} catch ( Facebook\Exceptions\FacebookSDKException $e ) {
-				dd ( $e->getMessage () );
+			} catch ( FacebookSDKException $e ) {
+				Log::erroc ( $e->getMessage () );
 			}
 		}
 		
@@ -64,8 +71,8 @@ class FacebookController extends Controller {
 		// Get basic info on the user from Facebook.
 		try {
 			$response = $fb->get ( '/me?fields=id,name,email' );
-		} catch ( Facebook\Exceptions\FacebookSDKException $e ) {
-			dd ( $e->getMessage () );
+		} catch ( FacebookSDKException $e ) {
+			Log::error ( $e->getMessage () );
 		}
 		
 		// Convert the response to a `Facebook/GraphNodes/GraphUser` collection
@@ -81,7 +88,7 @@ class FacebookController extends Controller {
 		return redirect ( '/' )->with ( 'message', 'Successfully logged in with Facebook' );
 	}
 
-	/** @desc stores Facebook events from the configured group in the database and associates them to a user, creating that user if necessary.
+	/**
 	 * @param LaravelFacebookSdk $fb
 	 * @param Request $request
 	 * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
@@ -98,24 +105,62 @@ class FacebookController extends Controller {
 	 */
 	protected function storeFacebookEvent(GraphObject $event,LaravelFacebookSdk $fb, Route $route){
 		$eventDataArray = $event->asArray ();
-		$enrichedEventResponse = $fb->get ( $eventDataArray ['id'] . '?fields=owner,description,name,start_time,end_time,timezone,updated_time' );
+		$enrichedEventResponse = $fb->get ( $eventDataArray ['id'] . '?fields=owner,description,name,start_time,end_time,timezone,updated_time,is_canceled,place' );
 		$enrichedEventData = $enrichedEventResponse->getGraphObject ();
 		$ownedEventData = [ ];
 		foreach ( $enrichedEventData as $key => $value ) {
-			if ($key == 'owner') {
-				$userArray = $value->asArray ();
-				$enrichedUser = $fb->get ( '/' . $userArray ['id'] . '?fields=name,id' )->getGraphUser ();
-				$owner = User::createOrUpdateGraphNode ( $enrichedUser );
-				if (! $owner)
-					throw new UnexpectedValueException ( 'Owner not created!' );
-			} else
-				$ownedEventData [$key] = $value;
+			switch($key){
+				case  'owner':
+					$userArray = $value->asArray ();
+					$enrichedUser = $fb->get ( '/' . $userArray ['id'] . '?fields=name,id' )->getGraphUser ();
+					$owner = User::createOrUpdateGraphNode ( $enrichedUser );
+					if (! $owner)
+						throw new UnexpectedValueException ( 'Owner not created!' );
+				break;
+				case 'place':
+					$location = $value->getProperty('location');
+					$locationName = $value->getProperty('name');
+					$countryCode = Countries::whereName($location['country'])->firstOrFail()->iso_3166_2;
+					$addressAttributes = [
+						'is_primary'=>true,
+						'street'=>$location['street'],
+						'city'=>$location['city'],
+						'state'=>CountryState::getStates($countryCode)[$location['state']],
+						'post_code'=>$location['zip'],
+						'country'=>$countryCode,
+						'lat'=>$location['latitude'],
+						'lng'=>$location['longitude'],
+					];
+				break;
+				case 'description':
+					$description = Description::firstOrNew(['body'=>$value]);
+				break;
+				case 'is_canceled':
+					if($value)
+						$deleteBecauseCancelled = true;
+				break;
+				default:
+					$ownedEventData [$key] = $value;
+				break;
+			}
 		}
 		Event::createOrUpdateGraphNode ( $ownedEventData );
 		Log::info('Storing event from Facebook group: '.$ownedEventData['name']);
 		$eventModel = Event::where ( 'facebook_id', '=', $eventDataArray ['id'] )->firstOrFail ();
 		// dd ( $eventModel );
-		$eventModel->owner ()->associate ( $owner )->save ();
+		if(!empty($owner))
+			$eventModel->owner ()->associate ( $owner )->save ();
+		if(!empty($addressAttributes)){
+			$eventModel->addAddress($addressAttributes);
+			$address = $eventModel->getPrimaryAddress();
+			$address->note = $locationName;
+			$address->save();
+		}
+		if(!empty($description))
+			$eventModel->description()->save($description);
+		if(!empty($deleteBecauseCancelled)){
+			$eventModel->delete();
+		}
 	}
 
 	/**
@@ -136,7 +181,6 @@ class FacebookController extends Controller {
 		$response = $fb->get ( config ( 'services.facebook.pageId' ) . "/events?since=2014-10-01T18%3A30%3A00.000Z&until=2017-10-01T18%3A30%3A00.000Z&limit=1000" );
 		$gof = new GraphObjectFactory ( $response );
 		$events = $gof->makeGraphList ();
-		//dd($events);
 		Log::info('Facebook events response from '.config ( 'services.facebook.pageId' ) . "/events" ,[$events]);
 		if(!empty($events))
 			foreach ( $events as $event ) {
@@ -161,8 +205,8 @@ class FacebookController extends Controller {
 		$fb->setDefaultAccessToken ( $token );
 		try {
 			$response = $fb->get ( '/me?fields=id,name,email' );
-		} catch ( Facebook\Exceptions\FacebookSDKException $e ) {
-			dd ( $e->getMessage () );
+		} catch ( FacebookSDKException $e ) {
+			Log::error ( $e->getMessage () );
 		}
 		
 		// Convert the response to a `Facebook/GraphNodes/GraphUser` collection

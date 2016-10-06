@@ -13,12 +13,6 @@ class CreateSkillsTable extends Migration {
 			$table->string ( 'title' );
 			$table->string('slug');
 			$table->text('description');
-			//craft quantity produced
-			$table->integer ( 'quantity' )->nullable();
-			//craft quantity variable based on variable crafting requirement
-			$table->integer ( 'variable' )->nullable();
-			//parent skill
-			$table->integer ( 'skill_id' )->nullable()->foreign ( 'skill_id' )->references ( 'id' )->on ( 'skills' );
 		});
 	}
 

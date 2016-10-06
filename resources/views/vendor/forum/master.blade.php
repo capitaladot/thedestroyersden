@@ -94,6 +94,7 @@
     });
     </script>
     <script>
+        var CKEDITOR_BASEPATH = '/assets/ckeditor/';
         $('textarea').ckeditor();
         // $('.textarea').ckeditor(); // if class is prefered.
     </script>

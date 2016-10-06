@@ -3,10 +3,6 @@
 namespace App\Policies;
 
 use Riari\Forum\Policies\ForumPolicy as RFP;
-use Riari\Forum\Models\Category;
-use Bican\Roles\Models\Role;
-use Bican\Roles\Models\Permission;
-use App\User;
 
 class ForumPolicy extends RFP{
 	/**

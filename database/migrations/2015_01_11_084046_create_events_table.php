@@ -20,7 +20,6 @@ class CreateEventsTable extends Migration {
 				$table->datetime ( 'start_time' );
 				$table->datetime ( 'end_time' )->nullable ();
 				$table->string ( 'timezone' );
-				$table->text ( 'description' );
 				$table->integer ( 'owner_id' )->foreign ( 'user_id' )->references ( 'id' )->on ( 'users' );
 			} );
 		}

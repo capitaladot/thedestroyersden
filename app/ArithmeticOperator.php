@@ -1,11 +1,14 @@
 <?php namespace App;
 
-use App\BaseModel;
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\Contracts\FillableContract;
+use App\Contracts\RelatableContract;
+use App\Traits\Fillable;
+use App\Traits\Relatable;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\Traits\Navigatable;
 
-class ArithmeticOperator extends BaseModel {
+class ArithmeticOperator extends BaseModel implements FillableContract, NavigatableContract, RelatableContract {
+	use Fillable;
 	use Navigatable;
-	public $table = "arithmetic_operators";
-
+	use Relatable;
 }

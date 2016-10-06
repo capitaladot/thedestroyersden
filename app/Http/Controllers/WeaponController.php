@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Repositories\WeaponRepository;
 use Illuminate\Routing\Route;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 
 class WeaponController extends BaseController {
 	public function __construct(WeaponRepository $repository) {
@@ -40,7 +41,7 @@ class WeaponController extends BaseController {
 			'fillables' => $show->processedFillables,
 			'relationControls' => $show->relationControls,
 			'relationMethods' => $show->relationMethods,
-			'title' => isset ( $show->traits ['Navigatable'] ) ? $show->getTitle () : '' 
+			'title' => $show->implementsInterface(NavigatableContract::class) ? $show->getTitle () : ''
 		] );
 	}
 }

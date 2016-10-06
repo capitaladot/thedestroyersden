@@ -38,7 +38,6 @@ class CategoryController extends BaseController
 	public function show(Request $request)
 	{
 		$category = $this->api('category.fetch', $request->route('category'))->get();
-
 		event(new UserViewingCategory($category));
 
 		$categories = [];

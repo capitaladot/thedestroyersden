@@ -31,6 +31,10 @@ class Kernel extends HttpKernel {
 		'captchad' => 'App\Http\Middleware\Captchad',
 		'cart' => 'App\Http\Middleware\Secure',
 		'guest' => 'App\Http\Middleware\RedirectIfAuthenticated',
+		'secure'=>'App\Http\Middleware\Secure',
+		'role' => \Bican\Roles\Middleware\VerifyRole::class,
+		'permission' => \Bican\Roles\Middleware\VerifyPermission::class,
+		'level' => \Bican\Roles\Middleware\VerifyLevel::class,
 	];
 
 }

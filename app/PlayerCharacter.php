@@ -2,7 +2,10 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\Contracts\FillableContract;
+use App\Contracts\RelatableContract;
+use App\Traits\Relatable;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\Traits\Attendable;
 use App\Traits\CharacterClassable;
 use App\Traits\Fillable;
@@ -11,7 +14,7 @@ use App\Traits\Navigatable;
 use App\Traits\Presentable;
 use App\Traits\Raceable;
 use McCool\LaravelAutoPresenter\HasPresenter;
-class PlayerCharacter extends BaseModel implements HasPresenter, NavigatableContract {
+class PlayerCharacter extends BaseModel implements FillableContract, HasPresenter, NavigatableContract, RelatableContract {
 	
 	use Attendable;
 	use CharacterClassable;
@@ -20,6 +23,7 @@ class PlayerCharacter extends BaseModel implements HasPresenter, NavigatableCont
 	use Navigatable; 
 	use Presentable;
 	use Raceable;
+	use Relatable;
 	public $relationMethods = [ 
 			'user',
 			'craftingOccurrences',

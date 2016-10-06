@@ -1,17 +1,13 @@
 <?php
-Form::macro ( 'dateTime', function ($input, $properties = [], $value = null) {
-	$dateArray = [ 
-			0 => false,
-			1 => false,
-			2 => false,
-			3 => false,
-			4 => false 
-	];
+Form::macro ( 'marshaledDateTime', function ($name, $properties = [], $value = null) {
 	$date = date ( "Y-m-d\TH:i:s", time());
 	if (! empty ( $value )) {
 		$date = date ( "Y-m-d\TH:i:s", strtotime ( $value ) );
 	}
-	return '<input name="'.$input.'" class="form-control" type="datetime-local" value="'.$date.'">';
+	$input = '<input name="'.$name.'" class="form-control" type="datetime-local"';
+	if(!empty($properties['notNull']))
+		$input.=' required="required"';
+	return $input.' value="'.$date.'">';
 } );
 Form::macro("timezone",function($name,$value,$options){
 	if(empty($value))
@@ -25,36 +21,39 @@ Form::macro("timezone",function($name,$value,$options){
 		$options = $opts;
 	return Form::select($name, $zones, $selected, $options);
 });
-Form::macro ( "chosen", function ($name, $defaults = array(), $selected = array(), $options = array()) {
+Form::macro ( "chosen", function ($name, $allOptions = array(), $selectedOptions = array(), $attributes = array()) {
 	
-	// For empty Input::old($name) session, $selected is an empty string
-	if (! $selected)
-		$selected = array ();
+	// For empty Input::old($name) session, $selectedOptions is an empty string
 	$multiple = str_plural ( $name ) == $name;
-	$opts = array (
+	$defaultAttributes = array (
 			'class' => 'chosen-select form-control',
 			'id' => $name,
-			'size' => ($multiple ? (count ( $selected ) < 7 ? 7 : count ( $selected )) : 1) 
+			'size' => ($multiple ? (count ( $selectedOptions ) < 7 ? 7 : count ( $selectedOptions )) : 1)
 	);
 	if ($multiple) {
-		$opts ['multiple'] = $multiple;
-		$opts ['name'] = $name . '[]';
+		$defaultAttributes ['multiple'] = $multiple;
+		$defaultAttributes ['name'] = $name . '[]';
 	} else
-		$opts ['name'] = $name;
-	if (! empty ( $options ))
-		$options = array_merge ( $opts, $options );
+		$defaultAttributes ['name'] = $name;
+	if (! empty ( $attributes ))
+		$attributes = array_merge ( $defaultAttributes, $attributes );
 	else
-		$options = $opts;
-	$attributes = Html::attributes ( $options );
-	
-	$ret = '<select ' . $attributes . '>';
-	foreach ( $defaults as $def ) {
-		$ret .= '<option value="' . ( !is_object($def) ? $def['value'] : $def->id )  . '"';
-		if($def['checked']){
-			$ret .= ' selected="selected"';
+		$attributes = $defaultAttributes;
+
+	$returnString = '<select ' . Html::attributes ( $attributes ) . '>';
+	foreach ( $allOptions as $eachOption ) {
+		$value = is_object($eachOption) ? $eachOption->id : (array_key_exists('value',$eachOption) ? $eachOption['value'] :  "" );
+		$returnString .= '<option value="' . $value  . '"';
+		if((!is_object($eachOption) && !empty($eachOption['checked'])) || (is_object($eachOption) && FALSE!==array_search($eachOption->id,$selectedOptions))){
+			$returnString .= ' selected="selected"';
 		}
-		$ret .= '>' . Html::entities ( $def['title']) . '</option>';
+		$returnString .= '>' . Html::entities ( (isset($eachOption['title'])
+				? $eachOption['title']
+				: (isset($eachOption['attributes']['note'])
+					? $eachOption['attributes']['note']
+					: $eachOption['attributes']['id']
+				))) . '</option>';
 	}
-	$ret .= '</select>';
-	return $ret;
+	$returnString .= '</select>';
+	return $returnString;
 } );

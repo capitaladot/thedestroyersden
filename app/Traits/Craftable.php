@@ -25,13 +25,11 @@ trait Craftable
 	public function getCrafts()
 	{
 		$crafts = collect();
-		foreach($this->craftingRequirements() as $craftingRequirement)
-			$crafts[$craftingRequirement->title] = $craftingRequirements->crafts();
+		foreach($this->requirements() as $craftingRequirement)
+			$crafts[$craftingRequirement->title] = $craftingRequirement->crafts();
 		return $crafts;
 	}
-	public function craftingRequirements(){
-		return $this->belongsToMany('App\CraftingRequirement');
-	}
+
 
 	/**
 	 */
@@ -42,16 +40,16 @@ trait Craftable
 
 	public function craftingComponents()
 	{
-		return $this->morphedByMany('App\CraftingComponent', 'requirable', 'crafting_requirements', 'requirable_id');
+		return $this->morphedByMany('App\CraftingComponent', 'requirable', 'requirements', 'requirable_id');
 	}
 
 	public function rawResources()
 	{
-		return $this->morphedByMany('App\RawResource', 'requirable', 'crafting_requirements', 'requirable_id');
+		return $this->morphedByMany('App\RawResource', 'requirable', 'requirements', 'requirable_id');
 	}
 
 	public function tools()
 	{
-		return $this->morphedByMany('App\Tool', 'requirable', 'crafting_requirements', 'reguirable_id');
+		return $this->morphedByMany('App\Tool', 'requirable', 'requirements', 'reguirable_id');
 	}
 }

@@ -2,13 +2,11 @@
 
 namespace App;
 
-use App\BaseModel;
-use McCool\LaravelAutoPresenter\HasPresenter;
-use Illuminate\Support\Facades\DB;
 // contracts
+use App\Traits\Relatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 // traits
@@ -22,7 +20,7 @@ use SammyK\LaravelFacebookSdk\SyncableGraphNodeTrait as SyncableGraphNodeTrait;
 use Bican\Roles\Traits\HasRoleAndPermission as HasRoleAndPermissionTrait;
 // related
 use App\Order;
-use Bican\Roles\Models\Role;
+use App\Role;
 
 class User extends BaseModel implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, HasRoleAndPermissionContract, NavigatableContract {
 	use Attendable;
@@ -32,7 +30,9 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 	use HasRoleAndPermissionTrait;
 	use Navigatable; 
 	use Presentable;
+	use Relatable;
 	use SyncableGraphNodeTrait;
+	
 	public $cart = null;
 	protected static $graph_node_field_aliases = [ 
 		'id' => 'facebook_id',
@@ -51,7 +51,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 	 *
 	 * @var array
 	 */
-	protected $fillable = [ 
+	public $fillable = [
 			'name',
 			'email',
 			'password',
@@ -64,7 +64,7 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 	 *
 	 * @var array
 	 */
-	protected $hidden = [ 
+	public $hidden = [
 			'remember_token',
 			'access_token',
 			'slug' 
@@ -77,21 +77,22 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
 	];
 	public function __construct(array $attributes = [])
 	{
-		$cartId = \Session::get('cart');
-		if(!empty($cartId))
-			$this->cart = Order::find($cartId);
-		else
-			$this->cart = $this->createOrder($this);
+		$parentConstructed = parent::__construct($attributes);
 		static::created(function($user){
-			self::createOrder($user);
+			$user->createCart();
 			$user->roles()->attach(Role::where(['name'=>'user'])->first()->id);
 		});
-		return parent::__construct($attributes);
+		return $parentConstructed;
 	}	
-	protected static function createOrder(User $user){
-		$user->cart = Order::create(['user_id'=>$user->id]);
-		//ddd($user);
-		\Session::put($user->cart->id);
+	public function createCart(){
+		$cart = new Order;
+		$cart->save();
+		$this->orders()->save($cart);
+		\Session::put($cart->id);
+		return $cart;
+	}
+	public function queryCart(){
+		return $this->orders()->where('executed',0)->where('failed',0)->first();
 	}
 	/**
 	 * Override getTitle from Navigatable since user objects have slightly different parameters.

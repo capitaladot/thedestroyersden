@@ -2,30 +2,38 @@
 
 namespace App;
 
-use App\BaseModel;
+use App\Traits\Describable;
+use App\Traits\Owned;
+use App\Traits\Relatable;
 use McCool\LaravelAutoPresenter\HasPresenter;
 use App\Traits\Fillable;
 use App\Traits\Navigatable;
 use App\Traits\Presentable;
 use SammyK\LaravelFacebookSdk\SyncableGraphNodeTrait;
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
+use vendocrat\Addresses\Traits\AddressableTrait as Addressable;
+use vendocrat\Addresses\Contracts\AddressableInterface;
 
-class Event extends BaseModel implements HasPresenter, NavigatableContract {
+class Event extends BaseModel implements AddressableInterface, HasPresenter, NavigatableContract {
+	use Addressable;
+	use Describable;
 	use Fillable;
 	use Navigatable;
+	use Owned;
 	use Presentable;
+	use Relatable;
 	use SyncableGraphNodeTrait;
 	const dateIntervalString = '+8 hours';
 	protected static $graph_node_field_aliases = [
-			'id' => 'facebook_id',
-			'name' => 'name',
-			'start_time' => 'start_time',
-			'timezone' => 'timezone',
-			'location' => 'location',
-			'updated_time' => 'updated_at' 
+		'id' => 'facebook_id',
+		'name' => 'name',
+		'start_time' => 'start_time',
+		'timezone' => 'timezone',
+		'location' => 'location',
+		'updated_time' => 'updated_at'
 	];
-	protected $hidden =[
-		'facebook_id'
+	public $hidden =[
+		'timezone'
 	];
 	/**
 	 * The database table used by the model.
@@ -39,21 +47,32 @@ class Event extends BaseModel implements HasPresenter, NavigatableContract {
 	 *
 	 * @var array
 	 */
-	protected $fillable = [ 
-			"name",
-			"start_time",
-			"timezone",
-			"description",
-			"facebook_id",
-			"title",
-			"slug" 
+	public $fillable = [
+		"name",
+		"start_time",
+		"timezone",
+		"facebook_id",
+		"title",
+		"slug"
 	];
 	public $duration;
-	public $relationMethods = [ 
-			'User' => 'owner',
-			'Arc' => 'arcs' 
+	public $relationMethods = [
+			'addresses',
+			'Owner' => 'owner',
+			'Arcs' => 'arcs'
 	];
-	public $casts = [];
+	public $dates = [
+		'created_at',
+		'updated_at',
+		'start_time',
+		'end_time'
+	];
+	public $casts =	[
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
+		'start_time' => 'datetime',
+		'end_time' => 'datetime'
+	];
 	public function __construct($values = array()) {
 		parent::__construct ( $values );
 		static::saving ( function (Event $event) {
@@ -65,16 +84,11 @@ class Event extends BaseModel implements HasPresenter, NavigatableContract {
     {
         return parent::newQuery()->orderBy('start_time','ASC');
     }
-	public function facebookId(){
+	public function getFacebookId(){
 		return '<a href="https://www.facebook.com/events/'.$this->facebook_id.'">Link</a>';
 	}
 	public function getDates() {
-		return [ 
-				'created_at',
-				'updated_at',
-				'start_time',
-				'end_time' 
-		];
+		return $this->dates;
 	}
 	/**
 	 * Inserts or updates the Graph node to the local database

@@ -1,6 +1,8 @@
 <?php namespace App\Http\Middleware;
 
-class VerifyCsrf extends \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Session\TokenMismatchException;
+class VerifyCsrf extends VerifyCsrfToken
 {
     /**
      * Routes we want to exclude.
@@ -9,7 +11,9 @@ class VerifyCsrf extends \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken
      */
     protected $routes = [
             'facebook/events',
-			'facebook/callback',
+			'facebook/login-callback',
+            'square/payment-callback',
+            'square/webhooks'
     ];
 
      /**
@@ -30,7 +34,7 @@ class VerifyCsrf extends \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken
             return $this->addCookieToResponse($request, $next($request));
         }
 
-        throw new \TokenMismatchException;
+        throw new TokenMismatchException;
     }
 
     /**

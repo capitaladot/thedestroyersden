@@ -43,7 +43,6 @@ abstract class BaseRepository implements CriteriaContract {
 		
 		if (! $model instanceof BaseModel)
 			throw new RepositoryException ( "Class {$this->model()} must be an instance of App\\BaseModel" );
-		$model->provideRelatables ();
 		return $this->model = $model;
 	}
 	/**
@@ -110,11 +109,17 @@ abstract class BaseRepository implements CriteriaContract {
 			return $this->model->find ( $idOrSlug, $columns );
 		return $this->findBySlug ( $idOrSlug, $columns );
 	}
-	public function findBySlug($slug, $columns) {
+
+	/**
+	 * @param $slug
+	 * @param $columns
+	 * @return mixed
+	 */
+	public function findBySlug($slug, $columns = ['*']) {
 		if($columns == ['*'])
 			$columns = [];
 		$columns[ 'slug'] = $slug;
-		return $this->model->where($columns)->firstOrFail ();
+		return $this->model->where($columns)->first();
 	}
 	/**
 	 *

@@ -17,17 +17,17 @@ class EventServiceProvider extends ServiceProvider {
 	 * @var array
 	 */
 	protected $listen = [ 
-			'event.name' => [ 
-					'EventListener' 
-			],
-			'auth.login' => [ 
-					'App\Handlers\Events\UserEventHandler@onUserLogIn' 
-			],
-			'auth.logout' => [ 
-					'App\Handlers\Events\UserEventHandler@onUserLogOut' 
-			] 
 	];
-	
+
+	/**
+	 * The subscriber classes to register.
+	 *
+	 * @var array
+	 */
+	protected $subscribe = [
+		'App\Listeners\UserEventListener',
+		'App\Listeners\EmailEventListener',
+	];
 	/**
 	 * Register any other events for your application.
 	 *

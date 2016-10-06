@@ -25,17 +25,15 @@ class DatabaseSeeder extends Seeder {
 		$this->call('PermissionRoleTableSeeder');
 		$this->call('PasswordResetsTableSeeder');
 		//game
+		$this->call('RulesAndSkillsSeeder');
+		$this->call('ItemSeeder');
 		$this->call('ArithmeticOperatorTableSeeder');
 		$this->call('DamageTypeTableSeeder');
 		$this->call('ItemTypeTableSeeder');
 		$this->call('CharacterClassTableSeeder');
 		$this->call('HomelandTableSeeder');
 		$this->call('RaceTableSeeder');
-		$this->call('SkillTableSeeder');
-		$this->call('PrerequisiteTableSeeder');
-		$this->call('CostTableSeeder');
 		$this->call('SlotTableSeeder');
-		$this->call('SpellTableSeeder');
 		$this->call('ArcTableSeeder');
 /*
 		

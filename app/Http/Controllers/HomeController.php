@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use MartinBean\MenuBuilder\MenuFacade as Menu;
 
 class HomeController extends Controller {
 	
@@ -32,6 +31,6 @@ class HomeController extends Controller {
 	 * @return Response
 	 */
 	public function index() {
-		return view ( 'home' );
+		return view ( 'home',['title'=>"A Steampunk Fantasy LARP in Central Indiana."] );
 	}
 }

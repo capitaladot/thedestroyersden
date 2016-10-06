@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Routing\Route;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent as Eloquent;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 use App\BaseModel;
 use App\User;
 use Log;
@@ -15,18 +15,22 @@ use Bican\Roles\Models\Role;
 class BaseController extends Controller {
 	protected $baseUrl;
 	protected $controllerName;
+	protected $isBaseModel;
 	protected $modelName;
+	protected $repository;
 	protected $user;
 	public function __construct() {
 		$this->controllerName = class_basename ( $this );
 		$this->modelName = class_basename ( $this->repository->model () );
 		$this->baseUrl = strtolower($this->modelName);
-		if(Auth::guest()){
-			$this->user = User::findOrFail(1);
-		}
-		else{
+		if(Auth::check()){
 			$this->user = Auth::user();
 		}
+		else{
+			$this->user = User::findOrFail(1);
+		}
+		$this->isBaseModel = is_subclass_of($this->repository->model,"App\BaseModel");
+		$this->guestRole = Role::where('name','Guest')->firstOrFail();
 	}
 	/**
 	 * Display a listing of the resource.
@@ -34,19 +38,19 @@ class BaseController extends Controller {
 	 * @return Response
 	 */
 	public function index(Route $route) {
-		if($this->user->can('list.'.str_slug(str_plural($this->baseUrl)))) {
+		if($this->user->can('list.'.str_slug($this->baseUrl))) {
 			$all = $this->repository->all();
-			return view((view()->exists($this->baseUrl . '/index')
-				? ($this->baseUrl . '/index')
-				: 'index'
-			), [
+			return view(\resolveView($this->repository->model,'index'), [
+				'model'=>$this->repository->model,
 				'baseUrl' => $this->baseUrl,
 				'modelName' => strtolower(class_basename($this->repository->model())),
 				'models' => $all ? $all : [],
-				'route' => $route
 			]);
 		}
-		abort(403, 'Unauthorized action.');
+		elseif($this->user->is($this->guestRole->id))
+			return redirect('auth/login');
+		else
+			abort(403, 'Unauthorized action.list.'.str_slug($this->baseUrl));
 	}
 
 	/**
@@ -54,22 +58,22 @@ class BaseController extends Controller {
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */
 	public function trim(Route $route) {
-		if($this->user->can('edit.'.str_slug(str_plural($this->baseUrl)))) {
+		if($this->user->can('edit.'.str_slug($this->baseUrl))) {
 			$all = $this->repository->all();
 			foreach ($all as $eachItem) {
 				$eachItem->title = trim($eachItem->title);
 				$eachItem->save();
 			}
-			return view((view()->exists($this->baseUrl . '/trim')
-				? ($this->baseUrl . '/trim')
-				: 'trim'
-			), [
+			return view(\resolveView($this->repository->model,'trim'), [
 				'modelName' => strtolower(class_basename($this->repository->model())),
 				'models' => $all ? $all : [],
 				'route' => $route
 			]);
 		}
-		abort(403, 'Unauthorized action.');
+		if($this->user->is($this->guestRole))
+			return redirect('auth/login');
+		else
+			abort(403, 'Unauthorized action.edit.'.str_slug($this->baseUrl));
 	}
 	/**
 	 * Show the form for creating a new resource.
@@ -77,15 +81,12 @@ class BaseController extends Controller {
 	 * @return Response
 	 */
 	public function create(Route $route) {
-		if($this->user->can('create.'.str_slug(str_plural($this->baseUrl)))) {
+		if($this->user->can('create.'.str_slug($this->baseUrl))) {
 			$create = $this->repository->makeModel();
-			if (FALSE !== array_search("App\Traits\Fillable", $create->traits))
+			if ($create->hasTrait("App\Traits\Fillable"))
 				$create = $create->getProcessedFillables();
 			$create = $create->provideRelatables();
-			return view((view()->exists($this->baseUrl . '/create')
-				? ($this->baseUrl . '/create')
-				: 'trim'
-			), [
+			return view(\resolveView($this->repository->model,'create'), [
 				'model' => $create,
 				'route' => $route,
 				'modelName' => class_basename($this->repository->model()),
@@ -94,7 +95,10 @@ class BaseController extends Controller {
 				'relationControls' => $create->relationControls
 			]);
 		}
-		abort(403, 'Unauthorized action.');
+		if($this->user->is($this->guestRole))
+			return redirect('auth/login');
+		else
+			abort(403, 'Unauthorized action.create.'.str_slug($this->baseUrl));
 	}
 
 	/**
@@ -103,24 +107,27 @@ class BaseController extends Controller {
 	 * @return Response
 	 */
 	public function store(Request $request) {
-		if($this->user->can('store.'.str_slug(str_plural($this->baseUrl)))) {
+		if($this->user->can('create.'.str_slug($this->baseUrl))) {
 			$validate = $this->repository->makeModel();
 			$validate->validate($request->all());
 			if ($validate->validator->fails()) {
 				return redirect()->back()->withInput()->withErrors($validate->validator);
 			} else {
-				if ($validate->validator->passes() && $validate->save()) {
+				if ($validate->validator->passes() && $validate->saveOrFail() && $validate->push() && $validate->attachRequiredRelations($request->all())) {
 					Log::info("Controller: Saved " . class_basename(get_class($this->repository->model) . " with ID " . $validate->id));
-					$url = (false !== array_search('App\Traits\Navigatable', $this->repository->model->traits))
+					$url = ($validate->hasTrait('App\Traits\Navigatable'))
 						? $this->repository->model->getUrl()
 						: $this->baseUrl . '/' . $validate->id;
 					return redirect($url);
 				} else {
-					dd($validate);
+					\ddd($validate);
 				}
 			}
 		}
-		abort(403, 'Unauthorized action.');
+		elseif($this->user->is($this->guestRole->id))
+			return redirect('auth/login');
+		else
+			abort(403, 'Unauthorized action.create.'.str_slug($this->baseUrl));
 	}
 
 	/**
@@ -130,18 +137,18 @@ class BaseController extends Controller {
 	 * @return Response
 	 */
 	public function show($idOrSlug, Route $route) {
-		if($this->user->can('read.'.str_slug(str_plural($this->baseUrl)))) {
+		if($this->user->can('read.'.str_slug($this->baseUrl))) {
 			$show = $this->repository->find($idOrSlug);
-			if (!$show)
+			if (!$show){
+				Log::error($idOrSlug.' not found.');
 				return response('Not found.', 404);
+			}
 			$show = $show->provideRelatables();
 			$show = $show->getProcessedFillables();
-			return view((view()->exists($this->baseUrl . '/show')
-				? ($this->baseUrl . '/show')
-				: 'show'
-			), [
-				'route' => $route,
+			return view(\resolveView($this->repository->model,'show'), [
+				'depth' => 0,
 				'modelName' => $this->modelName,
+				'modelSpecific'=>[],
 				'baseUrl' => $this->baseUrl,
 				'model' => $show,
 				'edit' => $show->getUrl() . '/edit',
@@ -150,10 +157,13 @@ class BaseController extends Controller {
 				'fillables' => $show->processedFillables,
 				'relationControls' => $show->relationControls,
 				'relationMethods' => $show->relationMethods,
-				'title' => isset ($show->traits ['App\Traits\Navigatable']) ? $show->getTitle() : ''
+				'title' => $show->hasTrait('App\Traits\Navigatable') ? $show->getTitle() : $this->modelName.' #'.$show->id
 			]);
 		}
-		abort(403, 'Unauthorized action.');
+		if($this->user->is($this->guestRole))
+			return redirect('auth/login');
+		else
+			abort(403, 'Unauthorized action.read.'.str_slug($this->baseUrl));
 	}
 	/**
 	 * Show the form for editing the specified resource.
@@ -162,14 +172,11 @@ class BaseController extends Controller {
 	 * @return Response
 	 */
 	public function edit($idOrSlug, Route $route) {
-		if($this->user->can('edit.'.str_slug(str_plural($this->baseUrl)))) {
+		if($this->user->can('edit.'.str_slug($this->baseUrl))) {
 			$edit = $this->repository->find($idOrSlug);
 			$edit = $edit->getProcessedFillables();
 			$edit = $edit->provideRelatables();
-			return view((view()->exists($this->baseUrl . '/edit')
-				? ($this->baseUrl . '/edit')
-				: 'edit'
-			), [
+			return view(\resolveView($this->repository->model,'edit'), [
 				'baseUrl' => $this->baseUrl,
 				'route' => $route,
 				'modelName' => class_basename($this->repository->model()),
@@ -180,7 +187,10 @@ class BaseController extends Controller {
 				'table' => $edit->getTable()
 			]);
 		}
-		abort(403, 'Unauthorized action.');
+		if($this->user->is($this->guestRole))
+			return redirect('auth/login');
+		else
+			abort(403, 'Unauthorized action.edit.'.str_slug($this->baseUrl));
 	}
 
 	/**
@@ -190,22 +200,25 @@ class BaseController extends Controller {
 	 * @return Response
 	 */
 	public function update($idOrSlug, Request $request) {
-		if($this->user->can('edit.'.str_slug(str_plural($this->baseUrl)))) {
+		if($this->user->can('edit.'.str_slug($this->baseUrl))) {
 			$update = $this->repository->find($idOrSlug);
 			$update->validate($request->all());
 			if ($update->validator->fails()) {
 				return redirect()->back()->withInput()->withErrors($update->validator);
 			} else {
-				if ($update->validator->passes()) {
+				if ($update->validator->passes() && $update->attachRequiredRelations($request->all())) {
 					$update->push();
 				}
-				$url = (FALSE !== array_search("App\Traits\Navigatable", $update->traits)
+				$url = ($update->hasTrait("App\Traits\Navigatable")
 					? $this->repository->model->getUrl()
 					: $this->baseUrl . '/' . $update->id);
 				return redirect($url);
 			}
 		}
-		abort(403, 'Unauthorized action.');
+		if($this->user->is($this->guestRole))
+			return redirect('auth/login');
+		else
+			abort(403, 'Unauthorized action.edit.'.str_slug($this->baseUrl));
 	}
 
 	/**
@@ -215,12 +228,15 @@ class BaseController extends Controller {
 	 * @return Response
 	 */
 	public function destroy($idOrSlug) {
-		if($this->user->can('delete.'.str_slug(str_plural($this->baseUrl)))) {
+		if($this->user->can('delete.'.str_slug($this->baseUrl))) {
 			$delete = $this->repository->find($idOrSlug);
 			$delete->delete();
 			return redirect(strtolower($this->baseUrl));
 		}
-		abort(403, 'Unauthorized action.');
+		if($this->user->is($this->guestRole))
+			return redirect('auth/login');
+		else
+			abort(403, 'Unauthorized action.delete.'.str_slug($this->baseUrl));
 	}
 }
 

@@ -2,32 +2,62 @@
 
 namespace App\Policies;
 
-use Riari\Forum\Policies\PostPolicy as RFP;
-use Riari\Forum\Models\Post;
+use App\User;
+use App\Thread;
+use App\Post;
+use Illuminate\Support\Facades\Gate;
 
-class PostPolicy extends RFP{
+class PostPolicy {
 	/**
-	 * Permission: Edit post.
+	 * Permission: Delete posts in thread.
 	 *
 	 * @param  object  $user
-	 * @param  Post  $post
+	 * @param  Thread  $thread
 	 * @return bool
 	 */
-	public function edit($user, Post $post)
+	public function deletePosts($user, Thread $thread)
 	{
-		return $user->id === $post->author_id;
+		if($user->isAdmin())
+			return true;
+		return false;
 	}
 
 	/**
-	 * Permission: Delete post.
+	 * Permission: Rename thread.
 	 *
 	 * @param  object  $user
-	 * @param  Post  $post
+	 * @param  Thread  $thread
+	 * @return bool
+	 */
+	public function rename($user, Thread $thread)
+	{
+		return $user->isAdmin() || $user->id === $thread->author_id;
+	}
+
+	/**
+	 * Permission: Reply to thread.
+	 *
+	 * @param  object  $user
+	 * @param  Thread  $thread
+	 * @return bool
+	 */
+	public function reply($user, Thread $thread)
+	{
+		return !$thread->locked;
+	}
+
+	/**
+	 * Permission: Delete thread.
+	 *
+	 * @param  object  $user
+	 * @param  Post $post
 	 * @return bool
 	 */
 	public function delete($user, Post $post)
 	{
-		return Gate::forUser($user)->allows('deletePosts', $post->thread) || $user->id === $post->user_id;
+		$thread = $post->thread;
+		$category = $post->thread->category;
+		return Gate::allows('deletePosts', $thread) || $user->id === $thread->author_id;
 	}
 }
 

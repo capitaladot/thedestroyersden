@@ -2,7 +2,7 @@
 
 namespace App\Presenters;
 
-use MartinBean\MenuBuilder\Contracts\PresenterContract;
+use MartinBean\MenuBuilder\Contracts\Presenter as PresenterContract;
 use App\MainMenu;
 use App\MainMenuItem;
 
@@ -17,6 +17,8 @@ class FormattedUnorderedListPresenter implements PresenterContract {
 	protected $ul_class;
 	protected $li_class;
 	protected $a_class;
+	protected $filters = [];
+	protected $sortRules = ['navigatable.title'];
 	
 	/**
 	 * Instantiate a new UnorderedListPresenter instance.
@@ -59,7 +61,12 @@ class FormattedUnorderedListPresenter implements PresenterContract {
 	 */
 	public function getItems() {
 		$itemsString = '';
-		$itemsArray = $this->menu->items->sortBy('navigatable.title')->values()->all();
+		$itemsBuilder = $this->menu->items;
+		foreach($this->filters as $eachFilter)
+			$itemsBuilder->where($eachFilter);
+		foreach($this->sortRules as $eachSortRule)
+			$itemsBuilder->sortBy($eachSortRule);
+		$itemsArray = $itemsBuilder->values()->all();
 		foreach ( $itemsArray as $item ) {
 			$itemsString .= $this->getItemWrapper ( $item );
 		}
@@ -86,5 +93,17 @@ class FormattedUnorderedListPresenter implements PresenterContract {
 	 */
 	public function getItemWrapper(MainMenuItem $item) {
 		return sprintf ( '<li class="%s"><a class="%s" href="%s">%s</a></li>', $this->li_class, $this->a_class, $item->getUrl (), $item->getTitle () );
+	}
+	public function addFilter($filter){
+		$this->filters[] = $filter;
+	}
+	public function addSortRule($sortRule){
+		$this->sortRules[] = $sortRule;
+	}
+	public function clearFilters(){
+		$this->filters = [];
+	}
+	public function clearSortRules(){
+		$this->sortRules = [];
 	}
 }

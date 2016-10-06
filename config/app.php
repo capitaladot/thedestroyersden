@@ -14,6 +14,7 @@ return [
 		 */
 		
 		'debug' => env ( 'APP_DEBUG' ),
+		'env' => env('APP_ENV', 'production'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -80,7 +81,7 @@ return [
 
 	'key' => env ( 'APP_KEY', 'SomeRandomString' ),
 		
-		'cipher' => MCRYPT_RIJNDAEL_128,
+		'cipher' => 'AES-256-CBC',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -119,7 +120,7 @@ return [
 				'Illuminate\Bus\BusServiceProvider',
 				'Illuminate\Cache\CacheServiceProvider',
 				'Illuminate\Foundation\Providers\ConsoleSupportServiceProvider',
-				'Illuminate\Routing\ControllerServiceProvider',
+				//'Illuminate\Routing\ControllerServiceProvider',
 				'Illuminate\Cookie\CookieServiceProvider',
 				'Illuminate\Database\DatabaseServiceProvider',
 				'Illuminate\Encryption\EncryptionServiceProvider',
@@ -141,28 +142,26 @@ return [
 		 * Application Service Providers...
 		 */
 				'App\Providers\AppServiceProvider',
-				'App\Providers\BusServiceProvider',
-				'App\Providers\ComposerServiceProvider',
 				'App\Providers\ConfigServiceProvider',
 				'App\Providers\EventServiceProvider',
 				'App\Providers\ForumServiceProvider',
 				'App\Providers\ForumFrontendServiceProvider',
+				'App\Providers\HelperServiceProvider',
 				'App\Providers\RouteServiceProvider',
+				'App\Providers\ViewComposerServiceProvider',
 		/*
 		 *
 		 * Module service providers...
 		 * */
-		//	'Way\Generators\GeneratorsServiceProvider',
 				Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 				'Kris\LaravelFormBuilder\FormBuilderServiceProvider',
-				//'Barryvdh\Debugbar\ServiceProvider',
 				'MartinBean\MenuBuilder\MenuBuilderServiceProvider',
 				'Teepluss\Theme\ThemeServiceProvider',
 				'SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider',
 				Bican\Roles\RolesServiceProvider::class,
 				'Stevebauman\Location\LocationServiceProvider',
 				'Thomaswelton\LaravelGravatar\LaravelGravatarServiceProvider',
-				'Caffeinated\Flash\FlashServiceProvider',
+				Caffeinated\Flash\FlashServiceProvider::class,
 				'Tuurbo\AmazonPayment\AmazonPaymentServiceProvider' ,
 				Mews\Captcha\CaptchaServiceProvider::class,
 				'Orangehill\Iseed\IseedServiceProvider',
@@ -171,9 +170,17 @@ return [
 				\Conner\Likeable\LikeableServiceProvider::class,
 				Collective\Html\HtmlServiceProvider::class,
 				Unisharp\Ckeditor\ServiceProvider::class,
-	]
-		
-	,
+				Smorken\Errors\ErrorServiceProvider::class,
+				vendocrat\Addresses\AddressesServiceProvider::class,
+				Webpatser\Countries\CountriesServiceProvider::class,
+				Orchestra\Parser\XmlServiceProvider::class,
+				Barryvdh\DomPDF\ServiceProvider::class,
+				Nitmedia\Wkhtml2pdf\L5Wkhtml2pdfServiceProvider::class,
+				Collective\Bus\BusServiceProvider::class,
+				Sleimanx2\Plastic\PlasticServiceProvider::class,
+				'DougSisk\CountryState\CountryStateServiceProvider',
+
+	],
  
 	/*
 	|--------------------------------------------------------------------------
@@ -186,8 +193,8 @@ return [
 	|
 	*/
 
-	'aliases' => [ 
-				
+	'aliases' => [
+				'Address'   => vendocrat\Addresses\Facades\Addresses::class,
 				'App' => 'Illuminate\Support\Facades\App',
 				'AmazonPayment' => 'Tuurbo\AmazonPayment\AmazonPaymentFacade',
 				'Artisan' => 'Illuminate\Support\Facades\Artisan',
@@ -195,18 +202,18 @@ return [
 				'Blade' => 'Illuminate\Support\Facades\Blade',
 				'Bus' => 'Illuminate\Support\Facades\Bus',
 				'Cache' => 'Illuminate\Support\Facades\Cache',
-				'Captcha' => Mews\Captcha\Facades\Captcha::class,
 				'Config' => 'Illuminate\Support\Facades\Config',
 				'Cookie' => 'Illuminate\Support\Facades\Cookie',
+				'Countries' => Webpatser\Countries\CountriesFacade::class,
+				'CountryState' => DougSisk\CountryState\CountryStateFacade::class,
 				'Crypt' => 'Illuminate\Support\Facades\Crypt',
 				'DB' => 'Illuminate\Support\Facades\DB',
-				//'Debugbar' => 'Barryvdh\Debugbar\Facade',
 				'Eloquent' => 'Illuminate\Database\Eloquent\Model',
 				'Event' => 'Illuminate\Support\Facades\Event',
 				'Excel' => 'Maatwebsite\Excel\Facades\Excel',
 				'Facebook' => 'SammyK\LaravelFacebookSdk\FacebookFacade',
 				'File' => 'Illuminate\Support\Facades\File',
-				'Flash' => 'Caffeinated\Flash\Facades\Flash',
+				'Flash' => Caffeinated\Flash\Facades\Flash::class,
 				'Form' => Collective\Html\FormFacade::class,
 				'FormBuilder' => 'Kris\LaravelFormBuilder\Facades\FormBuilder',
 				'Gate' => Illuminate\Support\Facades\Gate::class,
@@ -222,6 +229,8 @@ return [
 				'Mail' => 'Illuminate\Support\Facades\Mail',
 				'Menu' => 'MartinBean\MenuBuilder\MenuFacade',
 				'Password' => 'Illuminate\Support\Facades\Password',
+				//'PDF' => Barryvdh\DomPDF\Facade::class,
+				'PDF' => Nitmedia\Wkhtml2pdf\Facades\Wkhtml2pdf::class,
 				'Queue' => 'Illuminate\Support\Facades\Queue',
 				'Redirect' => 'Illuminate\Support\Facades\Redirect',
 				'Redis' => 'Illuminate\Support\Facades\Redis',
@@ -235,6 +244,8 @@ return [
 				'Theme' => 'Teepluss\Theme\Facades\Theme',
 				'URL' => 'Illuminate\Support\Facades\URL',
 				'Validator' => 'Illuminate\Support\Facades\Validator',
-				'View' => 'Illuminate\Support\Facades\View' 
+				'View' => 'Illuminate\Support\Facades\View',
+			    'XmlParser' => Orchestra\Parser\Xml\Facade::class,
+
 		] 
 ];

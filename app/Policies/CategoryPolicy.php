@@ -2,13 +2,12 @@
 
 namespace App\Policies;
 
-use Riari\Forum\Policies\CategoryPolicy as RFP;
-use Riari\Forum\Models\Category;
+use App\Category;
 use Bican\Roles\Models\Role;
 use Bican\Roles\Models\Permission;
 use App\User;
 
-class CategoryPolicy extends RFP{
+class CategoryPolicy{
 	/**
 	 * Permission: Create threads in category.
 	 *

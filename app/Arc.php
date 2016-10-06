@@ -2,10 +2,10 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\Traits\Relatable;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\Traits\Navigatable; 
 use App\Traits\Presentable;
-use App\BaseModel; 
 use McCool\LaravelAutoPresenter\HasPresenter;
 use App\Traits\Fillable;
 
@@ -13,6 +13,8 @@ class Arc extends BaseModel implements HasPresenter, NavigatableContract {
 	use Fillable;
 	use Navigatable; 
 	use Presentable;
+	use Relatable;
+
 	public $fillable = [ 
 			'start_time',
 			'end_time',
@@ -23,15 +25,9 @@ class Arc extends BaseModel implements HasPresenter, NavigatableContract {
 			'playerCharacters',
 			'expenditures',
 			'economy',
-			'sales' 
+			'sales',
+			'tickets'
 	];
-	public function playerCharacters() {
-		return $this->morphedByMany ( 'App\PlayerCharacter', 'attendable' );
-	}
-	public function users() {
-		return $this->morphedByMany ( 'App\User', 'attendable' );
-	}
-	
 	/**
 	 * return the set of people who attended a given Arc who did not play a
 	 * PlayerCharacter
@@ -52,6 +48,16 @@ class Arc extends BaseModel implements HasPresenter, NavigatableContract {
 			$combinedUsers = new Collection ();
 		}
 		return $combinedUsers;
+	}
+	//relations
+	public function playerCharacters() {
+		return $this->morphedByMany ( 'App\PlayerCharacter', 'attendable' );
+	}
+	public function users() {
+		return $this->morphedByMany ( 'App\User', 'attendable' );
+	}
+	public function tickets(){
+		return $this->hasMany ('App\Ticket');
 	}
 	public function expenditures() {
 		return $this->hasMany ( 'App\Expenditure' );

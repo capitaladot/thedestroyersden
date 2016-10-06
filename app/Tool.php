@@ -2,8 +2,10 @@
 
 namespace App;
 
-use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\BaseModel;
+use App\Traits\Ruled;
+use McCool\LaravelAutoPresenter\HasPresenter;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\Item;
 use App\Traits\Craftable;
 use App\Traits\ItemTypeable;
@@ -22,6 +24,7 @@ class Tool extends FinalProduct implements NavigatableContract {
 	use Requirable;
 	use Navigatable; 
 	use Presentable;
+	use Ruled;
 	public $loss_factor = 2;
 	public $used_by = '';
 	protected $fillable = [ 

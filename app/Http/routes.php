@@ -15,54 +15,66 @@ Route::get ( '/', function () {
 } );
 Route::get ( '/', 'WelcomeController@index' );
 Route::get ( 'home', 'HomeController@index' );
-Route::controllers ( [ 
-	'amazon' => 'AmazonController',
-	'auth' => 'Auth\AuthController',
-	'password' => 'Auth\PasswordController' 
-] );
-Route::group(['middleware' => 'auth'],function(){
+Route::group(['middleware' => ['secure','auth']],function(){
 	return [
-		'cart'=>Route::controller('cart', 'CartController'),
+		'order'=>Route::resource ( 'order', 'OrderController' ),
+		'payment/square'=>Route::controller('payment/square','Payment\SquareController'),
 		'user' => Route::resource ( 'user', 'UserController' )
 	];
 });
-Route::resource('captchad', 'MyCaptchaController' );
-Route::resource('contact', 'ContactController' );
-Route::group(['middleware' => 'captchad'],function(){
-	return [Route::post('contact', 'ContactController@store' )/*,
-	Route::post('auth*', 'AuthController' )*/];
+Route::group(['middleware' => 'secure'],function(){
+	Route::controllers ( [
+		'amazon' => 'AmazonController',
+		'auth' => 'Auth\AuthController',
+		'password' => 'Auth\PasswordController',
+		'square'=>'SquareController'
+	]);
 });
-Route::resource ( 'arithemeticoperator', 'ArithmeticOperatorController' );
+Route::group(['middleware' => 'captchad'],function(){
+	Route::post('contact', 'ContactController@store' );
+});
+Route::controller('book',"BookController");
+Route::resource ( 'captchad', 'MyCaptchaController' );
+Route::resource ( 'contact', 'ContactController' );
+Route::resource ( 'arithmeticoperator', 'ArithmeticOperatorController' );
 Route::resource ( 'arc', 'ArcController' );
 Route::resource ( 'characterclass', 'CharacterClassController' );
 Route::resource ( 'cost', 'CostController' );
 Route::resource ( 'craftingcomponent', 'CraftingComponentController' );
 Route::resource ( 'craftingrequirement', 'CraftingRequirementController' );
-Route::any('craft/trim','CraftController@trim');
 Route::resource ( 'craft', 'CraftController' );
 Route::resource ( 'damagetype', 'DamageTypeController' );
+Route::resource ( 'deity', 'DeityController' );
+Route::resource ( 'devotional', 'DevotionalController' );
+Route::any('description/search','DescriptionController@search');
 Route::resource ( 'description', 'DescriptionController' );
 Route::resource ( 'economy', 'EconomyController' );
 Route::resource ( 'expenditures', 'ExpendituresController' );
 Route::resource ( 'event', 'EventController' );
-Route::any('item/trim','ItemController@trim');
-Route::resource('google','GoogleController');
+Route::resource ( 'google','GoogleController');
 Route::resource ( 'item', 'ItemController' );
 Route::resource ( 'itemtype', 'ItemTypeController' );
+Route::resource ( 'link', 'LinkController' );
 Route::resource ( 'homeland', 'HomelandController' );
+Route::resource ( 'magic', 'MagicController' );
 Route::resource ( 'menu', 'MenuController' );
 Route::resource ( 'playercharacter', 'PlayerCharacterController' );
 Route::resource ( 'race', 'RaceController' );
 Route::resource ( 'rawresource', 'RawResourceController' );
+Route::resource ( 'requirement', 'RequirementController' );
+Route::resource ( 'requirementgroup', 'RequirementGroupController' );
+Route::resource ( 'rule', 'RuleController' );
 Route::resource ( 'sale', 'SaleController' );
 Route::resource ( 'skill', 'SkillController' );
+Route::resource ( 'skilltype', 'SkillTypeController' );
+Route::resource ( 'spell', 'SpellController' );
+Route::resource ( 'ticket', 'TicketController' );
 Route::resource ( 'tool', 'ToolController' );
 Route::resource ( 'weapon', 'WeaponController' );
 
 /* Facebook */
 Route::any ( 'facebook/login', 'FacebookController@login' );
 Route::any ( 'facebook/login-callback', 'FacebookController@loginCallback' );
-Route::any ( 'facebook/payment-callback', 'FacebookController@paymentCallback' );
 Route::any ( 'facebook/events', 'FacebookController@events' );
 /* Like */
 Route::any('like/toggle-like/{likeable_type}/{likeable_id}','LikeController@anyToggleLike');

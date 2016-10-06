@@ -6,9 +6,12 @@ use Riari\Forum\Models\Thread as T;
 use Conner\Likeable\Likeable;
 use Illuminate\Support\Facades\Gate;
 use App\Like;
+use Sleimanx2\Plastic\Searchable;
 
 class Thread extends T{
 	use Likeable;
+	use Searchable;
+	public $searchable = ['title'];
 	/**
 	 * Relationship: Posts.
 	 *
@@ -27,4 +30,8 @@ class Thread extends T{
 	{
 		return $this->morphMany(Like::class, 'likeable');
 	}
+	public static function withTrashed(){
+		return parent::withTrashed();
+	}
+
 }

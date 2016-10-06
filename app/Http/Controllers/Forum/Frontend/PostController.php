@@ -20,13 +20,10 @@ class PostController extends BaseController
 	public function show(Request $request)
 	{
 		$post = $this->api('post.fetch', $request->route('post'))->parameters(['with' => ['thread', 'thread.category', 'parent']])->get();
-
+		ini_set('memory_limit','384M');
+		\ddd($post);
 		event(new UserViewingPost($post));
-
-		$thread = $post->thread;
-		$category = $thread->category;
-
-		return view('forum::post.show', collect(['category'=>$category, 'thread'=>$thread, 'post'=>post]));
+		return view('forum::post.show', collect(['category'=>$post->thread->category, 'thread'=>$post->thread, 'post'=>$post]));
 	}
 
 	/**
@@ -67,14 +64,12 @@ class PostController extends BaseController
 		if ($request->has('post')) {
 			$post = $thread->posts->find($request->input('post'));
 		}
-
 		$post = $this->api('post.store')->parameters([
 			'thread_id' => $thread->id,
 			'author_id' => auth()->user()->id,
 			'post_id'   => is_null($post) ? 0 : $post->id,
 			'content'   => $request->input('content')
 		])->post();
-
 		$post->thread->touch();
 
 		Forum::alert('success', 'general.reply_added');
@@ -165,7 +160,6 @@ class PostController extends BaseController
 		}
 
 		$posts = $this->api('bulk.post.delete')->parameters($parameters)->delete();
-
 		return $this->bulkActionResponse($posts, 'posts.deleted');
 	}
 

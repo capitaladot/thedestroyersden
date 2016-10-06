@@ -1,12 +1,18 @@
 <?php namespace App;
 
-use App\BaseModel;
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
+use App\Contracts\FillableContract;
+use App\Contracts\RelatableContract;
+use App\Traits\Fillable;
+use App\Traits\Relatable;
+use App\Traits\Ruled;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\Traits\Navigatable;
 
-class DamageType extends BaseModel implements NavigatableContract  {
+class DamageType extends BaseModel implements FillableContract, NavigatableContract, RelatableContract  {
+	use Fillable;
 	use Navigatable;
-	public $table ='damage_types';
+	use Relatable;
+	use Ruled;
 	public function weapons(){
 		return $this->belongsToMany('App\Weapon');
 	}

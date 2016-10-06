@@ -2,18 +2,20 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Traits\Navigatable; use App\Traits\Presentable;
-use App\BaseModel; use McCool\LaravelAutoPresenter\HasPresenter;
+use App\Contracts\FillableContract;
+use App\Contracts\RelatableContract;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
+use App\Traits\Fillable;
+use App\Traits\Navigatable;
+use App\Traits\Presentable;
+use App\Traits\Relatable;
+use McCool\LaravelAutoPresenter\HasPresenter;
 
-/**
- *
- * @author U53456
- *        
- */
-class Experience extends BaseModel implements HasPresenter, NavigatableContract {
-	use Navigatable; 
+class Experience extends BaseModel implements FillableContract, HasPresenter, NavigatableContract, RelatableContract {
+	use Fillable;
+	use Navigatable;
 	use Presentable;
+	use Relatable;
 	public function playerCharacter() {
 		return $this->hasOne ( 'App\PlayerCharacter' );
 	}

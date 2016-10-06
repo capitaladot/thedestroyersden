@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Routing\Route;
-use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent as Eloquent;
-use App;
-use Barryvdh\Debugbar\Facade as Debugbar;
 use App\Http\Requests\ContactFormRequest;
+use Mail;
 
 class ContactController extends Controller{
 	public function index(Route $route) {
@@ -26,14 +24,14 @@ class ContactController extends Controller{
 	}
 	public function store(ContactFormRequest $request)
 	{
-		$sent = \Mail::send('emails.contact',
-        array(
+		$sent = Mail::send('emails.contact',
+       [
             'name' => $request->get('name'),
             'email' => $request->get('email'),
             'user_message' => $request->get('message')
-        ), function($message)use($request)
+        ], function($message)use($request)
 		{
-			$message->from('website@destroyersden.com','DestroyersDen.com');
+			$message->from('destroyersdenlarp@gmail.com','DestroyersDen.com');
 			$message->replyTo($request->get('email'),$request->get('name'));
 			$message->cc($request->get('email'),$request->get('name'));
 			$message->to('destroyersdenlarp@gmail.com', 'Destroyers Den Staff Gmail')

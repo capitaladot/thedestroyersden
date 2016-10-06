@@ -7,11 +7,12 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 @endsection @yield('head')
 @section('styles')
-		<link href="/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 		<link href="/css/app.css" rel="stylesheet">
 		<link href="/css/styles.css" rel="stylesheet">
 		{{-- Fonts --}}
 		<link href="//fonts.googleapis.com/css?family=Raleway:900,800,700,600,500,400,300" rel="stylesheet" type="text/css">
+		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 @endsection @yield('styles')
 @section('scripts')
 	{{-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries --}}
@@ -34,7 +35,7 @@
 @section('bodyscripts')
 	{{-- Scripts --}}
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-		<script src="/js/bootstrap.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 		<script src="/js/raleway.js"></script>
 @endsection @yield('bodyscripts')
 @section('endbody')

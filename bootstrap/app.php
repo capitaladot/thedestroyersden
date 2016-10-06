@@ -28,7 +28,14 @@ $app->singleton ( 'Illuminate\Contracts\Http\Kernel', 'App\Http\Kernel' );
 $app->singleton ( 'Illuminate\Contracts\Console\Kernel', 'App\Console\Kernel' );
 
 $app->singleton ( 'Illuminate\Contracts\Debug\ExceptionHandler', 'App\Exceptions\Handler' );
-
+/**
+ * Configure Monolog.
+ */
+$app->configureMonologUsing(function(Monolog\Logger $monolog) {
+	$filename = storage_path('logs/laravel-'.php_sapi_name().'-'.get_current_user().'.log');
+	$handler = new Monolog\Handler\RotatingFileHandler($filename);
+	$monolog->pushHandler($handler);
+});
 /*
  * |--------------------------------------------------------------------------
  * | Return The Application

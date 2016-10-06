@@ -2,10 +2,13 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract; 
-use App\Traits\Navigatable; 
+use App\Contracts\FillableContract;
+use App\Contracts\RelatableContract;
+use App\Traits\Fillable;
+use App\Traits\Relatable;
+use App\Traits\RoutedById;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\Traits\Presentable;
-use App\BaseModel; 
 use McCool\LaravelAutoPresenter\HasPresenter;
 use App\Cost;
 use App\CharacterClass;
@@ -16,8 +19,11 @@ use App\Skill;
 
 /**
  */
-class Expenditure extends BaseModel implements HasPresenter {
+class Expenditure extends BaseModel implements FillableContract, HasPresenter, NavigatableContract,RelatableContract {
+	use Fillable;
+	use RoutedById;
 	use Presentable;
+	use Relatable;
 	public function value(){
 		$costs = Costs::where(['skill_id'=>$this->skill])->get()->sortBy('operation')->filter(function($cost){
 			if (

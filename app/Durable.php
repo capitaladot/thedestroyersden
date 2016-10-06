@@ -2,29 +2,39 @@
 
 namespace App;
 
-use MartinBean\MenuBuilder\Contracts\NavigatableContract;
-use App\Consumption;
-use App\Item;
-use App\PlayerCharacter;
+use App\Traits\Ruled;
+use MartinBean\MenuBuilder\Contracts\Navigatable as NavigatableContract;
 use App\Traits\Craftable;
-use App\Traits\Navigatable; use App\Traits\Presentable;
-use App\Traits\Requireable;
+use App\Traits\Navigatable;
+use App\Traits\Owned;
+use App\Traits\Presentable;
+use App\Traits\Requirable;
 use App\Traits\Salvageable;
 use App\Traits\Taggable;
 use App\Contracts\ItemContract;
 
-class Durable extends Item implements ItemContract, NavigatableContract {
+class Durable extends FinalProduct implements ItemContract, NavigatableContract {
 	use Craftable;
-	use Navigatable; use Presentable;
-	use Requireable;
+	use Navigatable;
+	use Owned;
+	use Presentable;
+	use Requirable;
+	use Ruled;
 	use Salvageable;
 	use Taggable;
-	protected $table = 'items';
 	protected $consumable = false;
+	public function __construct($attributes=[]){
+		parent::__construct($attributes);
+		$this->itemType()->associate(ItemType::where('title','=','Durable')->first());
+	}
+	//relations
 	public function craftingOccurrence() {
 		return $this->belongsTo ( 'App\CraftingOccurrence' );
 	}
 	public function ownable() {
 		return $this->belongsTo ( 'App\Ownable' );
+	}
+	public function scope($query){
+		return $query->where('item_type_id',ItemType::where('title','Durable')->first()->id);
 	}
 }

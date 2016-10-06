@@ -2,11 +2,13 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Riari\Forum\Models\Category as C;
-use App\Thread;
+use \App\Thread as Thread;
 use Illuminate\Support\Facades\Gate;
 
 class Category extends C{
+	use SoftDeletes;
 	/**
 	 * Relationship: Threads.
 	 *
