@@ -13,8 +13,8 @@ return [
 		 * |
 		 */
 		'facebook' => [ 
-				'groupId' => ***REMOVED***,
-				'pageId' => ***REMOVED***
+				'groupId' => '',
+				'pageId' => ''
 		],
 		'mailgun' => [ 
 				'domain' => '',
@@ -29,15 +29,15 @@ return [
 			'sandbox_mode' => true,
 			'store_name' => 'The Destroyer\'s Den',
 			'statement_name' => 'The Destroyer\'s Den 317-426-0120',
-			'client_id' => '***REMOVED***',
+			'client_id' => '',
 			'seller_id' => '',
 			'access_key' => '',
-			'secret_key' => '***REMOVED***',
+			'secret_key' => '',
 		],
 		
 		'ses' => [ 
-				'key' => '***REMOVED***',
-				'secret' => '***REMOVED***',
+				'key' => '',
+				'secret' => '',
 				'region' => 'us-east-1' 
 		],
 		
@@ -46,11 +46,11 @@ return [
 				'secret' => '' 
 		],
 		'square'=>[
-			'signature_key'=>'***REMOVED***',
-			/*'applicaiton_id'=>'***REMOVED***',
-			'application_secret=>'***REMOVED***'*/
+			'signature_key'=>'',
+			/*'applicaiton_id'=>'',
+			'application_secret=>''*/
 			//sandbox
-			'application_id'=>'sandbox-***REMOVED***',
-			'application_secret'=>'***REMOVED***'
+			'application_id'=>'',
+			'application_secret'=>''
 		]
 ];

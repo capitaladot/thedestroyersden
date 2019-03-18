@@ -6,13 +6,13 @@
  * Time: 4:02 PM
  */
 return [
-	'signature_key'=>'***REMOVED***',
+	'signature_key'=>'''',
 	/*
-	'access_token'=>'***REMOVED***',
-	'application_id'=>'***REMOVED***',
-	'application_secret=>'***REMOVED***'*/
+	'access_token'=>'''',
+	'application_id'=>'''',
+	'application_secret=>''''*/
 	//sandbox
-	'access_token'=>'***REMOVED***',
-	'application_id'=>'sandbox-***REMOVED***',
-	'application_secret'=>'***REMOVED***'
+	'access_token'=>'''',
+	'application_id'=>'''',
+	'application_secret'=>''''
 ];

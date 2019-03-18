@@ -79,8 +79,8 @@ return [
 	| connection. You may also set the "password" value below this one.
 	|
 	*/
-//***REMOVED***
-	'username' => '***REMOVED***',
+//''
+	'username' => '''',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -93,7 +93,7 @@ return [
 	|
 	*/
 
-	'password' => '***REMOVED***',
+	'password' => '''',
 
 	/*
 	|--------------------------------------------------------------------------
